@@ -3,15 +3,20 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29519.181
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SabTool.CLI", "SabTool.CLI\SabTool.CLI.csproj", "{516E4A73-1BAA-45EE-82E3-BF14D5ADB5C7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SabTool.CLI", "SabTool.CLI\SabTool.CLI.csproj", "{516E4A73-1BAA-45EE-82E3-BF14D5ADB5C7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SabTool.Client", "SabTool.Client\SabTool.Client.csproj", "{8FDA33DF-2CA1-4723-ABEF-E53AA2704459}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SabTool.Client", "SabTool.Client\SabTool.Client.csproj", "{8FDA33DF-2CA1-4723-ABEF-E53AA2704459}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SabTool.Parsers", "SabTool.Parsers\SabTool.Parsers.csproj", "{B2CC8D11-BACF-44BF-A21F-97EF027AE306}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SabTool.Parsers", "SabTool.Parsers\SabTool.Parsers.csproj", "{B2CC8D11-BACF-44BF-A21F-97EF027AE306}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SabTool.Utils", "SabTool.Utils\SabTool.Utils.csproj", "{88AE9087-01F6-4941-9A05-5DED8F5A84AA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SabTool.Utils", "SabTool.Utils\SabTool.Utils.csproj", "{88AE9087-01F6-4941-9A05-5DED8F5A84AA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SabTool.Writers", "SabTool.Writers\SabTool.Writers.csproj", "{ECF6FC39-2D34-495F-A752-2C6EE2C4C2D7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SabTool.Writers", "SabTool.Writers\SabTool.Writers.csproj", "{ECF6FC39-2D34-495F-A752-2C6EE2C4C2D7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FA2A6265-9E25-41C3-B063-3C759F9F3604}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
