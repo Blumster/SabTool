@@ -6,9 +6,21 @@ using System.Linq;
 namespace SabTool.CLI.Commands
 {
     using Base;
+    using Containers.LooseFiles;
 
     public class LooseFileCategory : BaseCategory
     {
+        public static IDictionary<string, uint> LooseFilesBinPCStaticFiles = new Dictionary<string, uint>
+        {
+            { "France.shaders", 0xEE2E6431 },
+            { @"Cinematics\Conversations\Conversations.cnvpack", 0x46350DCF },
+            { @"Cinematics\Cinematics.cinpack", 0x0F3C8F37 },
+            { "global.map", 0x6B37A7CB },
+            { "France.map", 0x25B96F25 },
+            { @"France\EditNodes\EditNodes.pack", 0xC965B7EA },
+            { "GameTemplates.wsd", 0x12CDBDE3 }
+        };
+
         public override string Key { get; } = "loose-files";
         public override string Usage { get; } = "<sub command name>";
 
@@ -34,17 +46,24 @@ namespace SabTool.CLI.Commands
                     return false;
                 }
 
-                if (!Directory.Exists(outputFolder))
-                {
-                    Console.WriteLine("ERROR: Output directory doesn't exist!");
-                    return false;
-                }
+                Directory.CreateDirectory(outputFolder);
 
-                /*using (var parser = new LooseFileParser(filePath))
+                var looseFile = new LooseFile();
+
+                using (var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+                    looseFile.Read(fs);
+
+                foreach (var file in looseFile.Files)
                 {
-                    parser.Parse();
-                    parser.Extract(outputFolder);
-                }*/
+                    var outFilePath = Path.Combine(outputFolder, file.Name);
+                    var directoryName = Path.GetDirectoryName(outFilePath);
+
+                    Directory.CreateDirectory(directoryName);
+
+                    Console.WriteLine($"Unpacking {file}...");
+
+                    File.WriteAllBytes(outFilePath, file.Data);
+                }
 
                 Console.WriteLine("Files successfully unpacked!");
                 return true;
@@ -67,27 +86,62 @@ namespace SabTool.CLI.Commands
                 var filePath = arguments.ElementAt(0);
                 var inputFolder = arguments.ElementAt(1);
 
-                if (!File.Exists(filePath))
+                if (File.Exists(filePath))
                 {
-                    Console.WriteLine("ERROR: Loose file doesn't exist!");
+                    Console.WriteLine("ERROR: Loose file already exist!");
                     return false;
                 }
 
                 if (!Directory.Exists(inputFolder))
                 {
-                    Console.WriteLine("ERROR: Output directory doesn't exist!");
+                    Console.WriteLine("ERROR: Input directory doesn't exist!");
                     return false;
                 }
 
-                var files = Directory.GetFiles(inputFolder, "*", SearchOption.AllDirectories);
+                var looseFile = new LooseFile();
 
-                if (files.Length == 0)
+                if (Path.GetFileName(filePath) == "loosefiles_BinPC.pack")
                 {
-                    Console.WriteLine("ERROR: No files found in the input directory!");
-                    return false;
+                    foreach (var pair in LooseFilesBinPCStaticFiles)
+                    {
+                        var path = Path.Combine(inputFolder, pair.Key);
+                        if (!File.Exists(path))
+                        {
+                            Console.WriteLine($"Missing file in input folder: {pair.Key}!");
+                            return false;
+                        }
+
+                        var entry = new LooseFileEntry(pair.Value, pair.Key, path);
+
+                        looseFile.AddFile(entry);
+
+                        Console.WriteLine($"Adding: \"{entry}\" to loose file...");
+                    }
+                }
+                else
+                {
+                    var files = Directory.GetFiles(inputFolder, "*", SearchOption.AllDirectories);
+
+                    if (files.Length == 0)
+                    {
+                        Console.WriteLine("ERROR: No files found in the input directory!");
+                        return false;
+                    }
+
+                    foreach (var file in files)
+                    {
+                        var entry = new LooseFileEntry(0, file.Substring(inputFolder.Length + 1), file);
+
+                        looseFile.AddFile(entry);
+
+                        Console.WriteLine($"Adding: \"{entry}\" to loose file...");
+                    }
                 }
 
-                Console.WriteLine("Files successfully packed!");
+                using (var fs = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.None))
+                    looseFile.Write(fs);
+
+                Console.WriteLine("Loose file successfully packed! Path: {0}", filePath);
                 return true;
             }
         }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace SabTool.Parsers.Megapack.Global
+namespace SabTool.Parsers.Megapacks.Global
 {
     using Base;
     using Client.Streaming;

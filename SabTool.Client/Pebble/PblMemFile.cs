@@ -26,19 +26,22 @@ namespace SabTool.Client.Pebble
             }
         }
 
+        #region Virtual table 107BDC0
         public override long GetFileSize() // 0xDBA7F0
         {
             return Length;
         }
 
-        public override bool Func16()
-        {
-            return false;
-        }
+        // IsEndOfFile not overridden
 
         public override bool IsOpen() // 0xDBA800
         {
             return (Flags1C & 1) == 1;
+        }
+
+        public override bool Func16() // 0xDBA910
+        {
+            return false;
         }
 
         public override void Read(byte[] destination, int bytesToRead) // 0xDBA810
@@ -84,6 +87,8 @@ namespace SabTool.Client.Pebble
             }
         }
 
+        // Read2 not overridden
+
         public override long GetOffset() // 0xDBA900
         {
             return Offset;
@@ -101,7 +106,7 @@ namespace SabTool.Client.Pebble
             }
         }
 
-        public virtual void Read2(byte[] destination, int bytesToRead) // 0xDBA920
+        public virtual void Read3(byte[] destination, int bytesToRead) // 0xDBA920
         {
             Read(destination, bytesToRead);
         }
@@ -110,6 +115,7 @@ namespace SabTool.Client.Pebble
         {
             Seek(destOffsetLow + (((long)destOffsetHigh) << 32), type);
         }
+        #endregion
 
         public bool SetPayloadArray(byte[] payloadArray, int arraySize) // 0xDBA6F0
         {

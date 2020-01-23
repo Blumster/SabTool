@@ -9,4 +9,8 @@
     <ProjectReference Include="..\SabTool.Utils\SabTool.Utils.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="LooseFiles\" />
+  </ItemGroup>
+
 </Project>

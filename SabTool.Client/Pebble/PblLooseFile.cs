@@ -130,6 +130,8 @@ namespace SabTool.Client.Pebble
             }
         }
 
+        // Read2 not overridden
+
         public override long GetOffset() // 0x24
         {
             lock (StaticDiscFileData.Lock)

@@ -17,7 +17,7 @@ namespace SabTool.CLI
 
         static void Main(string[] args)
         {
-            PblLooseFile.GetStaticDiscFileInstance(GetFilePath(@"France\loosefiles_Binpc.pack"));
+            //PblLooseFile.GetStaticDiscFileInstance(GetFilePath(@"France\loosefiles_Binpc.pack"));
 
             if (args.Length > 0 && args[1] == "exec")
             {

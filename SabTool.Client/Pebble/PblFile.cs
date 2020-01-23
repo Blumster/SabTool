@@ -17,14 +17,14 @@ namespace SabTool.Client.Pebble
         #region Virtual Table 0x107BD90
         public abstract long GetFileSize(); // 0x04
 
-        public virtual bool IsEndOfFile() // 0x08
+        public virtual bool IsEndOfFile() // 0x08, 0x64AF70
         {
             return false;
         }
 
         public abstract bool IsOpen(); // 0x0C
 
-        public virtual bool Func16() // 0x10
+        public virtual bool Func16() // 0x10, 0xDBAFC0
         {
             return false;
         }
@@ -35,14 +35,14 @@ namespace SabTool.Client.Pebble
 
         public abstract void Seek(long destOffset, SeekOrigin type); // 0x1C
 
-        public virtual void Func32(int a, int b) // 0x20
+        public virtual void Read2(byte[] dest, int bytesToRead) // 0x20, 0x64AF80
         {
 
         }
 
         public abstract long GetOffset(); // 0x24
 
-        public virtual void Close() // 0x28
+        public virtual void Close() // 0x28, 0xDBAFD0
         {
         }
         #endregion
