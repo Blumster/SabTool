@@ -21,8 +21,8 @@ namespace SabTool.CLI.Commands
             { "GameTemplates.wsd", 0x12CDBDE3 }
         };
 
-        public override string Key { get; } = "loose-files";
-        public override string Usage { get; } = "<sub command name>";
+        public override string Key => "loose-files";
+        public override string Usage => "<sub command name>";
 
         public class LooseFileUnpackCommand : BaseCommand
         {

@@ -7,18 +7,21 @@ namespace SabTool.CLI.Base
 {
     public abstract class BaseCategory : ICommand
     {
-        private readonly Dictionary<string, ICommand> _commands = new Dictionary<string, ICommand>();
+        protected readonly Dictionary<string, ICommand> _commands = new Dictionary<string, ICommand>();
 
         public abstract string Key { get; }
         public abstract string Usage { get; }
 
-        public void Setup()
+        public virtual void Setup()
         {
             _commands.Clear();
 
             foreach (var type in GetType().GetNestedTypes())
             {
-                if (type.IsClass && type.GetInterfaces().Contains(typeof(ICommand)))
+                if (!type.IsClass)
+                    continue;
+
+                if (type.GetInterfaces().Contains(typeof(ICommand)))
                 {
                     var newInstance = Activator.CreateInstance(type) as ICommand;
 
@@ -29,7 +32,7 @@ namespace SabTool.CLI.Base
             }
         }
 
-        public bool Execute(IEnumerable<string> arguments)
+        public virtual bool Execute(IEnumerable<string> arguments)
         {
             if (arguments.Count() == 0)
             {
@@ -47,7 +50,7 @@ namespace SabTool.CLI.Base
             return _commands[nextKey].Execute(arguments.Skip(1));
         }
 
-        public void BuildUsage(StringBuilder builder, IEnumerable<string> arguments)
+        public virtual void BuildUsage(StringBuilder builder, IEnumerable<string> arguments)
         {
             builder.AppendFormat(" {0}", Key);
 
@@ -80,6 +83,19 @@ namespace SabTool.CLI.Base
             }
 
             builder.Append(">");
+        }
+
+        protected void AddInstance(ICommand command)
+        {
+            _commands.Add(command.Key, command);
+
+            command.Setup();
+        }
+
+        protected void AddInstance<T>()
+            where T : ICommand, new()
+        {
+            AddInstance(new T());
         }
     }
 }
