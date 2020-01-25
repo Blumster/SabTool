@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.IO;
+using System.Linq;
 
 namespace SabTool.CLI.Commands.Megapack
 {
@@ -15,7 +16,7 @@ namespace SabTool.CLI.Commands.Megapack
         public class UnpackCommand : BaseCommand
         {
             public override string Key { get; } = "unpack";
-            public override string Usage { get; } = "<game base path> <output directory path>";
+            public override string Usage { get; } = "<game base path> <output directory>";
 
             public override bool Execute(IEnumerable<string> arguments)
             {

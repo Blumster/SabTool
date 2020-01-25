@@ -11,14 +11,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SabTool.Parsers", "SabTool.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SabTool.Utils", "SabTool.Utils\SabTool.Utils.csproj", "{88AE9087-01F6-4941-9A05-5DED8F5A84AA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SabTool.Writers", "SabTool.Writers\SabTool.Writers.csproj", "{ECF6FC39-2D34-495F-A752-2C6EE2C4C2D7}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FA2A6265-9E25-41C3-B063-3C759F9F3604}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SabTool.Containers", "SabTool.Containers\SabTool.Containers.csproj", "{3E2AC0D9-6DA7-4FFB-A0C7-AC7201FA5C16}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SabTool.Containers", "SabTool.Containers\SabTool.Containers.csproj", "{3E2AC0D9-6DA7-4FFB-A0C7-AC7201FA5C16}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -42,10 +40,6 @@ Global
 		{88AE9087-01F6-4941-9A05-5DED8F5A84AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{88AE9087-01F6-4941-9A05-5DED8F5A84AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{88AE9087-01F6-4941-9A05-5DED8F5A84AA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{ECF6FC39-2D34-495F-A752-2C6EE2C4C2D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{ECF6FC39-2D34-495F-A752-2C6EE2C4C2D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{ECF6FC39-2D34-495F-A752-2C6EE2C4C2D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{ECF6FC39-2D34-495F-A752-2C6EE2C4C2D7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3E2AC0D9-6DA7-4FFB-A0C7-AC7201FA5C16}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3E2AC0D9-6DA7-4FFB-A0C7-AC7201FA5C16}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3E2AC0D9-6DA7-4FFB-A0C7-AC7201FA5C16}.Release|Any CPU.ActiveCfg = Release|Any CPU

@@ -29,7 +29,7 @@ namespace SabTool.Utils.Extensions
             if (string.IsNullOrEmpty(required))
                 return false;
 
-            return reader.ReadHeaderString(required.Length) == required;
+            return reader.ReadHeaderString(required.Length, reversed: reversed) == required;
         }
 
         public static string ReadStringWithMaxLength(this BinaryReader reader, int maxLength, bool breakOnNewLine = false)

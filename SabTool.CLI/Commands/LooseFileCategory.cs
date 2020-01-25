@@ -24,7 +24,7 @@ namespace SabTool.CLI.Commands
         public override string Key => "loose-files";
         public override string Usage => "<sub command name>";
 
-        public class LooseFileUnpackCommand : BaseCommand
+        public class UnpackCommand : BaseCommand
         {
             public override string Key { get; } = "unpack";
             public override string Usage { get; } = "<loose file path> <output directory path>";
@@ -70,7 +70,7 @@ namespace SabTool.CLI.Commands
             }
         }
 
-        public class LooseFilePackCommand : BaseCommand
+        public class PackCommand : BaseCommand
         {
             public override string Key { get; } = "pack";
             public override string Usage { get; } = "<loose file path> <input directory path>";
@@ -107,7 +107,7 @@ namespace SabTool.CLI.Commands
                         var path = Path.Combine(inputFolder, pair.Key);
                         if (!File.Exists(path))
                         {
-                            Console.WriteLine($"Missing file in input folder: {pair.Key}!");
+                            Console.WriteLine($"ERROR: Missing file in input folder: {pair.Key}!");
                             return false;
                         }
 

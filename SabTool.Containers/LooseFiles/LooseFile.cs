@@ -5,6 +5,7 @@ using System.Text;
 namespace SabTool.Containers.LooseFiles
 {
     using System.IO;
+    using Utils.Extensions;
 
     public class LooseFile
     {
@@ -23,21 +24,10 @@ namespace SabTool.Containers.LooseFiles
                 {
                     var crc = br.ReadUInt32();
                     var size = br.ReadInt32();
-                    var strArr = br.ReadBytes(120);
+                    var name = br.ReadStringFromCharArray(120);
                     var data = br.ReadBytes(size);
 
-                    var termInd = 119;
-
-                    for (var i = 0; i < 119; ++i)
-                    {
-                        if (strArr[i] == 0)
-                        {
-                            termInd = i;
-                            break;
-                        }
-                    }
-
-                    Files.Add(new LooseFileEntry(crc, Encoding.UTF8.GetString(strArr, 0, termInd), data));
+                    Files.Add(new LooseFileEntry(crc, name, data));
 
                     if ((stream.Position % 16) != 0)
                         stream.Position += 16 - (stream.Position % 16);
