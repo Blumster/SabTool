@@ -7,7 +7,7 @@ namespace SabTool.CLI.Commands.Megapack
 {
     using Base;
     using Containers.LooseFiles;
-    using Containers.Map;
+    using Containers.Megapacks;
 
     public class MegapackGlobalCategory : BaseCategory
     {

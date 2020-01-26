@@ -8,13 +8,13 @@ namespace SabTool.Client.Streaming
 
     public class WSStreamBlockNode
     {
-        public PblTreeNode TreeNode { get; set; }
+        public PblTreeNode<WSStreamBlock> TreeNode { get; set; }
         public WSStreamBlock StreamBlock { get; set; }
 
         public WSStreamBlockNode()
         {
-            TreeNode = new PblTreeNode(null);
-            TreeNode.Dword0 = TreeNode.Dword0 & 0xFFFFFF0F | 0xC;
+            TreeNode = new PblTreeNode<WSStreamBlock>(null);
+            TreeNode.Dword0 = (int)(TreeNode.Dword0 & 0xFFFFFF0F) | 0xC;
 
             StreamBlock = new WSStreamBlock(true);
         }
@@ -31,6 +31,7 @@ namespace SabTool.Client.Streaming
         private object _lock = new object();
         public static uint ActiveStreamBlockCount { get; private set; }
 
+        public string FileName { get; set; }
         public float FieldA4 { get; set; }
         public float FieldA8 { get; set; }
         public float FieldAC { get; set; }
@@ -66,7 +67,7 @@ namespace SabTool.Client.Streaming
 
         public void SetFileNameFromFormat(string format, params object[] args)
         {
-
+            FileName = string.Format(format, args);
         }
 
         public void ReadSomeArrays(BinaryReader br)
