@@ -7,7 +7,7 @@ namespace SabTool.CLI.Commands.Megapack
 {
     using Base;
     using Containers.LooseFiles;
-    using Containers.Megapacks;
+    using Containers.Megapacks.Global;
 
     public class MegapackGlobalCategory : BaseCategory
     {
@@ -17,6 +17,14 @@ namespace SabTool.CLI.Commands.Megapack
 
         public class UnpackCommand : BaseCommand
         {
+            public static readonly List<string> Megapacks = new List<string>()
+            {
+                @"Global\Dynamic0.megapack",
+                @"Global\palettes0.megapack",
+                @"Global\patchdynamic0.megapack",
+                @"Global\patchpalettes0.megapack"
+            };
+
             public override string Key { get; } = "unpack";
             public override string Usage { get; } = "<game base path> <output directory>";
 
@@ -47,6 +55,17 @@ namespace SabTool.CLI.Commands.Megapack
                     return false;
                 }
 
+                foreach (var filePath in Megapacks)
+                {
+                    var fullPath = Path.Combine(basePath, filePath);
+
+                    if (!filePath.Contains("patch") && !File.Exists(fullPath))
+                    {
+                        Console.WriteLine($"ERROR: Missing non-optional megapack: {filePath}!");
+                        return false;
+                    }
+                }
+
                 var looseFile = new LooseFile();
 
                 using (var fs = new FileStream(looseFilePath, FileMode.Open, FileAccess.Read, FileShare.Read))
@@ -63,6 +82,28 @@ namespace SabTool.CLI.Commands.Megapack
 
                 using (var ms = new MemoryStream(globalMapEntry.Data))
                     globalMap.Read(ms);
+
+                var megapacks = new List<GlobalMegapack>();
+
+                foreach (var filePath in Megapacks)
+                {
+                    var fullPath = Path.Combine(basePath, filePath);
+
+                    if (!File.Exists(fullPath))
+                        continue;
+
+                    var megapack = new GlobalMegapack(globalMap);
+
+                    using (var fs = new FileStream(fullPath, FileMode.Open, FileAccess.Read, FileShare.Read))
+                        megapack.Read(fs);
+
+                    megapacks.Add(megapack);
+                }
+
+                foreach (var megapack in megapacks)
+                {
+                    // TODO: extract when we have the proper file reading methods
+                }
 
                 Console.WriteLine("Successfully unpacked the global megapacks!");
                 return true;

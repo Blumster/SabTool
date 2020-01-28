@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace SabTool.Containers.Megapacks
+namespace SabTool.Containers.Megapacks.Global
 {
     using Utils.Extensions;
 
