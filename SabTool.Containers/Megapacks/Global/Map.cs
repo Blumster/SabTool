@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
@@ -7,7 +6,7 @@ namespace SabTool.Containers.Megapacks.Global
 {
     using Utils.Extensions;
 
-    public class GlobalMap : StreamingManager
+    public class Map : StreamingManager
     {
         public void Read(Stream stream)
         {

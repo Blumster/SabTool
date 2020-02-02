@@ -94,13 +94,7 @@ namespace SabTool.Containers.Megapacks
 
         public void Sub658580(int crc)
         {
-            if (Field18C == null)
-            {
-                Field194 = 0;
-                Field18C = new int[Entry7Count];
-            }
-
-            Field18C[Field194++] = crc;
+            Sub162DC70(crc);
         }
 
         public void Sub659F20(BinaryReader br)
@@ -182,6 +176,17 @@ namespace SabTool.Containers.Megapacks
                     PblTreeULongP.Add(crc, dataArr);
                 }
             }
+        }
+
+        public void Sub162DC70(int crc)
+        {
+            if (Field18C == null)
+            {
+                Field194 = 0;
+                Field18C = new int[Entry7Count];
+            }
+
+            Field18C[Field194++] = crc;
         }
     }
 }

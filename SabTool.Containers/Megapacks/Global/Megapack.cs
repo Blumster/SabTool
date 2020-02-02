@@ -5,11 +5,11 @@ using System.Text;
 
 namespace SabTool.Containers.Megapacks.Global
 {
-    public class GlobalMegapack : MegaFile
+    public class Megapack : MegaFile
     {
-        public GlobalMap Map { get; }
+        public Map Map { get; }
 
-        public GlobalMegapack(GlobalMap map)
+        public Megapack(Map map)
         {
             Map = map;
         }

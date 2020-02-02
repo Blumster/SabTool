@@ -78,12 +78,12 @@ namespace SabTool.CLI.Commands.Megapack
                     return false;
                 }
 
-                var globalMap = new GlobalMap();
+                var globalMap = new Map();
 
                 using (var ms = new MemoryStream(globalMapEntry.Data))
                     globalMap.Read(ms);
 
-                var megapacks = new List<GlobalMegapack>();
+                var megapacks = new List<Megapack>();
 
                 foreach (var filePath in Megapacks)
                 {
@@ -92,10 +92,13 @@ namespace SabTool.CLI.Commands.Megapack
                     if (!File.Exists(fullPath))
                         continue;
 
-                    var megapack = new GlobalMegapack(globalMap);
+                    var megapack = new Megapack(globalMap);
 
                     using (var fs = new FileStream(fullPath, FileMode.Open, FileAccess.Read, FileShare.Read))
+                    {
+                        Console.WriteLine($"Reading: {Path.GetFileName(fullPath)}");
                         megapack.Read(fs);
+                    }
 
                     megapacks.Add(megapack);
                 }
