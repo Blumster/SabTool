@@ -18,16 +18,5 @@
             AddInstance<MegapackDLCGlobalCategory>();
             AddInstance<MegapackDLCFranceCategory>();
         }
-
-        /*
-         * var looseFile = new LooseFile();
-
-                using (var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
-                    looseFile.Read(fs);
-
-                foreach (var file in looseFile.Files)
-                {
-                }
-         * */
     }
 }
