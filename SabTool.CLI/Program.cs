@@ -7,13 +7,6 @@ namespace SabTool.CLI
 
     public class Program
     {
-        const string GameBase = @"G:\Games\The Saboteur\";
-
-        public static string GetFilePath(string relPath)
-        {
-            return string.Format("{0}{1}", GameBase, relPath);
-        }
-
         static void Main(string[] args)
         {
             if (args.Length > 0 && args[1] == "exec")

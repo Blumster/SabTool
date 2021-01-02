@@ -107,5 +107,10 @@ namespace SabTool.Client.Streaming
                 var str = br.ReadStringWithMaxLength(strLen);
             }
         }
+
+        public WSStreamBlockNode Sub9F1860(uint crc)
+        {
+            return null;
+        }
     }
 }

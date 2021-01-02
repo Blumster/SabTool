@@ -4,6 +4,7 @@ using System.Text;
 
 namespace SabTool.Client.Streaming
 {
+    using Blueprint;
     using Pebble;
 
     public class WSStreamBlockNode
@@ -42,8 +43,11 @@ namespace SabTool.Client.Streaming
         public float FieldDC { get; set; }
         public float FieldE0 { get; set; }
         public float FieldE4 { get; set; }
+        public int SomeOffset { get; set; } // 0xF0
         public uint Flags { get; set; }       // 0x108
         public int Field198_CRC { get; set; } // 0x198
+        public WSBlueprint Blueprint { get; set; } // 0x1A4
+
 
         public WSStreamBlock(bool unkBaseClassStuff)
         {
@@ -78,6 +82,29 @@ namespace SabTool.Client.Streaming
         public void Sub659F20(BinaryReader br)
         {
 
+        }
+
+        public int Sub65A5E0()
+        {
+            // TODO
+            return 0;
+        }
+
+        public int Sub65C0A0()
+        {
+            return Sub162E480();
+        }
+
+        public int Sub65BDF0(int a2, int a3)
+        {
+            // TODO
+            return 0;
+        }
+
+        public int Sub162E480()
+        {
+            // TODO
+            return 0;
         }
     }
 }
