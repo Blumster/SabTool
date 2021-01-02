@@ -10,14 +10,14 @@ namespace SabTool.Containers.Megapacks
     {
         public static StreamingManager Instance { get; private set; }
         public int Field90 { get; set; }
-        public int FieldA0 { get; set; }
+        public int m_nTotalNumBlocks { get; set; }
         public StreamBlock[][] Field1CC { get; } = new StreamBlock[2][];
-        public int Field1D4 { get; set; }
+        public int m_nPalettes { get; set; }
         public int Field1D8 { get; set; }
-        public StreamBlock[][] StreamBlockArray { get; } = new StreamBlock[2][];
+        public StreamBlock[][] m_pPalettes { get; } = new StreamBlock[2][];
         public Dictionary<int, StreamBlock> Field9F7C { get; } = new Dictionary<int, StreamBlock>();
         public Dictionary<int, StreamBlock> Field9FA4 { get; } = new Dictionary<int, StreamBlock>();
-        public Dictionary<int, StreamBlock> FieldDA30 { get; } = new Dictionary<int, StreamBlock>();
+        public Dictionary<int, StreamBlock> m_DynamicBlocks { get; } = new Dictionary<int, StreamBlock>();
         public int FieldDA84 { get; set; }
         public long PerformanceCounter { get; set; }
 
@@ -60,17 +60,17 @@ namespace SabTool.Containers.Megapacks
 
                 var v22 = br.ReadInt16();
 
-                if (removeExisting && FieldDA30.ContainsKey(blockCrc))
-                    FieldDA30.Remove(blockCrc);
+                if (removeExisting && m_DynamicBlocks.ContainsKey(blockCrc))
+                    m_DynamicBlocks.Remove(blockCrc);
 
                 var block = new StreamBlock();
                 block.Flags |= 8;
-                block.Field198_CRC = blockCrc;
+                block.m_nId = blockCrc;
                 block.SetFileNameFromFormat(@"{0}\{1}", mapFileNameWithoutExtension, blockName);
 
                 // Do not override it. If removeExisting is true, existing ones will be removed
-                if (!FieldDA30.ContainsKey(blockCrc))
-                    FieldDA30.Add(blockCrc, block);
+                if (!m_DynamicBlocks.ContainsKey(blockCrc))
+                    m_DynamicBlocks.Add(blockCrc, block);
                 else
                     Console.WriteLine($"DEBUG: Trying to add {blockCrc} (${block.FileName}) to dictionary, but it already exists!");
 
@@ -88,8 +88,8 @@ namespace SabTool.Containers.Megapacks
                 block.FieldAC = UnkCalc(fArr1[2], fArr2[2]);
                 block.Flags &= 0xFFFFFEF8;
 
-                block.ReadSomeArrays(br);
-                block.Sub659F20(br);
+                block.ReadTextureInfo(br);
+                block.ReadTOCs(br);
             }
         }
 
@@ -97,14 +97,14 @@ namespace SabTool.Containers.Megapacks
         {
             if (Field1D8 > 0)
                 for (var i = 0; i < Field1D8; ++i)
-                    if (Field1CC[arrOff ? 1 : 0][i].Field198_CRC == crc)
-                        return Field1D4 + i;
+                    if (Field1CC[arrOff ? 1 : 0][i].m_nId == crc)
+                        return m_nPalettes + i;
 
-            if (Field1D4 <= 0)
+            if (m_nPalettes <= 0)
                 return -1;
 
-            for (var i = 0; i < Field1D4; ++i)
-                if (StreamBlockArray[arrOff ? 1 : 0][i].Field198_CRC == crc)
+            for (var i = 0; i < m_nPalettes; ++i)
+                if (m_pPalettes[arrOff ? 1 : 0][i].m_nId == crc)
                     return i;
 
             return -1;
@@ -142,8 +142,8 @@ namespace SabTool.Containers.Megapacks
                 if (v22 >= 2)
                 {
                     var block = new StreamBlock();
-                    block.ReadSomeArrays(br);
-                    block.Sub659F20(br);
+                    block.ReadTextureInfo(br);
+                    block.ReadTOCs(br);
                 }
             }
         }
@@ -181,7 +181,7 @@ namespace SabTool.Containers.Megapacks
                     Field9F7C.Remove(blockCrc);
 
                 var block = new StreamBlock();
-                block.Field198_CRC = blockCrc;
+                block.m_nId = blockCrc;
                 block.SetFileNameFromFormat(@"{0}\{1}", mapFileNameWithoutExtension, blockName);
 
                 // Do not override it. If removeExisting is true, existing ones will be removed
@@ -210,8 +210,8 @@ namespace SabTool.Containers.Megapacks
 
                 block.Flags &= 0xFFFFFEFF;
 
-                block.ReadSomeArrays(br);
-                block.Sub659F20(br);
+                block.ReadTextureInfo(br);
+                block.ReadTOCs(br);
             }
         }
 
@@ -248,7 +248,7 @@ namespace SabTool.Containers.Megapacks
                     Field9FA4.Remove(blockCrc);
 
                 var block = new StreamBlock();
-                block.Field198_CRC = blockCrc;
+                block.m_nId = blockCrc;
                 block.SetFileNameFromFormat(@"{0}\{1}", mapFileNameWithoutExtension, blockName);
 
                 // Do not override it. If removeExisting is true, existing ones will be removed
@@ -271,8 +271,8 @@ namespace SabTool.Containers.Megapacks
                 block.FieldAC = UnkCalc(fArr1[2], fArr2[2]);
                 block.Flags = (block.Flags & 0xFFFFFEFA) | 2;
 
-                block.ReadSomeArrays(br);
-                block.Sub659F20(br);
+                block.ReadTextureInfo(br);
+                block.ReadTOCs(br);
             }
         }
 
@@ -285,17 +285,17 @@ namespace SabTool.Containers.Megapacks
         {
             for (var off = 0; off <= 1; ++off)
             {
-                if (Instance.StreamBlockArray[off] == null)
+                if (Instance.m_pPalettes[off] == null)
                     continue;
 
-                var indLen = Instance.StreamBlockArray[off].Length.ToString().Length;
+                var indLen = Instance.m_pPalettes[off].Length.ToString().Length;
 
-                for (var i = 0; i < Instance.StreamBlockArray[off].Length; ++i)
+                for (var i = 0; i < Instance.m_pPalettes[off].Length; ++i)
                 {
-                    if (Instance.StreamBlockArray[off][i].Field198_CRC == crc)
+                    if (Instance.m_pPalettes[off][i].m_nId == crc)
                     {
                         source = $"StreamBlockArray[{off}][{string.Format($"{{0,{indLen}}}", i)}]";
-                        return Instance.StreamBlockArray[off][i];
+                        return Instance.m_pPalettes[off][i];
                     }
                 }
             }
@@ -303,19 +303,19 @@ namespace SabTool.Containers.Megapacks
             if (Instance.Field9F7C.ContainsKey(crc))
             {
                 source = $"Field9F7C[0x{crc:X8}]";
-                return Instance.FieldDA30[crc];
+                return Instance.m_DynamicBlocks[crc];
             }
 
             if (Instance.Field9FA4.ContainsKey(crc))
             {
                 source = $"Field9FA4[0x{crc:X8}]";
-                return Instance.FieldDA30[crc];
+                return Instance.m_DynamicBlocks[crc];
             }
 
-            if (Instance.FieldDA30.ContainsKey(crc))
+            if (Instance.m_DynamicBlocks.ContainsKey(crc))
             {
                 source = $"FieldDA30[0x{crc:X8}]";
-                return Instance.FieldDA30[crc];
+                return Instance.m_DynamicBlocks[crc];
             }
 
             source = null;

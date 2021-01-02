@@ -19,7 +19,7 @@ namespace SabTool.Containers.Megapacks.France
 
                 var franceStr = br.ReadStringWithMaxLength(256);
 
-                FieldA0 = br.ReadInt32();
+                m_nTotalNumBlocks = br.ReadInt32();
                 FieldDA84 = br.ReadInt32();
 
                 var count = br.ReadInt32();
@@ -65,9 +65,9 @@ namespace SabTool.Containers.Megapacks.France
                 Field90 = br.ReadInt16();
                 var sh2 = br.ReadInt16();
 
-                Sub9F3900(br, FieldA0, mapFileNameWithoutExtension, false);
-                Sub9F3BF0(br, FieldA0, mapFileNameWithoutExtension, false);
-                Sub9F3FA0(br, FieldA0, mapFileNameWithoutExtension, false);
+                Sub9F3900(br, m_nTotalNumBlocks, mapFileNameWithoutExtension, false);
+                Sub9F3BF0(br, m_nTotalNumBlocks, mapFileNameWithoutExtension, false);
+                Sub9F3FA0(br, m_nTotalNumBlocks, mapFileNameWithoutExtension, false);
             }
         }
 

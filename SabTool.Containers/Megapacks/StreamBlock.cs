@@ -28,7 +28,7 @@ namespace SabTool.Containers.Megapacks
         public int[] Field18C { get; set; }
         public int Entry7Count { get; set; }
         public int Field194 { get; set; }
-        public int Field198_CRC { get; set; }
+        public int m_nId { get; set; }
         public short CountFor432 { get; set; }
         public Dictionary<int, int[]> PblTreeULongP => new Dictionary<int, int[]>();
         public int CountFor432And436 { get; set; }
@@ -40,7 +40,7 @@ namespace SabTool.Containers.Megapacks
         {
             Flags = 0xAAAAAAAA;
             Flags &= 0xFFCFFEE7;
-            Field198_CRC = -1;
+            m_nId = -1;
 
             // ...
 
@@ -55,7 +55,7 @@ namespace SabTool.Containers.Megapacks
             FileName = string.Format(format, args);
         }
 
-        public void ReadSomeArrays(BinaryReader br)
+        public void ReadTextureInfo(BinaryReader br)
         {
             if (Array288 != null)
                 Array288 = null;
@@ -97,7 +97,7 @@ namespace SabTool.Containers.Megapacks
             Sub162DC70(crc);
         }
 
-        public void Sub659F20(BinaryReader br)
+        public void ReadTOCs(BinaryReader br)
         {
             br.ReadInt32();
 
