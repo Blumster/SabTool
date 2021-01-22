@@ -314,7 +314,7 @@ namespace SabTool.Containers.Megapacks
 
             if (Instance.m_DynamicBlocks.ContainsKey(crc))
             {
-                source = $"FieldDA30[0x{crc:X8}]";
+                source = $"m_DynamicBlocks[0x{crc:X8}]";
                 return Instance.m_DynamicBlocks[crc];
             }
 
