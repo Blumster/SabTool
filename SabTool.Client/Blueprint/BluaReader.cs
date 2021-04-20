@@ -3,7 +3,7 @@ using System.Text;
 
 namespace SabTool.Client
 {
-    public class BluaStruct
+    public class BluaReader
     {
         public int BaseOff { get; set; }
         public byte[] Data { get; set; }
@@ -11,7 +11,7 @@ namespace SabTool.Client
         public int Size { get; set; }
         public int Count { get; set; }
 
-        public BluaStruct()
+        public BluaReader()
         {
             BaseOff = 0;
             Data = null;
@@ -23,6 +23,15 @@ namespace SabTool.Client
         public int ReadInt()
         {
             var res = BitConverter.ToInt32(Data, BaseOff + Offset);
+
+            Offset += 4;
+
+            return res;
+        }
+
+        public float ReadFloat()
+        {
+            var res = BitConverter.ToSingle(Data, BaseOff + Offset);
 
             Offset += 4;
 
@@ -55,6 +64,11 @@ namespace SabTool.Client
             Offset += 1;
 
             return res;
+        }
+
+        public byte ReadBool()
+        {
+            return ReadByte();
         }
 
         public string ReadString(int maxLen)

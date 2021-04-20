@@ -10,7 +10,7 @@ namespace SabTool.Client.Streaming
     public class WSStreamingManager : Singleton<WSStreamingManager>
     {
         public uint FieldA0 { get; set; }
-        public WSStreamBlockNode[][] StreamBlockArray = new WSStreamBlockNode[2][];
+        public WSStreamBlockNode[][] StreamBlockArray { get; } = new WSStreamBlockNode[2][];
         public uint Field1D4 { get; set; }
 
         public WSStreamingManager()
@@ -108,7 +108,7 @@ namespace SabTool.Client.Streaming
             }
         }
 
-        public WSStreamBlockNode Sub9F1860(uint crc)
+        public WSStreamBlockNode FindInDynamicBlocks(uint nameCrc)
         {
             return null;
         }

@@ -11,13 +11,13 @@ namespace SabTool.Client.Blueprint
         public uint Unk8 { get; set; }
         public WSDoubleLinkedCircularList<object> UnkC { get; set; }
 
-        public bool Sub6900D0(uint crc, BluaStruct blua)
+        public bool SetControllableProperty(uint crc, BluaReader blua)
         {
             return Sub1634800(crc, blua);
         }
 
         // TODO: read done, data storage isn't
-        public bool Sub1634800(uint crc, BluaStruct blua)
+        public bool Sub1634800(uint crc, BluaReader blua)
         {
             uint field;
 

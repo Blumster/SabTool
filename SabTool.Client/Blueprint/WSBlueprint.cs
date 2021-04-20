@@ -43,7 +43,7 @@ namespace SabTool.Client.Blueprint
             return true;
         }
 
-        public virtual object Sub452660()
+        public virtual object GetDamagableBlueprint()
         {
             // TODO: proper object
             return null;
@@ -52,7 +52,7 @@ namespace SabTool.Client.Blueprint
         public virtual void Sub452670() { }
         public virtual void Sub452680() { }
 
-        public virtual object Sub452690()
+        public virtual object GetModelRenderableBlueprint()
         {
             // TODO: proper object
             return null;
@@ -62,7 +62,7 @@ namespace SabTool.Client.Blueprint
         public virtual void Sub4526B0() { }
         public virtual void Sub4526C0() { }
 
-        public virtual object Sub4526D0()
+        public virtual object GetTargetableBlueprint()
         {
             // TODO: proper object
             return null;
@@ -92,7 +92,7 @@ namespace SabTool.Client.Blueprint
             return null;
         }
 
-        public virtual object Sub452800()
+        public virtual object GetAIAttractionPtBlueprint()
         {
             // TODO: proper object
             return null;
@@ -102,7 +102,7 @@ namespace SabTool.Client.Blueprint
         public virtual void Sub452820() { }
         public virtual void Sub452830() { }
 
-        public virtual IWSControllableBlueprint Sub452840()
+        public virtual IWSControllableBlueprint GetControllableBlueprint()
         {
             return null;
         }
@@ -137,7 +137,7 @@ namespace SabTool.Client.Blueprint
         public virtual void Sub452A00() { }
         public virtual void Sub452A10() { }
 
-        public virtual object Sub452A20()
+        public virtual object GetAudibleBlueprint()
         {
             // TODO: proper object
             return null;
@@ -182,28 +182,28 @@ namespace SabTool.Client.Blueprint
         public virtual void Sub452C70() { }
         public virtual void Sub452C80() { }
 
-        public virtual void Sub452C90(string unkStr)
+        public virtual void Init(string blueprintName)
         {
         }
 
-        public virtual void Sub452CA0()
+        public virtual void Preload()
         {
         }
 
-        public virtual bool Sub450FD0(uint crc, BluaStruct blua)
+        public virtual bool SetProperty(uint crc, BluaReader blua)
         {
             return false;
         }
 
-        public virtual void Sub452CB0()
+        public virtual void PostLoad()
         {
         }
 
-        public virtual void Sub452CC0(BluaStruct a, string category, string unk)
+        public virtual void Sub452CC0(BluaReader a, string category, string unk)
         {
         }
 
-        public virtual void Sub452CD0()
+        public virtual void EndLiveUpdate()
         {
         }
 
@@ -240,7 +240,7 @@ namespace SabTool.Client.Blueprint
             return Sub443880();
         }
 
-        public virtual bool Sub452D10()
+        public virtual bool IsDynamic()
         {
             return (Flags & 1) != 0;
         }
@@ -270,37 +270,37 @@ namespace SabTool.Client.Blueprint
             }
         }
 
-        public void Sub460920(WSStreamBlockNode node)
+        public void SetStreamBlock(WSStreamBlockNode node)
         {
             Sub41DF90(node);
         }
 
-        public bool Sub461220(uint crc, BluaStruct blua)
+        public bool SetCommonProperty(uint crc, BluaReader blua)
         {
             bool v4 = false;
 
-            var v5 = Sub452660();
+            var v5 = GetDamagableBlueprint();
             if (v5 != null && false) // TODO: struct is returned in the above call
                 v4 = true;
 
-            var v7 = Sub452A20();
+            var v7 = GetAudibleBlueprint();
             if (v7 != null && false) // TODO: struct is returned in the above call
                 v4 = true;
 
-            var v8 = Sub452690();
+            var v8 = GetModelRenderableBlueprint();
             if (v8 != null && false) // TODO: struct is returned in the above call
                 v4 = true;
 
-            var v9 = Sub4526D0();
+            var v9 = GetTargetableBlueprint();
             if (v9 != null && false) // TODO: struct is returned in the above call
                 v4 = true;
 
-            var v10 = Sub452800();
+            var v10 = GetAIAttractionPtBlueprint();
             if (v10 != null && false) // TODO: struct is returned in the above call
                 v4 = true;
 
-            var v11 = Sub452840();
-            if (v11 != null && false) // TODO: struct is returned in the above call
+            var v11 = GetControllableBlueprint();
+            if (v11 != null && v11.SetControllableProperty(crc, blua))
                 v4 = true;
 
             if (Hash.StringToHash("dynamic") == crc)
@@ -360,21 +360,415 @@ namespace SabTool.Client.Blueprint
             return v4;
         }
 
-        public void Sub4614A0(BluaStruct blua, string category, string unk)
+        public void SetProperties(BluaReader blua, string bluprintType, string blueprintName)
         {
-            Sub452CA0();
+            Preload();
 
             while (blua.Offset < blua.Size)
             {
                 var crc = blua.ReadUInt();
-                var v11 = blua.ReadInt();
+                var propertyValueLength = blua.ReadInt();
 
-                if (!Sub450FD0(crc, blua) && !Sub461220(crc, blua))
-                    blua.Offset += v11;
+                if (!SetProperty(crc, blua) && !SetCommonProperty(crc, blua))
+                {
+                    // Skip over this property, if it wasn't read properly
+                    blua.Offset += propertyValueLength;
+                }
+            }
 
-                Sub452CB0();
+            PostLoad();
+        }
+
+
+        public static string UnkStrGlobalCont;
+        public static void Create(string blueprintType, string blueprintName, BluaReader blua)
+        {
+            var typeCrc = Hash.StringToHash(blueprintType);
+            var nameCrc = Hash.StringToHash(blueprintName);
+
+
+            WSBlueprint blueprint = null;
+            // TODO: get blueprint from cache
+
+            var found = blueprint != null;
+            if (found)
+            {
+                blueprint.Sub452CC0(blua, blueprintType, blueprintName);
+            }
+
+            UnkStrGlobalCont = blueprintName;
+
+            if (!found)
+            {
+                switch (blueprintType)
+                {
+                    case "Weapon":
+                        break;
+
+                    case "Searcher":
+                        break;
+
+                    case "MeleeWeapon":
+                        break;
+
+                    case "Ammo":
+                        break;
+
+                    case "bullet":
+                        break;
+
+                    case "FlameOrdnance":
+                        break;
+
+                    case "PhysicalOrdnance":
+                        break;
+
+                    case "Rocket":
+                        break;
+
+                    case "HumanPhysics":
+                        break;
+
+                    case "Player":
+                        break;
+
+                    case "Car":
+                        break;
+
+                    case "Truck":
+                        break;
+
+                    case "APC":
+                        break;
+
+                    case "Tank":
+                        break;
+
+                    case "Human":
+                        break;
+
+                    case "Spore":
+                        break;
+
+                    case "VehicleCollision":
+                        break;
+
+                    case "PlayerCollision":
+                        break;
+
+                    case "Targetable":
+                        break;
+
+                    case "Prop":
+                        break;
+
+                    case "TrainList":
+                        break;
+
+                    case "Train":
+                        break;
+
+                    case "Foliage":
+                        break;
+
+                    case "AIAttractionPt":
+                        break;
+
+                    case "DamageSphere":
+                        break;
+
+                    case "Explosion":
+                        break;
+
+                    case "AIController":
+                        break;
+
+                    case "ScriptController":
+                        blueprint = new WSAIScriptControllerBlueprint();
+                        break;
+
+                    case "AISpawner":
+                        break;
+
+                    case "AICombatParams":
+                        break;
+
+                    case "AICrowdBlocker":
+                        break;
+
+                    case "GlobalHumanParams":
+                        break;
+
+                    case "Melee":
+                        break;
+
+                    case "ParticleEffect":
+                        break;
+
+                    case "RadialBlur":
+                        break;
+
+                    case "Sound":
+                        break;
+
+                    case "Turret":
+                        break;
+
+                    case "SearchTurret":
+                        break;
+
+                    case "TrainCarriage":
+                        break;
+
+                    case "TrainEngine":
+                        break;
+
+                    case "TrainItem":
+                        break;
+
+                    case "SlowMotionCamera":
+                        break;
+
+                    case "ElasticTransition":
+                        break;
+
+                    case "AnimatedTransition":
+                        break;
+
+                    case "GroupTransition":
+                        break;
+
+                    case "ScopeTransition":
+                        break;
+
+                    case "CameraSettings":
+                        break;
+
+                    case "GroupCameraSettings":
+                        break;
+
+                    case "CameraSettingsMisc":
+                        break;
+
+                    case "ToneMapping":
+                        break;
+
+                    case "LightSettings":
+                        break;
+
+                    case "LightHalo":
+                        break;
+
+                    case "LightVolume":
+                        break;
+
+                    case "ClothObject":
+                        break;
+
+                    case "ClothForce":
+                        break;
+
+                    case "WillToFight":
+                        break;
+
+                    case "WillToFightNode":
+                        break;
+
+                    case "HealthEffectFilter":
+                        break;
+
+                    case "ParticleEffectSpawner":
+                        break;
+
+                    case "ButtonPrompt":
+                        break;
+
+                    case "Item":
+                        break;
+
+                    case "FxBoneStateList":
+                        break;
+
+                    case "FxHumanHead":
+                        break;
+
+                    case "FxHumanBodyPart":
+                        break;
+
+                    case "FxHumanBodySetup":
+                        break;
+
+                    case "FaceExpression":
+                        break;
+
+                    case "HumanBodyPart":
+                        break;
+
+                    case "HumanBodySetup":
+                        break;
+
+                    case "HumanSkeletonScale":
+                        break;
+
+                    case "AnimatedObject":
+                        break;
+
+                    case "RandomObj":
+                        break;
+
+                    case "BridgeController":
+                        break;
+
+                    case "Ricochet":
+                        break;
+
+                    case "AIRoad":
+                        break;
+
+                    case "Highlight":
+                        break;
+
+                    case "MiniGame":
+                        break;
+
+                    case "SabotageTarget":
+                        break;
+
+                    case "BigMap":
+                        break;
+
+                    case "FlashMovie":
+                        break;
+
+                    case "ItemCache":
+                        break;
+
+                    case "VirVehicleWheel":
+                        break;
+
+                    case "VirVehicleTransmission":
+                        break;
+
+                    case "VirVehicleEngine":
+                        break;
+
+                    case "VirVehicleChassis":
+                        break;
+
+                    case "VirVehicleSetup":
+                        break;
+
+                    case "VehicleWheelFX":
+                        break;
+
+                    case "Difficulty":
+                        break;
+
+                    case "Shop":
+                        break;
+
+                    case "Perks":
+                        break;
+
+                    case "PerkFactors":
+                        break;
+
+                    case "PhysicsParticleSet":
+                        break;
+
+                    case "PhysicsParticle":
+                        break;
+
+                    case "Decal":
+                        break;
+
+                    case "DetailObject":
+                        break;
+
+                    case "CivilianProp":
+                        break;
+
+                    case "Bird":
+                        break;
+
+                    case "Escalation":
+                        break;
+
+                    case "EscHWTF":
+                        break;
+
+                    case "AIChatterSet":
+                        break;
+
+                    case "AIChatter":
+                        break;
+
+                    case "SeatAnimations":
+                        break;
+
+                    case "SeatAnimationsPassenger":
+                        break;
+
+                    case "SeatAnimationsGunner":
+                        break;
+
+                    case "SeatAnimationsSearcher":
+                        break;
+
+                    case "SeatAnimationsDriver":
+                        break;
+
+                    case "FoliageFx":
+                        break;
+
+                    case "WaterController":
+                        break;
+
+                    case "WaterTexture":
+                        break;
+
+                    case "LeafSpawner":
+                        break;
+
+                    case "VerletBoneObject":
+                        break;
+
+                    case "WaterParticleFx":
+                        break;
+
+                    case "Cinematics":
+                        break;
+
+                    case "Rumble":
+                        break;
+
+                    case "ImageFolder":
+                        break;
+
+                    case "CreditName":
+                        break;
+                }
+
+                if (blueprintType == "CommonUI_Persistent" || blueprintType == "Common" || blueprintType == "SingleImage" || blueprintType == "InteriorImages" || blueprintType == "AIPathPt" || blueprint == null)
+                    return;
+            }
+
+            blueprint.Priority = 0;
+
+            if (!found)
+                blueprint.Init(blueprintName);
+
+            blueprint.SetProperties(blua, blueprintType, blueprintName);
+
+            if (found)
+                blueprint.EndLiveUpdate();
+
+            if (blueprint.IsDynamic())
+            {
+                blueprint.SetStreamBlock(WSStreamingManager.Instance.FindInDynamicBlocks(nameCrc));
             }
         }
+
 
         public virtual int Sub452D20()
         {

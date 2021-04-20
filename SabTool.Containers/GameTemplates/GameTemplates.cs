@@ -13,13 +13,12 @@ namespace SabTool.Containers.GameTemplates
 
     public class GameTemplates
     {
-        public static string UnkStrGlobalCont;
         public int Unknown { get; set; }
 
         public void Read(Stream stream)
         {
-            var blua = new BluaStruct();
-            var innerBlua = new BluaStruct();
+            var blua = new BluaReader();
+            var subReader = new BluaReader();
 
             using (var br = new BinaryReader(stream, Encoding.UTF8, true))
             {
@@ -38,34 +37,34 @@ namespace SabTool.Containers.GameTemplates
 
                 do
                 {
-                    var offset = blua.ReadInt(off);
+                    var templateSize = blua.ReadInt(off);
                     var v7 = off + 4;
-                    var v8 = off + 8;
-                    var innerCount = blua.ReadInt(v8);
+                    var subCountOff = off + 8;
+                    var subCount = blua.ReadInt(subCountOff);
 
-                    for (off = v8 + 4; innerCount != 0; off = offset + v7)
+                    for (off = subCountOff + 4; subCount != 0; off = templateSize + v7)
                     {
-                        var strLen1 = blua.ReadInt(off);
+                        var nameLen = blua.ReadInt(off);
 
                         blua.Offset = off + 4;
 
-                        var str1 = blua.ReadString(strLen1);
+                        var name = blua.ReadString(nameLen);
 
-                        var strLen2 = blua.ReadInt(blua.Offset);
+                        var categoryLen = blua.ReadInt(blua.Offset);
 
                         blua.Offset += 4;
 
-                        var str2 = blua.ReadString(strLen2);
+                        var category = blua.ReadString(categoryLen);
 
-                        innerBlua.Size = offset + v7 - (blua.Offset + 4);
-                        innerBlua.Data = blua.Data;
-                        innerBlua.BaseOff = blua.Offset + 4;
-                        innerBlua.Offset = 0;
-                        innerBlua.Count = 0;
+                        subReader.Size = templateSize + v7 - (blua.Offset + 4);
+                        subReader.Data = blua.Data;
+                        subReader.BaseOff = blua.Offset + 4;
+                        subReader.Offset = 0;
+                        subReader.Count = 0;
 
-                        Sub461590(str2, str1, innerBlua);
+                        WSBlueprint.Create(category, name, subReader);
 
-                        --innerCount;
+                        --subCount;
                     }
 
                     --blua.Count;
@@ -106,394 +105,6 @@ namespace SabTool.Containers.GameTemplates
             using (var bw = new BinaryWriter(stream, Encoding.UTF8, true))
             {
                 
-            }
-        }
-
-        private void Sub461590(string categoryStr, string unkStr, BluaStruct blua)
-        {
-            var categoryHash = Hash.StringToHash(categoryStr);
-            var unkStrHash = Hash.StringToHash(unkStr);
-
-            
-            WSBlueprint blueprint = null;
-            // TODO: get blueprint from cache
-
-            var found = blueprint != null;
-            if (found)
-            {
-                blueprint.Sub452CC0(blua, categoryStr, unkStr);
-            }
-
-            UnkStrGlobalCont = unkStr;
-
-            if (!found)
-            {
-                switch (categoryStr)
-                {
-                    case "Weapon":
-                        break;
-
-                    case "Searcher":
-                        break;
-
-                    case "MeleeWeapon":
-                        break;
-
-                    case "Ammo":
-                        break;
-
-                    case "bullet":
-                        break;
-
-                    case "FlameOrdnance":
-                        break;
-
-                    case "PhysicalOrdnance":
-                        break;
-
-                    case "Rocket":
-                        break;
-
-                    case "HumanPhysics":
-                        break;
-
-                    case "Player":
-                        break;
-
-                    case "Car":
-                        break;
-
-                    case "Truck":
-                        break;
-
-                    case "APC":
-                        break;
-
-                    case "Tank":
-                        break;
-
-                    case "Human":
-                        break;
-
-                    case "Spore":
-                        break;
-
-                    case "VehicleCollision":
-                        break;
-
-                    case "PlayerCollision":
-                        break;
-
-                    case "Targetable":
-                        break;
-
-                    case "Prop":
-                        break;
-
-                    case "TrainList":
-                        break;
-
-                    case "Train":
-                        break;
-
-                    case "Foliage":
-                        break;
-
-                    case "AIAttractionPt":
-                        break;
-
-                    case "DamageSphere":
-                        break;
-
-                    case "Explosion":
-                        break;
-
-                    case "AIController":
-                        break;
-
-                    case "ScriptController":
-                        blueprint = new WSAIScriptControllerBlueprint();
-                        break;
-
-                    case "AISpawner":
-                        break;
-
-                    case "AICombatParams":
-                        break;
-
-                    case "AICrowdBlocker":
-                        break;
-
-                    case "GlobalHumanParams":
-                        break;
-
-                    case "Melee":
-                        break;
-
-                    case "ParticleEffect":
-                        break;
-
-                    case "RadialBlur":
-                        break;
-
-                    case "Sound":
-                        break;
-
-                    case "Turret":
-                        break;
-
-                    case "SearchTurret":
-                        break;
-
-                    case "TrainCarriage":
-                        break;
-
-                    case "TrainEngine":
-                        break;
-
-                    case "TrainItem":
-                        break;
-
-                    case "SlowMotionCamera":
-                        break;
-
-                    case "ElasticTransition":
-                        break;
-
-                    case "AnimatedTransition":
-                        break;
-
-                    case "GroupTransition":
-                        break;
-
-                    case "ScopeTransition":
-                        break;
-
-                    case "CameraSettings":
-                        break;
-
-                    case "GroupCameraSettings":
-                        break;
-
-                    case "CameraSettingsMisc":
-                        break;
-
-                    case "ToneMapping":
-                        break;
-
-                    case "LightSettings":
-                        break;
-
-                    case "LightHalo":
-                        break;
-
-                    case "LightVolume":
-                        break;
-
-                    case "ClothObject":
-                        break;
-
-                    case "ClothForce":
-                        break;
-
-                    case "WillToFight":
-                        break;
-
-                    case "WillToFightNode":
-                        break;
-
-                    case "HealthEffectFilter":
-                        break;
-
-                    case "ParticleEffectSpawner":
-                        break;
-
-                    case "ButtonPrompt":
-                        break;
-
-                    case "Item":
-                        break;
-
-                    case "FxBoneStateList":
-                        break;
-
-                    case "FxHumanHead":
-                        break;
-
-                    case "FxHumanBodyPart":
-                        break;
-
-                    case "FxHumanBodySetup":
-                        break;
-
-                    case "FaceExpression":
-                        break;
-
-                    case "HumanBodyPart":
-                        break;
-
-                    case "HumanBodySetup":
-                        break;
-
-                    case "HumanSkeletonScale":
-                        break;
-
-                    case "AnimatedObject":
-                        break;
-
-                    case "RandomObj":
-                        break;
-
-                    case "BridgeController":
-                        break;
-
-                    case "Ricochet":
-                        break;
-
-                    case "AIRoad":
-                        break;
-
-                    case "Highlight":
-                        break;
-
-                    case "MiniGame":
-                        break;
-
-                    case "SabotageTarget":
-                        break;
-
-                    case "BigMap":
-                        break;
-
-                    case "FlashMovie":
-                        break;
-
-                    case "ItemCache":
-                        break;
-
-                    case "VirVehicleWheel":
-                        break;
-
-                    case "VirVehicleTransmission":
-                        break;
-
-                    case "VirVehicleEngine":
-                        break;
-
-                    case "VirVehicleChassis":
-                        break;
-
-                    case "VirVehicleSetup":
-                        break;
-
-                    case "VehicleWheelFX":
-                        break;
-
-                    case "Difficulty":
-                        break;
-
-                    case "Shop":
-                        break;
-
-                    case "Perks":
-                        break;
-
-                    case "PerkFactors":
-                        break;
-
-                    case "PhysicsParticleSet":
-                        break;
-
-                    case "PhysicsParticle":
-                        break;
-
-                    case "Decal":
-                        break;
-
-                    case "DetailObject":
-                        break;
-
-                    case "CivilianProp":
-                        break;
-
-                    case "Bird":
-                        break;
-
-                    case "Escalation":
-                        break;
-
-                    case "EscHWTF":
-                        break;
-
-                    case "AIChatterSet":
-                        break;
-
-                    case "AIChatter":
-                        break;
-
-                    case "SeatAnimations":
-                        break;
-
-                    case "SeatAnimationsPassenger":
-                        break;
-
-                    case "SeatAnimationsGunner":
-                        break;
-
-                    case "SeatAnimationsSearcher":
-                        break;
-
-                    case "SeatAnimationsDriver":
-                        break;
-
-                    case "FoliageFx":
-                        break;
-
-                    case "WaterController":
-                        break;
-
-                    case "WaterTexture":
-                        break;
-
-                    case "LeafSpawner":
-                        break;
-
-                    case "VerletBoneObject":
-                        break;
-
-                    case "WaterParticleFx":
-                        break;
-
-                    case "Cinematics":
-                        break;
-
-                    case "Rumble":
-                        break;
-
-                    case "ImageFolder":
-                        break;
-
-                    case "CreditName":
-                        break;
-                }
-                
-                if (categoryStr == "CommonUI_Persistent" || categoryStr == "Common" || categoryStr == "SingleImage" || categoryStr == "InteriorImages" || categoryStr == "AIPathPt" || blueprint == null)
-                    return;
-            }
-
-            blueprint.Priority = 0;
-
-            if (!found)
-                blueprint.Sub452C90(unkStr);
-
-            blueprint.Sub4614A0(blua, categoryStr, unkStr);
-
-            if (found)
-                blueprint.Sub452CD0();
-
-            if (blueprint.Sub452D10())
-            {
-                blueprint.Sub460920(WSStreamingManager.Instance.Sub9F1860(unkStrHash));
             }
         }
     }

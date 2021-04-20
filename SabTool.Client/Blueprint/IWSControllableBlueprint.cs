@@ -11,6 +11,6 @@ namespace SabTool.Client.Blueprint
         uint Unk8 { get; set; }
         WSDoubleLinkedCircularList<object> UnkC { get; set; }
 
-        bool Sub6900D0(uint crc, BluaStruct blua);
+        bool SetControllableProperty(uint crc, BluaReader blua);
     }
 }
