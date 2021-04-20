@@ -8,8 +8,9 @@ namespace SabTool.CLI.Commands
     using Base;
     using Containers.LooseFiles;
 
-    public class LooseFileCategory : BaseCategory
+    public class LooseFilesCategory : BaseCategory
     {
+        // TODO: move this data when extracting into a json/xml next to the files, so custom files can be unpacked and repacked
         public static IDictionary<string, uint> LooseFilesBinPCStaticFiles = new Dictionary<string, uint>
         {
             { "France.shaders", 0xEE2E6431 },
