@@ -60,11 +60,11 @@ namespace SabTool.CLI.Commands
 
                 if (!string.IsNullOrEmpty(value))
                 {
-                    Console.WriteLine("\"{0}\" => {1}", hashStr, value);
+                    Console.WriteLine("\"0x{0}\" => {1}", hashStr, value);
                 }
                 else
                 {
-                    Console.WriteLine("\"{0}\" => <NO STRING FOUND FOR THIS HASH>", hashStr, value);
+                    Console.WriteLine("\"0x{0}\" => <NO STRING FOUND FOR THIS HASH>", hashStr, value);
                 }
                 
                 return true;
