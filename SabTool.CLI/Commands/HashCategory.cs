@@ -48,7 +48,7 @@ namespace SabTool.CLI.Commands
 
                 var hashStr = arguments.ElementAt(0);
                 if (hashStr.StartsWith("0x"))
-                    hashStr = hashStr.Substring(2);
+                    hashStr = hashStr[2..];
 
                 if (!uint.TryParse(hashStr, NumberStyles.HexNumber, null, out uint hash))
                 {

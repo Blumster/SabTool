@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 
-namespace SabTool.Client
+namespace SabTool.Client.Blueprint
 {
     public class BluaReader
     {
@@ -34,6 +34,15 @@ namespace SabTool.Client
             var res = BitConverter.ToSingle(Data, BaseOff + Offset);
 
             Offset += 4;
+
+            return res;
+        }
+
+        public double ReadDouble()
+        {
+            var res = BitConverter.ToDouble(Data, BaseOff + Offset);
+
+            Offset += 8;
 
             return res;
         }
@@ -89,6 +98,17 @@ namespace SabTool.Client
             Offset += i + 1;
 
             return sb.ToString();
+        }
+
+        public byte[] ReadBytes(int size)
+        {
+            var ret = new byte[size];
+
+            Array.Copy(Data, BaseOff + Offset, ret, 0, size);
+
+            Offset += size;
+
+            return ret;
         }
     }
 }

@@ -37166,3 +37166,12 @@
 0x7C4E0976:UI.Pause_Nav_MAP
 0x184215CF:quitToShell
 0x149A8973:vo_cht_chr_Margot
+0xF0676C78:LuaInt
+0xF5B799C2:LuaString
+0x1B444F31:LuaBool
+0x2B93BDA9:LuaFloat
+0x404D1343:LuaTable
+0x3290BA65:LuaCrc
+0xB9059DF9:LuaCrcList
+0xE0B01D9F:InitialModule
+0x1E59E605:Looping
