@@ -70,5 +70,36 @@ namespace SabTool.CLI.Commands
                 return true;
             }
         }
+
+        public class BruteforceCommand : BaseCommand
+        {
+            public override string Key { get; } = "bruteforce";
+            public override string Usage { get; } = "<length>";
+
+            public override bool Execute(IEnumerable<string> arguments)
+            {
+                if (arguments.Count() < 1)
+                {
+                    Console.WriteLine("ERROR: Not enough arguments given!");
+                    return false;
+                }
+
+                var lenStr = arguments.ElementAt(0);
+
+                var hashStr = arguments.ElementAt(1);
+                if (hashStr.StartsWith("0x"))
+                    hashStr = hashStr[2..];
+
+                if (int.TryParse(lenStr, out int length) && uint.TryParse(hashStr, NumberStyles.HexNumber, null, out uint hash))
+                {
+                    Hash.Bruteforce(length, hash);
+
+                    return true;
+                }
+
+                Console.WriteLine("ERROR: Invalid length argument given!");
+                return false;
+            }
+        }
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace SabTool.Utils
@@ -98,6 +99,153 @@ namespace SabTool.Utils
             }
 
             return hash;
+        }
+
+        private const int CharCount = 45;
+        private static char[] Characters = new char[CharCount] {
+            'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
+            'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
+            'u', 'v', 'w', 'x', 'y', 'z',
+            '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+            '_', '-', '.', ',', '/', ' ', '+', '\'', '\\'
+        };
+        private static readonly StringBuilder Builder = new();
+
+        public static void Bruteforce(int length, uint hash)
+        {
+            /*var lastLine = File.ReadAllLines("X:\\Projects\\The_Saboteur\\CalculatedHashes.txt").Last();
+
+            var sepIndex = lastLine.IndexOf(':');
+            lastLine = lastLine[(sepIndex + 1)..];
+
+            if (lastLine.Length > length)
+            {
+                Console.WriteLine("Bruteforce: Already processed longer words!");
+                return;
+            }
+
+            if (lastLine.Length < length - 1)
+            {
+                Console.WriteLine("Bruteforce: Not yet processed all the previous lengths!");
+                return;
+            }
+
+            if (lastLine.Length == length - 1 && lastLine != new string('\\', length - 1))
+            {
+                Console.WriteLine("Bruteforce: The previous length is not fully processed!");
+                return;
+            }
+
+            if (lastLine.Length == length && lastLine == new string('\\', length))
+            {
+                Console.WriteLine("Bruteforce: The length is already finished!");
+                return;
+            }*/
+
+            while (true)
+            {
+                var strVals = new int[length];
+
+                /*if (lastLine.Length == length)
+                {
+                    int off = 0;
+
+                    foreach (var c in lastLine)
+                    {
+                        for (var i = 0; i < CharCount; ++i)
+                        {
+                            if (c == Characters[i])
+                            {
+                                strVals[off] = i;
+                                break;
+                            }
+                        }
+
+                        ++off;
+                    }
+                }*/
+
+                //using var sw = new StreamWriter(new FileStream("X:\\Projects\\The_Saboteur\\CalculatedHashes.txt", FileMode.Append, FileAccess.Write, FileShare.None));
+
+                long total = (long)Math.Pow(CharCount, length);
+                long curr = AlreadyDone(strVals) + 1;
+                var stopAfter = false;
+
+                do
+                {
+                    var str = CalcString(strVals);
+
+                    if (FNV32string(str) == hash)
+                    {
+                        Console.WriteLine($"Bruteforce: {str} => 0x{hash:X8}");
+                        stopAfter = true;
+                    }
+
+                    //sw.WriteLine($"0x{FNV32string(str):X8}:{str}");
+
+                    if (++curr % 100000000 == 0)
+                    {
+                        Console.Title = $"Bruteforce: {length}: {curr}/{total}: {curr/(double)total*100.0:4}%";
+
+                        //sw.Flush();
+                    }
+                }
+                while (IncString(strVals));
+
+                ++length;
+
+                if (stopAfter)
+                    break;
+            }
+        }
+
+        private static bool IncString(int[] values)
+        {
+            for (var i = values.Length; i > 0; --i)
+            {
+                // return false if the first character would overflow
+                if (i == 1 && values[i - 1] == CharCount - 1)
+                    return false;
+
+                // increase the last character
+                values[i - 1] += 1;
+
+                // check if the character overflowed
+                if (values[i - 1] < CharCount)
+                {
+                    return true;
+                }
+
+                // on overflow, set to zero and increase the next character
+                values[i - 1] = 0;
+            }
+
+            return false;
+        }
+
+        private static string CalcString(int[] values)
+        {
+            Builder.Clear();
+
+            for (var i = 0; i < values.Length; ++i)
+            {
+                Builder.Append(Characters[values[i]]);
+            }
+
+            return Builder.ToString();
+        }
+
+        private static long AlreadyDone(int[] values)
+        {
+            long val = 0;
+            int pow = 0;
+
+            for (var i = values.Length; i > 0; --i)
+            {
+                val += (long)Math.Pow(CharCount, pow++) * values[i - 1];
+            }
+
+            return val;
         }
     }
 }

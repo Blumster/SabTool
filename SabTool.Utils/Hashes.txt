@@ -37175,3 +37175,31 @@
 0xB9059DF9:LuaCrcList
 0xE0B01D9F:InitialModule
 0x1E59E605:Looping
+0xEC438E17:MuzzleFlashTime
+0x9B889E4A:Automatic
+0x277B8B55:Ordnance
+0x71DFBAEE:Crosshairs
+0x990D3409:Is High Will to Fight?
+0x2FCBFE5F:Use for day/night cycle?
+0x04BF05E7:Start Hour
+0x65F01872:AttractionPt
+0x28E10525:Type
+0x79450675:Parent
+0x99A54CBF:StartDisabled
+0x798A195E:Persistent
+0xD235DA20:MaxSlots
+0xF33EAC7D:SoundTriggerSettings
+0x1F317606:SoundAreaSettings
+0x7C541819:SoundDistSettings
+0x66AC7E16:SoundTimeSettings
+0xE6F43618:SoundScriptSettings
+0x7EE2F763:ScriptTriggered
+0x7076575C:Sound3DSettings
+0x0852D5EF:SoundFake3DSettings
+0x92D61CFD:SoundAmbianceSettings
+0x43B9013B:SpawnBlueprint
+0xA90ECBBB:MaxNumSpawns
+0x6D0C6486:MaxNumAlive
+0x7E1F64C8:MinTimeBetweenSpawns
+0xE1AE04B8:Height
+0xCE5B1183:Talkable
