@@ -4,6 +4,8 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SabTool.Utils
 {
@@ -109,66 +111,20 @@ namespace SabTool.Utils
             '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
             '_', '-', '.', ',', '/', ' ', '+', '\'', '\\'
         };
-        private static readonly StringBuilder Builder = new();
+
+        private const int TaskCount = 2;
+        private static long[] Progress = new long[TaskCount];
+        private static StringBuilder[] Builders = new StringBuilder[TaskCount];
 
         public static void Bruteforce(int length, uint hash)
         {
-            /*var lastLine = File.ReadAllLines("X:\\Projects\\The_Saboteur\\CalculatedHashes.txt").Last();
-
-            var sepIndex = lastLine.IndexOf(':');
-            lastLine = lastLine[(sepIndex + 1)..];
-
-            if (lastLine.Length > length)
-            {
-                Console.WriteLine("Bruteforce: Already processed longer words!");
-                return;
-            }
-
-            if (lastLine.Length < length - 1)
-            {
-                Console.WriteLine("Bruteforce: Not yet processed all the previous lengths!");
-                return;
-            }
-
-            if (lastLine.Length == length - 1 && lastLine != new string('\\', length - 1))
-            {
-                Console.WriteLine("Bruteforce: The previous length is not fully processed!");
-                return;
-            }
-
-            if (lastLine.Length == length && lastLine == new string('\\', length))
-            {
-                Console.WriteLine("Bruteforce: The length is already finished!");
-                return;
-            }*/
-
-            while (true)
+            /*while (true)
             {
                 var strVals = new int[length];
 
-                /*if (lastLine.Length == length)
-                {
-                    int off = 0;
-
-                    foreach (var c in lastLine)
-                    {
-                        for (var i = 0; i < CharCount; ++i)
-                        {
-                            if (c == Characters[i])
-                            {
-                                strVals[off] = i;
-                                break;
-                            }
-                        }
-
-                        ++off;
-                    }
-                }*/
-
-                //using var sw = new StreamWriter(new FileStream("X:\\Projects\\The_Saboteur\\CalculatedHashes.txt", FileMode.Append, FileAccess.Write, FileShare.None));
-
                 long total = (long)Math.Pow(CharCount, length);
                 long curr = AlreadyDone(strVals) + 1;
+                long onePct = (long)Math.Max(total / 100.0d, 1000000.0d);
                 var stopAfter = false;
 
                 do
@@ -181,13 +137,9 @@ namespace SabTool.Utils
                         stopAfter = true;
                     }
 
-                    //sw.WriteLine($"0x{FNV32string(str):X8}:{str}");
-
-                    if (++curr % 100000000 == 0)
+                    if (++curr % onePct == 0)
                     {
-                        Console.Title = $"Bruteforce: {length}: {curr}/{total}: {curr/(double)total*100.0:4}%";
-
-                        //sw.Flush();
+                        Console.Title = $"Bruteforce: {length}: {curr}/{total}: {(double)curr/(double)total*100.0:0.00}%";
                     }
                 }
                 while (IncString(strVals));
@@ -196,7 +148,136 @@ namespace SabTool.Utils
 
                 if (stopAfter)
                     break;
+            }*/
+
+            var tasks = new List<Task<bool>>();
+
+            while (true)
+            {
+                tasks.Clear();
+
+                var stopAfter = false;
+
+                long total = (long)Math.Pow(CharCount, length);
+                long onePct = (long)(total / 100.0d);
+                long oneTaskCount = total / TaskCount;
+                long remaining = total;
+                long totalCount = 0;
+
+                // Create and start tasks
+                for (var i = 0; i < TaskCount; ++i)
+                {
+                    if (Builders[i] == null)
+                        Builders[i] = new();
+
+                    var strVals = new int[length];
+                    var count = oneTaskCount;
+
+                    // Compensate for integer division, the last task takes all the remaining work
+                    if (i == TaskCount - 1)
+                    {
+                        count = remaining;
+                    }
+
+                    // Setup the start values for the task
+                    if (totalCount > 0)
+                    {
+                        AddCount(strVals, totalCount);
+                    }
+
+                    var id = i;
+                    var localCount = count;
+                    var localStrVals = strVals;
+
+                    Console.WriteLine($"Task {id} from {totalCount,10} to {totalCount + localCount - 1,10} ({total,10}) ({CalcString(localStrVals, id),10}) with count {localCount,10} looking for hash 0x{hash:X8}");
+
+                    // Start and store the task
+                    tasks.Add(Task.Factory.StartNew(() =>
+                    {
+                        return Bruteforce(id, localStrVals, hash, localCount);
+                    }));
+
+                    // Update the counters
+                    remaining -= count;
+                    totalCount += count;
+                }
+
+                Console.WriteLine();
+
+                var lastCurr = 0L;
+
+                while (true)
+                {
+                    var stop = true;
+
+                    // Check if the tasks have completed
+                    foreach (var task in tasks)
+                    {
+                        if (!task.IsCompleted)
+                        {
+                            stop = false;
+                        }
+                        else if (task.Result)
+                        {
+                            stopAfter = true;
+                        }
+                    }
+
+                    if (stop)
+                        break;
+
+                    var curr = 0L;
+
+                    foreach (var current in Progress)
+                    {
+                        curr += current;
+                    }
+
+                    if (curr - lastCurr > onePct)
+                    {
+                        Console.Title = $"Bruteforce: {length}: {curr}/{total}: {curr / (double)total * 100.0d:0.00}%";
+
+                        lastCurr = curr;
+                    }
+
+                    Thread.Sleep(100);
+                }
+
+                Task.WaitAll(tasks.ToArray());
+
+                ++length;
+
+                if (stopAfter)
+                    break;
             }
+        }
+
+        
+        private static bool Bruteforce(int taskId, int[] strVals, uint hash, long itrCount)
+        {
+            var stopAfter = false;
+            var i = 0L;
+
+            Progress[taskId] = 0;
+
+            do
+            {
+                var str = CalcString(strVals, taskId);
+
+                if (FNV32string(str) == hash)
+                {
+                    Console.WriteLine($"Bruteforce: {str} => 0x{hash:X8}");
+                    stopAfter = true;
+                }
+
+                Progress[taskId] += 1;
+
+                if (++i == itrCount)
+                    break;
+            }
+            while (IncString(strVals));
+
+            return stopAfter;
         }
 
         private static bool IncString(int[] values)
@@ -223,16 +304,26 @@ namespace SabTool.Utils
             return false;
         }
 
-        private static string CalcString(int[] values)
+        private static void AddCount(int[] values, long count)
         {
-            Builder.Clear();
+            for (var i = values.Length; i > 0; --i)
+            {
+                values[i - 1] = (int)(count % CharCount);
+
+                count /= CharCount;
+            }
+        }
+
+        private static string CalcString(int[] values, int taskId)
+        {
+            Builders[taskId].Clear();
 
             for (var i = 0; i < values.Length; ++i)
             {
-                Builder.Append(Characters[values[i]]);
+                Builders[taskId].Append(Characters[values[i]]);
             }
 
-            return Builder.ToString();
+            return Builders[taskId].ToString();
         }
 
         private static long AlreadyDone(int[] values)
