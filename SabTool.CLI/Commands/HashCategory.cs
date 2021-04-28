@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -74,7 +75,7 @@ namespace SabTool.CLI.Commands
         public class BruteforceCommand : BaseCommand
         {
             public override string Key { get; } = "bruteforce";
-            public override string Usage { get; } = "<length>";
+            public override string Usage { get; } = "<length> <hash>";
 
             public override bool Execute(IEnumerable<string> arguments)
             {
@@ -99,6 +100,46 @@ namespace SabTool.CLI.Commands
 
                 Console.WriteLine("ERROR: Invalid length argument given!");
                 return false;
+            }
+        }
+
+        public class GenerateFromFileCommand : BaseCommand
+        {
+            public override string Key { get; } = "generate-from-file";
+            public override string Usage { get; } = "<input file path> [output file path]";
+
+            public override bool Execute(IEnumerable<string> arguments)
+            {
+                if (arguments.Count() < 1)
+                {
+                    Console.WriteLine("ERROR: Not enough arguments given!");
+                    return false;
+                }
+
+                var inputFilePath = arguments.ElementAt(0);
+                if (!File.Exists(inputFilePath))
+                {
+                    Console.WriteLine("ERROR: Non-existant input file given!");
+                    return false;
+                }
+
+                var outFilePath = Path.Join(Path.GetDirectoryName(inputFilePath), $"{Path.GetFileNameWithoutExtension(inputFilePath)}-hash{Path.GetExtension(inputFilePath)}");
+
+                if (arguments.Count() == 2)
+                {
+                    outFilePath = arguments.ElementAt(1);
+                }
+
+                var lines = File.ReadAllLines(inputFilePath);
+
+                for (var i = 0; i < lines.Length; ++i)
+                {
+                    lines[i] = $"0x{Hash.FNV32string(lines[i]):X8}:{lines[i]}";
+                }
+
+                File.WriteAllLines(outFilePath, lines);
+
+                return true;
             }
         }
     }

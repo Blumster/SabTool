@@ -118,38 +118,6 @@ namespace SabTool.Utils
 
         public static void Bruteforce(int length, uint hash)
         {
-            /*while (true)
-            {
-                var strVals = new int[length];
-
-                long total = (long)Math.Pow(CharCount, length);
-                long curr = AlreadyDone(strVals) + 1;
-                long onePct = (long)Math.Max(total / 100.0d, 1000000.0d);
-                var stopAfter = false;
-
-                do
-                {
-                    var str = CalcString(strVals);
-
-                    if (FNV32string(str) == hash)
-                    {
-                        Console.WriteLine($"Bruteforce: {str} => 0x{hash:X8}");
-                        stopAfter = true;
-                    }
-
-                    if (++curr % onePct == 0)
-                    {
-                        Console.Title = $"Bruteforce: {length}: {curr}/{total}: {(double)curr/(double)total*100.0:0.00}%";
-                    }
-                }
-                while (IncString(strVals));
-
-                ++length;
-
-                if (stopAfter)
-                    break;
-            }*/
-
             var tasks = new List<Task<bool>>();
 
             while (true)
