@@ -56,7 +56,7 @@ namespace SabTool.Containers.GameTemplates
             {
                 var bytes = reader.ReadBytes(size);
 
-                Output.WriteLine($"[0x{crc:X8}][UNKNOWN][UNKNOWN]: {BitConverter.ToString(bytes).Replace('-', ' ')} ({(size >= 4 ? BitConverter.ToInt32(bytes, 0) : "")}, {(size >= 4 ? BitConverter.ToSingle(bytes, 0) : "")}, {Encoding.UTF8.GetString(bytes)})");
+                Output.WriteLine($"[0x{crc:X8}][UNKNOWN][{(string.IsNullOrEmpty(name) ? "UNKNOWN" : name)}]: {BitConverter.ToString(bytes).Replace('-', ' ')} ({(size >= 4 ? BitConverter.ToInt32(bytes, 0) : "")}, {(size >= 4 ? BitConverter.ToSingle(bytes, 0) : "")}, {Encoding.UTF8.GetString(bytes)})");
             }
         }
 
@@ -107,11 +107,11 @@ namespace SabTool.Containers.GameTemplates
             // Damagable properties
 
             // Audible properties
-            { 0x42C6DA9D, new("Audible", "", typeof(int)) },
+            { 0x42C6DA9D, new("Audible", "Sound Events", typeof(int)) },
             { 0x246DB06C, new("Audible", "", typeof(int)) },
             { 0x3217CDF0, new("Audible", "", typeof(float)) },
             { 0x212A9DB0, new("Audible", "", typeof(bool)) },
-            { 0x02D3EB9F, new("Audible", "", typeof(int)) },
+            { 0x02D3EB9F, new("Audible", "", typeof(Crc)) },
             { 0x04FBB1EE, new("Audible", "", typeof(string)) },
             { 0x1E59E605, new("Audible", "Looping", typeof(bool)) },
             { 0xD76D7747, new("Audible", "", typeof(int)) },
