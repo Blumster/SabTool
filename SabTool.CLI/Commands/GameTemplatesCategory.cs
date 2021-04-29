@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace SabTool.CLI.Commands.GameTemplates
+namespace SabTool.CLI.Commands
 {
     using Base;
     using Containers.GameTemplates;
@@ -11,7 +11,7 @@ namespace SabTool.CLI.Commands.GameTemplates
 
     public class GameTemplatesCategory : BaseCategory
     {
-        public override string Key => "base";
+        public override string Key => "game-templates";
 
         public override string Usage => "<sub command>";
 
@@ -81,7 +81,7 @@ namespace SabTool.CLI.Commands.GameTemplates
         public class DumpCommand : BaseCommand
         {
             public override string Key { get; } = "dump";
-            public override string Usage { get; } = "<game base path> <output file path>";
+            public override string Usage { get; } = "<game base path | input file path> [output file path]";
 
             public override bool Execute(IEnumerable<string> arguments)
             {
@@ -91,48 +91,50 @@ namespace SabTool.CLI.Commands.GameTemplates
                     return false;
                 }
 
-                var basePath = arguments.ElementAt(0);
-                var outputDir = arguments.Count() > 1 ? arguments.ElementAt(1) : null;
+                var basePathOrFilePath = arguments.ElementAt(0);
+                var outputFilePath = arguments.Count() > 1 ? arguments.ElementAt(1) : null;
 
-                if (!Directory.Exists(basePath))
+                byte[] data = null;
+
+                var attrs = File.GetAttributes(basePathOrFilePath);
+                if ((attrs & FileAttributes.Directory) == FileAttributes.Directory)
                 {
-                    Console.WriteLine("ERROR: The game base path does not exist!");
-                    return false;
+                    var looseFilePath = Path.Combine(basePathOrFilePath, @"France\loosefiles_BinPC.pack");
+                    if (!File.Exists(looseFilePath))
+                    {
+                        Console.WriteLine($"ERROR: Loosefile could not be found under \"{looseFilePath}\"!");
+                        return false;
+                    }
+
+                    var looseFile = new LooseFile();
+
+                    using (var fs = new FileStream(looseFilePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+                        looseFile.Read(fs);
+
+                    var gameTemplatesEntry = looseFile.Files.Where(f => f.Name == "GameTemplates.wsd").FirstOrDefault();
+                    if (gameTemplatesEntry == null)
+                    {
+                        Console.WriteLine("ERROR: Could not read GameTemplates.wsd from loosefiles!");
+                        return false;
+                    }
+
+                    data = gameTemplatesEntry.Data;
                 }
-
-                if (outputDir != null)
+                else
                 {
-                    Directory.CreateDirectory(outputDir);
-                }
-
-                var looseFilePath = Path.Combine(basePath, @"France\loosefiles_BinPC.pack");
-                if (!File.Exists(looseFilePath))
-                {
-                    Console.WriteLine($"ERROR: Loosefile could not be found under \"{looseFilePath}\"!");
-                    return false;
-                }
-
-                var looseFile = new LooseFile();
-
-                using (var fs = new FileStream(looseFilePath, FileMode.Open, FileAccess.Read, FileShare.Read))
-                    looseFile.Read(fs);
-
-                var gameTemplatesEntry = looseFile.Files.Where(f => f.Name == "GameTemplates.wsd").FirstOrDefault();
-                if (gameTemplatesEntry == null)
-                {
-                    Console.WriteLine("ERROR: Could not read GameTemplates.wsd from loosefiles!");
-                    return false;
+                    data = File.ReadAllBytes(basePathOrFilePath);
                 }
 
                 StreamWriter writer = null;
-                if (outputDir != null)
+
+                if (outputFilePath != null)
                 {
-                    writer = new StreamWriter(new FileStream(Path.Combine(outputDir, "game-templates.txt"), FileMode.Create, FileAccess.Write, FileShare.None));
+                    writer = new StreamWriter(new FileStream(outputFilePath, FileMode.Create, FileAccess.Write, FileShare.None));
                 }
 
                 var gameTemplates = new GameTemplatesDump(writer);
 
-                using (var ms = new MemoryStream(gameTemplatesEntry.Data))
+                using (var ms = new MemoryStream(data))
                     gameTemplates.Read(ms);
 
                 if (writer != null)
