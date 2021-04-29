@@ -29,7 +29,7 @@ namespace SabTool.CLI.Commands
                     return false;
                 }
 
-                Console.WriteLine("\"{0}\" => 0x{1:X8}", arguments.ElementAt(0), Hash.StringToHash(arguments.ElementAt(0)));
+                Console.WriteLine("\"{0}\" => 0x{1:X8}", arguments.ElementAt(0), Hash.FNV32string(arguments.ElementAt(0)));
                 return true;
             }
         }
