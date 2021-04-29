@@ -75,6 +75,7 @@ namespace SabTool.Containers.GameTemplates
                 "Byte[]" => BitConverter.ToString(reader.ReadBytes(size)).Replace('-', ' '),
                 "FloatRange2" => new FloatRange2(reader.ReadFloat(), reader.ReadFloat()),
                 "FloatRange4" => new FloatRange4(reader.ReadFloat(), reader.ReadFloat(), reader.ReadFloat(), reader.ReadFloat()),
+                "Color" => new Color(reader.ReadInt()),
                 _ => null
             };
         }
@@ -92,6 +93,13 @@ namespace SabTool.Containers.GameTemplates
             public override string ToString()
             {
                 return $"({Val1}, {Val2}, {Val3}, {Val4})";
+            }
+        }
+        record Color(int Value)
+        {
+            public override string ToString()
+            {
+                return $"(R: {(Value >> 24) & 0xFF}, G: {(Value >> 16) & 0xFF}, B: {(Value >> 8) & 0xFF}, A: {Value& 0xFF})";
             }
         }
 
