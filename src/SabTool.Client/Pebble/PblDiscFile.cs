@@ -506,10 +506,10 @@ namespace SabTool.Client.Pebble
 
             FileName = fileName;
 
-            var colonInd = FileName.IndexOf(':');
-            var fixedFolderName = colonInd != -1 ? fileName.Substring(FileName.IndexOf(':') + 2) : fileName;
+            var colonInd = FileName.IndexOf(':', StringComparison.InvariantCulture);
+            var fixedFolderName = colonInd != -1 ? fileName[(colonInd + 2)..] : fileName;
 
-            if (fixedFolderName.IndexOf('\\') != -1 || fixedFolderName.IndexOf('/') != -1)
+            if (fixedFolderName.Contains('\\', StringComparison.InvariantCulture) || fixedFolderName.Contains('/', StringComparison.InvariantCulture))
                 Directory.CreateDirectory(Path.GetDirectoryName(fixedFolderName.Replace('/', '\\')));
 
             try

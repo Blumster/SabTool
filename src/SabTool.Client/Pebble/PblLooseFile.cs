@@ -221,8 +221,8 @@ namespace SabTool.Client.Pebble
                         ++fileNameItr;
                     }
 
-                    var firstInd = fileName.IndexOf('\\');
-                    if (match || (firstInd != -1 && fileName.Substring(firstInd + 1) == StaticDiscFileData.FileName))
+                    var firstInd = fileName.IndexOf('\\', StringComparison.InvariantCulture);
+                    if (match || (firstInd != -1 && fileName[(firstInd + 1)..] == StaticDiscFileData.FileName))
                     {
                         IsCustomDiscFile = false;
                         DiscFile = StaticDiscFileData.DiscFile;
