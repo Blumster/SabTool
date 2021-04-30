@@ -7,6 +7,9 @@ namespace SabTool.Containers.GameTemplates.Dump
 
     public class LuaParam
     {
+        public const int NamePad = -20;
+        public const int TypePad = -10;
+
         public const uint LuaIntCrc = 0xF0676C78;
         public const uint LuaStringCrc = 0xF5B799C2;
         public const uint LuaBoolCrc = 0x1B444F31;
@@ -78,13 +81,13 @@ namespace SabTool.Containers.GameTemplates.Dump
 
             return TypeCrc switch
             {
-                LuaStringCrc => $"[{Name}, {typeStr}, {StringVal}]",
-                LuaIntCrc => $"[{Name}, {typeStr}, {IntVal}]",
-                LuaCrcListCrc => $"[{Name}, {typeStr}, {CrcCount}, {(CrcList.Count > 0 ? CrcList.Aggregate((a, b) => $"{a}, {b}") : "")}]",
-                LuaCrcCrc => $"[{Name}, {typeStr}, {CrcVal}]",
-                LuaBoolCrc => $"[{Name}, {typeStr}, {BoolVal}]",
-                LuaFloatCrc => $"[{Name}, {typeStr}, {FloatVal}]",
-                _ => $"[{Name}, {typeStr}, UNKNOWN LUA PARAM CRC]",
+                LuaStringCrc => $"[{Name,NamePad}, {typeStr,TypePad}, {StringVal}]",
+                LuaIntCrc => $"[{Name,NamePad}, {typeStr,TypePad}, {IntVal}]",
+                LuaCrcListCrc => $"[{Name,NamePad}, {typeStr,TypePad}, {CrcCount}, {(CrcList.Count > 0 ? CrcList.Aggregate((a, b) => $"{a}, {b}") : "")}]",
+                LuaCrcCrc => $"[{Name,NamePad}, {typeStr,TypePad}, {CrcVal}]",
+                LuaBoolCrc => $"[{Name,NamePad}, {typeStr,TypePad}, {BoolVal}]",
+                LuaFloatCrc => $"[{Name,NamePad}, {typeStr,TypePad}, {FloatVal}]",
+                _ => $"[{Name,NamePad}, {typeStr,TypePad}, UNKNOWN LUA PARAM]",
             };
         }
     }
