@@ -165,8 +165,19 @@ namespace SabTool.Containers.GameTemplates
                 var stringVal = Encoding.UTF8.GetString(bytes);
                 var crcVal = bytes.Length >= 4 ? new Crc(BitConverter.ToUInt32(bytes, 0)).ToString() : "";
 
-                if (!stringVal.All(c => char.IsWhiteSpace(c) || char.IsLetterOrDigit(c)))
-                    stringVal = null;
+                for (var i = 0; i < bytes.Length; ++i)
+                {
+                    // Don't check nulltermination
+                    if (i == bytes.Length - 1 && bytes[i] == 0)
+                        break;
+
+                    // Check every character to be valid
+                    if (bytes[i] < 0x20 || bytes[i] > 0x7E)
+                    {
+                        stringVal = null;
+                        break;
+                    }
+                }
 
                 if (string.IsNullOrEmpty(stringVal))
                 {
@@ -174,6 +185,9 @@ namespace SabTool.Containers.GameTemplates
                 }
                 else
                 {
+                    if (stringVal[^1] == '\0')
+                        stringVal = stringVal[0..^1];
+
                     guessStr = $" (I: {intStr,-15} | F: {floatStr,-15} | S: {stringVal,-15} | Crc: {crcVal})";
                 }
             }
