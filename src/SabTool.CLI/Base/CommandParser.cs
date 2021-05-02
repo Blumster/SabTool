@@ -16,7 +16,7 @@ namespace SabTool.CLI.Base
 
         static CommandParser()
         {
-            static bool filter(Type a) => a.Namespace.StartsWith(CommandNamespace) && a.IsClass && !a.IsNested && a.GetInterfaces().Contains(typeof(ICommand));
+            static bool filter(Type a) => a.Namespace == CommandNamespace && a.IsClass && !a.IsNested && a.GetInterfaces().Contains(typeof(ICommand));
 
             foreach (var type in Assembly.GetExecutingAssembly().GetTypes().Where(filter))
             {
