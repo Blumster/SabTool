@@ -80,6 +80,31 @@ namespace SabTool.CLI.Base
             if (!_commands.ContainsKey(commandKey))
             {
                 Console.WriteLine("ERROR: Unknown command!");
+                Console.WriteLine();
+                Console.WriteLine("Available commands:");
+                Console.Write("<");
+
+                var first = true;
+
+                foreach (var command in _commands)
+                {
+                    // Don't list the shortcuts
+                    if (command.Key == command.Value.Shortcut)
+                        continue;
+
+                    if (!first)
+                    {
+                        Console.Write(" | ");
+                    }
+                    else
+                        first = false;
+
+                    Console.Write($"{command.Key}/{command.Value.Shortcut}");
+                }
+
+                Console.WriteLine(" | exit/e>");
+                Console.WriteLine();
+
                 return false;
             }
 
