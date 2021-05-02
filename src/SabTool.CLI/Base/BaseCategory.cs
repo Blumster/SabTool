@@ -26,6 +26,18 @@ namespace SabTool.CLI.Base
                 {
                     var newInstance = Activator.CreateInstance(type) as ICommand;
 
+                    if (_commands.ContainsKey(newInstance.Key))
+                    {
+                        Console.WriteLine($"ERROR: Command {Key} already has subcommand key {newInstance.Key} defined in the commands list! Skipping command...");
+                        continue;
+                    }
+
+                    if (_commands.ContainsKey(newInstance.Shortcut))
+                    {
+                        Console.WriteLine($"ERROR: Command {Key} already has subcommand shortcut {newInstance.Shortcut} defined in the commands list! Skipping command...");
+                        continue;
+                    }
+
                     _commands.Add(newInstance.Key, newInstance);
                     _commands.Add(newInstance.Shortcut, newInstance);
 

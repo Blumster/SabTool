@@ -22,6 +22,30 @@ namespace SabTool.CLI.Base
             {
                 var newInstance = Activator.CreateInstance(type) as ICommand;
 
+                if (_commands.ContainsKey(newInstance.Key))
+                {
+                    Console.WriteLine($"ERROR: Command key {newInstance.Key} is already defined in the commands list! Skipping command...");
+                    continue;
+                }
+
+                if (_commands.ContainsKey(newInstance.Shortcut))
+                {
+                    Console.WriteLine($"ERROR: Command shortcut {newInstance.Shortcut} is already defined in the commands list! Skipping command...");
+                    continue;
+                }
+
+                if (newInstance.Key == "exit")
+                {
+                    Console.WriteLine($"ERROR: Command {newInstance.Key} tried to override the exit command! Skipping command...");
+                    continue;
+                }
+
+                if (newInstance.Shortcut == "e")
+                {
+                    Console.WriteLine($"ERROR: Command {newInstance.Key} has the same shortcut as the exit command! Skipping command...");
+                    continue;
+                }
+
                 _commands.Add(newInstance.Key, newInstance);
                 _commands.Add(newInstance.Shortcut, newInstance);
 
