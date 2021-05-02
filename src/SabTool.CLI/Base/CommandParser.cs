@@ -23,6 +23,7 @@ namespace SabTool.CLI.Base
                 var newInstance = Activator.CreateInstance(type) as ICommand;
 
                 _commands.Add(newInstance.Key, newInstance);
+                _commands.Add(newInstance.Shortcut, newInstance);
 
                 newInstance.Setup();
             }

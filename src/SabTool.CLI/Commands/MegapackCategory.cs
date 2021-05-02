@@ -7,6 +7,8 @@
     {
         public override string Key => "megapack";
 
+        public override string Shortcut => "m";
+
         public override string Usage => "<sub command>";
 
         public override void Setup()

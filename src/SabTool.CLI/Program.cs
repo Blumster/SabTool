@@ -20,7 +20,7 @@ namespace SabTool.CLI
                 Console.Write("Enter a command: ");
 
                 var cmd = Console.ReadLine();
-                if (cmd == "exit")
+                if (cmd == "exit" || cmd == "e")
                     break;
 
                 CommandParser.ExecuteCommand(cmd);

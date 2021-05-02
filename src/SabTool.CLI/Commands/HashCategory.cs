@@ -13,11 +13,14 @@ namespace SabTool.CLI.Commands
     {
         public override string Key => "hash";
 
+        public override string Shortcut => "h";
+
         public override string Usage => "<sub command>";
 
         public class CalcCommand : BaseCommand
         {
             public override string Key { get; } = "calc";
+            public override string Shortcut { get; } = "c";
             public override string Usage { get; } = "<string to calculate hash from>";
 
             public override bool Execute(IEnumerable<string> arguments)
@@ -36,6 +39,7 @@ namespace SabTool.CLI.Commands
         public class ResolveCommand : BaseCommand
         {
             public override string Key { get; } = "resolve";
+            public override string Shortcut { get; } = "r";
             public override string Usage { get; } = "<hash value>";
 
             public override bool Execute(IEnumerable<string> arguments)
@@ -74,6 +78,7 @@ namespace SabTool.CLI.Commands
         public class BruteforceCommand : BaseCommand
         {
             public override string Key { get; } = "bruteforce";
+            public override string Shortcut { get; } = "b";
             public override string Usage { get; } = "<length> <hash>";
 
             public override bool Execute(IEnumerable<string> arguments)
@@ -105,6 +110,7 @@ namespace SabTool.CLI.Commands
         public class GenerateFromFileCommand : BaseCommand
         {
             public override string Key { get; } = "generate-from-file";
+            public override string Shortcut { get; } = "g";
             public override string Usage { get; } = "<input file path> [output file path]";
 
             public override bool Execute(IEnumerable<string> arguments)

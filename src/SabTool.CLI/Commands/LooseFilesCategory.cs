@@ -23,11 +23,13 @@ namespace SabTool.CLI.Commands
         };
 
         public override string Key => "loose-files";
+        public override string Shortcut => "l";
         public override string Usage => "<sub command name>";
 
         public class UnpackCommand : BaseCommand
         {
             public override string Key { get; } = "unpack";
+            public override string Shortcut { get; } = "u";
             public override string Usage { get; } = "<loose file path> <output directory path>";
 
             public override bool Execute(IEnumerable<string> arguments)
@@ -74,6 +76,7 @@ namespace SabTool.CLI.Commands
         public class PackCommand : BaseCommand
         {
             public override string Key { get; } = "pack";
+            public override string Shortcut { get; } = "p";
             public override string Usage { get; } = "<loose file path> <input directory path>";
 
             public override bool Execute(IEnumerable<string> arguments)

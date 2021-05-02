@@ -10,6 +10,7 @@ namespace SabTool.CLI.Base
         protected readonly Dictionary<string, ICommand> _commands = new Dictionary<string, ICommand>();
 
         public abstract string Key { get; }
+        public abstract string Shortcut { get; }
         public abstract string Usage { get; }
 
         public virtual void Setup()
@@ -26,6 +27,7 @@ namespace SabTool.CLI.Base
                     var newInstance = Activator.CreateInstance(type) as ICommand;
 
                     _commands.Add(newInstance.Key, newInstance);
+                    _commands.Add(newInstance.Shortcut, newInstance);
 
                     newInstance.Setup();
                 }
@@ -72,6 +74,10 @@ namespace SabTool.CLI.Base
 
             foreach (var command in _commands)
             {
+                // Don't list the shortcuts
+                if (command.Key == command.Value.Shortcut)
+                    continue;
+
                 if (!first)
                 {
                     builder.Append(" | ");
@@ -79,10 +85,10 @@ namespace SabTool.CLI.Base
                 else
                     first = false;
 
-                builder.Append(command.Key);
+                builder.Append($"{command.Key}/{command.Value.Shortcut}");
             }
 
-            builder.Append(">");
+            builder.Append('>');
         }
 
         protected void AddInstance(ICommand command)
