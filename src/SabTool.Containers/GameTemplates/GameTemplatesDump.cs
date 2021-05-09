@@ -1377,6 +1377,11 @@ namespace SabTool.Containers.GameTemplates
             { new(0x91EB2C3E, 0xB2A09C8C), new(null, typeof(float)) },
             { new(0x91EB2C3E, 0xDEC209DB), new(null, typeof(float)) },
 
+            // VirVehicleSetup
+            { new(0x798C1EC7, 0x04D46017), new(null, typeof(Crc)) },
+            { new(0x798C1EC7, 0x072CEE8B), new(null, typeof(Crc)) },
+            { new(0x798C1EC7, 0x0B187235), new(null, typeof(Crc)) },
+
             // WaterController
             { new(0x1AECDEB6, 0x95FF5441), new(null, typeof(Crc)) },
             { new(0x1AECDEB6, 0x3B2E2AA3), new(null, typeof(float)) },
