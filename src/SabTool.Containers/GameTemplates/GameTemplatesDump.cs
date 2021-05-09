@@ -1362,6 +1362,20 @@ namespace SabTool.Containers.GameTemplates
             { new(0x2B8D1FDF, 0x04965406), new(null, typeof(Crc)) },
             { new(0x2B8D1FDF, 0x7F3BC5E3), new(null, typeof(Crc)) },
 
+            // VirVehicleEngine
+            { new(0x91EB2C3E, 0x62474AD0), new(null, typeof(float)) },
+            { new(0x91EB2C3E, 0x577141F3), new(null, typeof(float)) },
+            { new(0x91EB2C3E, 0x60CB691E), new(null, typeof(float)) },
+            { new(0x91EB2C3E, 0x4EADB17F), new(null, typeof(float)) },
+            { new(0x91EB2C3E, 0x00DA288D), new(null, typeof(float)) },
+            { new(0x91EB2C3E, 0x0B80AC5C), new(null, typeof(float)) },
+            { new(0x91EB2C3E, 0x1CAB1FCC), new(null, typeof(float)) },
+            { new(0x91EB2C3E, 0xAA61FF67), new(null, typeof(FloatVector3)) },
+            { new(0x91EB2C3E, 0x80DFA4CE), new(null, typeof(float)) },
+            { new(0x91EB2C3E, 0x8ED55693), new(null, typeof(float)) },
+            { new(0x91EB2C3E, 0xB2A09C8C), new(null, typeof(float)) },
+            { new(0x91EB2C3E, 0xDEC209DB), new(null, typeof(float)) },
+
             // WaterController
             { new(0x1AECDEB6, 0x95FF5441), new(null, typeof(Crc)) },
             { new(0x1AECDEB6, 0x3B2E2AA3), new(null, typeof(float)) },
