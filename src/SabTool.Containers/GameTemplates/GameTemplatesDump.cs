@@ -684,6 +684,25 @@ namespace SabTool.Containers.GameTemplates
             { new(0x08271F91, 0xE5955136), new(null, typeof(int)) },
             { new(0x08271F91, 0xF2F6EAEC), new(null, typeof(Crc)) },
 
+            // FxHumanBodySetup
+            { new(0xD9F7FCE1, 0x622DD842), new(null, typeof(Crc)) },
+            { new(0xD9F7FCE1, 0x1E233FA7), new(null, typeof(int)) },
+            { new(0xD9F7FCE1, 0x37A9525D), new(null, typeof(int)) },
+            { new(0xD9F7FCE1, 0x44C27FCB), new(null, typeof(int)) },
+            { new(0xD9F7FCE1, 0xCBA8D62C), new(null, typeof(int)) },
+            { new(0xD9F7FCE1, 0xC3A43714), new(null, typeof(int)) },
+            { new(0xD9F7FCE1, 0xC57D2B43), new(null, typeof(Crc)) },
+            { new(0xD9F7FCE1, 0xA1757F0A), new(null, typeof(Crc)) },
+            { new(0xD9F7FCE1, 0x79691A2F), new(null, typeof(int)) },
+            { new(0xD9F7FCE1, 0x922CC098), new(null, typeof(Crc)) },
+            { new(0xD9F7FCE1, 0x9E288655), new(null, typeof(int)) },
+            { new(0xD9F7FCE1, 0xDB9C23DC), new(null, typeof(int)) },
+            { new(0xD9F7FCE1, 0xD0541403), new(null, typeof(float)) },
+            { new(0xD9F7FCE1, 0xD594DB5B), new(null, typeof(float)) },
+            { new(0xD9F7FCE1, 0xDD1296DA), new(null, typeof(int)) },
+            { new(0xD9F7FCE1, 0xFC20CB8A), new(null, typeof(int)) },
+            { new(0xD9F7FCE1, 0xD4D4470A), new(null, typeof(int)) },
+
             // FxHumanHead
             { new(0x7DAB4B80, 0xE5955136), new(null, typeof(int)) },
             { new(0x7DAB4B80, 0xA714324C), new(null, typeof(int)) },
