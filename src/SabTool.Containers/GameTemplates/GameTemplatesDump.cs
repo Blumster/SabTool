@@ -874,6 +874,11 @@ namespace SabTool.Containers.GameTemplates
             { new(0xCB248263, 0xCB248263), new(null, typeof(Crc)) },
             { new(0xCB248263, 0x725A3658), new(null, typeof(bool)) },
 
+            // HumanSkeletonScale
+            { new(0x5822D085, 0x5A8132A3), new(null, typeof(float)) },
+            { new(0x5822D085, 0x69435911), new(null, typeof(float)) },
+            { new(0x5822D085, 0xC5C50C7F), new(null, typeof(float)) },
+
             // Item
             { new(0x71798A24, 0x953C60F5), new(null, typeof(float)) },
             { new(0x71798A24, 0x8303620E), new(null, typeof(int)) },
