@@ -161,7 +161,7 @@ namespace SabTool.Containers.GameTemplates
             if (bytes.Length >= 4)
             {
                 var intStr = bytes.Length >= 4 ? BitConverter.ToInt32(bytes, 0).ToString() : "";
-                var floatStr = bytes.Length >= 4 ? BitConverter.ToSingle(bytes, 0).ToString() : "";
+                var floatStr = bytes.Length >= 4 ? BitConverter.ToSingle(bytes, 0).ToString("0.00") : "";
                 var stringVal = Encoding.UTF8.GetString(bytes);
                 var crcVal = bytes.Length >= 4 ? new Crc(BitConverter.ToUInt32(bytes, 0)).ToString() : "";
 
@@ -209,8 +209,8 @@ namespace SabTool.Containers.GameTemplates
                 "String" => reader.ReadString(size),
                 "Crc" => new Crc(reader.ReadUInt()),
                 "LuaParam" => new LuaParam(reader),
-                "Single" => reader.ReadFloat(),
-                "Double" => reader.ReadDouble(),
+                "Single" => reader.ReadFloat().ToString("0.00"),
+                "Double" => reader.ReadDouble().ToString("0.00"),
                 "Byte[]" => BitConverter.ToString(reader.ReadBytes(size)).Replace('-', ' '),
                 "FloatVector2" => new FloatVector2(reader.ReadFloat(), reader.ReadFloat()),
                 "FloatVector3" => new FloatVector3(reader.ReadFloat(), reader.ReadFloat(), reader.ReadFloat()),
