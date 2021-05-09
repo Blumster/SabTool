@@ -684,6 +684,23 @@ namespace SabTool.Containers.GameTemplates
             { new(0x08271F91, 0xE5955136), new(null, typeof(int)) },
             { new(0x08271F91, 0xF2F6EAEC), new(null, typeof(Crc)) },
 
+            // FxHumanHead
+            { new(0x7DAB4B80, 0xE5955136), new(null, typeof(int)) },
+            { new(0x7DAB4B80, 0xA714324C), new(null, typeof(int)) },
+            { new(0x7DAB4B80, 0xD6A5096B), new(null, typeof(float)) },
+            { new(0x7DAB4B80, 0xD9725C55), new(null, typeof(Crc)) },
+            { new(0x7DAB4B80, 0xEE7D0BA3), new(null, typeof(Crc)) },
+            { new(0x7DAB4B80, 0xF2F6EAEC), new(null, typeof(Crc)) },
+            { new(0x7DAB4B80, 0xF83F6C44), new(null, typeof(Crc)) },
+            { new(0x7DAB4B80, 0x6DA79337), new(null, typeof(int)) },
+            { new(0x7DAB4B80, 0x3FF4F976), new(null, typeof(Color)) },
+            { new(0x7DAB4B80, 0x62404569), new(null, typeof(Crc)) },
+            { new(0x7DAB4B80, 0x679CD9A1), new(null, typeof(int)) },
+            { new(0x7DAB4B80, 0x1DCCDB2F), new(null, typeof(Crc)) },
+            { new(0x7DAB4B80, 0x08C3EE6A), new(null, typeof(float)) },
+            { new(0x7DAB4B80, 0x1CBA8055), new(null, typeof(int)) },
+            { new(0x7DAB4B80, 0x1CF649BB), new(null, typeof(Crc)) },
+
             // GunnerSeat
             { new(0x1A8CEE3F, 0x6CE6C69A), new(null, typeof(FloatVector2)) },
             { new(0x1A8CEE3F, 0x6C36BA37), new(null, typeof(float)) },
