@@ -667,6 +667,10 @@ namespace SabTool.Containers.GameTemplates
             { new(0x5A8EE34C, 0xC023ACD3), new(null, typeof(Crc)) },
             { new(0x5A8EE34C, 0xC2161E01), new(null, typeof(float)) },
 
+            // FlashMovie
+            { new(0x9CC86FE3, 0x9CAA0ADF), new(null, typeof(Crc)) },
+            { new(0x9CC86FE3, 0xA1F61387), new(null, typeof(int)) },
+
             // FxHumanBodyPart
             { new(0x08271F91, 0x679CD9A1), new(null, typeof(int)) },
             { new(0x08271F91, 0x1CBA8055), new(null, null) },
