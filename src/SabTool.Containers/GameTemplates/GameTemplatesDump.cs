@@ -503,6 +503,18 @@ namespace SabTool.Containers.GameTemplates
             { new(0x92473A24, 0x29EC9F57), new(null, typeof(bool)) },
             { new(0x92473A24, 0x2A4802C1), new(null, typeof(bool)) },
 
+            // AIChatter
+            { new(0x669746CA, 0xCBE8ED58), new(null, typeof(float)) },
+            { new(0x669746CA, 0xBDB6564E), new(null, typeof(float)) },
+            { new(0x669746CA, 0xC187EFD3), new(null, typeof(bool)) },
+            { new(0x669746CA, 0xDC83F68F), new(null, typeof(FloatVector2)) },
+            { new(0x669746CA, 0x87519019), new(null, typeof(int)) },
+            { new(0x669746CA, 0x70C454D5), new(null, typeof(FloatVector2)) },
+            { new(0x669746CA, 0x7213E378), new(null, typeof(int)) },
+            { new(0x669746CA, 0x2C504344), new(null, typeof(Crc)) },
+            { new(0x669746CA, 0x076B2507), new(null, typeof(FloatVector2)) },
+            { new(0x669746CA, 0x22CC5267), new(null, typeof(bool)) },
+
             // Aimer
             { new(0x1F18A531, 0x6DA3DB23), new(null, typeof(float)) },
             { new(0x1F18A531, 0x42BC590B), new(null, typeof(float)) },
