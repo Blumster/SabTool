@@ -1324,6 +1324,20 @@ namespace SabTool.Containers.GameTemplates
             { new(0x2B8D1FDF, 0x04965406), new(null, typeof(Crc)) },
             { new(0x2B8D1FDF, 0x7F3BC5E3), new(null, typeof(Crc)) },
 
+            // WaterController
+            { new(0x1AECDEB6, 0x95FF5441), new(null, typeof(Crc)) },
+            { new(0x1AECDEB6, 0x3B2E2AA3), new(null, typeof(float)) },
+            { new(0x1AECDEB6, 0x33175C7A), new(null, typeof(float)) },
+            { new(0x1AECDEB6, 0x35AFA241), new(null, typeof(float)) },
+            { new(0x1AECDEB6, 0x25D7DDC9), new(null, typeof(float)) },
+            { new(0x1AECDEB6, 0x0EC38247), new(null, typeof(Color)) },
+            { new(0x1AECDEB6, 0x1B9B037D), new(null, typeof(float)) },
+            { new(0x1AECDEB6, 0xA491DFCA), new(null, typeof(Color)) },
+            { new(0x1AECDEB6, 0x7F39F1BB), new(null, typeof(Color)) },
+            { new(0x1AECDEB6, 0xA2300E26), new(null, typeof(Color)) },
+            { new(0x1AECDEB6, 0xB9969F89), new(null, typeof(float)) },
+            { new(0x1AECDEB6, 0xC61EDBD1), new(null, typeof(float)) },
+
             // WaterFlow
             { new(0xE9162F96, 0x33E229EA), new(null, typeof(float)) },
 
