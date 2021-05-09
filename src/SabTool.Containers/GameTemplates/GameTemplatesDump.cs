@@ -949,6 +949,7 @@ namespace SabTool.Containers.GameTemplates
             { new(0x438C44F5, 0x27B412FF), new(null, typeof(float)) },
             { new(0x438C44F5, 0x280BF82C), new(null, typeof(float)) },
             { new(0x438C44F5, 0x3229D516), new(null, typeof(Crc)) },
+            { new(0x438C44F5, 0x4D1DD4D1), new(null, typeof(float)) },
 
             // LightHaloAttachment
             { new(0x0B213D8E, 0x54F0B858), new(null, typeof(float)) },
