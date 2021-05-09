@@ -369,6 +369,7 @@ namespace SabTool.Containers.GameTemplates
             { "Rumble", new() { } },
             { "ImageFolder", new() { } },
             { "CreditName", new() { } },
+            { "WaterFlow", new() { } },
 
             // Shared
             { "Damageable", new() { "DamageableRoot" } },
@@ -1320,6 +1321,9 @@ namespace SabTool.Containers.GameTemplates
             { new(0x2B8D1FDF, 0x37B68026), new(null, typeof(Crc)) },
             { new(0x2B8D1FDF, 0x04965406), new(null, typeof(Crc)) },
             { new(0x2B8D1FDF, 0x7F3BC5E3), new(null, typeof(Crc)) },
+
+            // WaterFlow
+            { new(0xE9162F96, 0x33E229EA), new(null, typeof(float)) },
 
             // Weapon
             { new(0x787C0871, 0x7C0B86B9), new(null, typeof(bool)) },
