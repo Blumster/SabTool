@@ -1108,6 +1108,16 @@ namespace SabTool.Containers.GameTemplates
             { new(0x600E3B1E, 0xAC6A5E5F), new(null, typeof(float)) },
             { new(0x600E3B1E, 0xAE85A3E9), new(null, typeof(float)) },
 
+            // RandomObj
+            { new(0x75F73A4F, 0xDFAFCDA6), new(null, typeof(int)) },
+            { new(0x75F73A4F, 0xF0C7DA5F), new(null, typeof(string)) },
+            { new(0x75F73A4F, 0xF8A56E55), new(null, typeof(bool)) },
+            { new(0x75F73A4F, 0x7FD9A169), new(null, typeof(float)) },
+            { new(0x75F73A4F, 0x01CAB9A5), new(null, typeof(Crc)) },
+            { new(0x75F73A4F, 0x0AA3E5D9), new(null, typeof(int)) },
+            { new(0x75F73A4F, 0x3EECCF6B), new(null, typeof(Crc)) },
+            { new(0x75F73A4F, 0x84F14707), new(null, typeof(Crc)) },
+
             // ScriptController
             { new(0x7A6E9D28, 0xE0B01D9F), new(null, typeof(string)) },
             { new(0x7A6E9D28, 0xCA6B9057), new(null, typeof(int)) },
