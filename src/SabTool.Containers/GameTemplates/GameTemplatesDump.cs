@@ -1122,6 +1122,28 @@ namespace SabTool.Containers.GameTemplates
             { new(0xF0DDFE9E, 0x99327D6F), new(null, typeof(float)) },
             { new(0xF0DDFE9E, 0xE1AE04B8), new(null, typeof(float)) },
 
+            // ToneMapping
+            { new(0x0C8FC411, 0xEA229E08), new(null, typeof(float)) },
+            { new(0x0C8FC411, 0xED233E1A), new(null, typeof(float)) },
+            { new(0x0C8FC411, 0xE7D25889), new(null, typeof(float)) },
+            { new(0x0C8FC411, 0xCB9F3DB9), new(null, typeof(float)) },
+            { new(0x0C8FC411, 0xD0AAAE60), new(null, typeof(float)) },
+            { new(0x0C8FC411, 0xE6E5D038), new(null, typeof(float)) },
+            { new(0x0C8FC411, 0xC3D37FD0), new(null, typeof(float)) },
+            { new(0x0C8FC411, 0xAD6CB5F5), new(null, typeof(float)) },
+            { new(0x0C8FC411, 0xB781F21F), new(null, typeof(float)) },
+            { new(0x0C8FC411, 0xBCF8745D), new(null, typeof(float)) },
+            { new(0x0C8FC411, 0x98BC3287), new(null, typeof(float)) },
+            { new(0x0C8FC411, 0x7C15A554), new(null, typeof(float)) },
+            { new(0x0C8FC411, 0x812C819E), new(null, typeof(float)) },
+            { new(0x0C8FC411, 0x87B59751), new(null, typeof(float)) },
+            { new(0x0C8FC411, 0x78DB0D8C), new(null, typeof(float)) },
+            { new(0x0C8FC411, 0x571B565F), new(null, typeof(float)) },
+            { new(0x0C8FC411, 0x5F353262), new(null, typeof(float)) },
+            { new(0x0C8FC411, 0x2EC570B5), new(null, typeof(float)) },
+            { new(0x0C8FC411, 0x183AD396), new(null, typeof(float)) },
+            { new(0x0C8FC411, 0x2CB865CD), new(null, typeof(float)) },
+
             // Trappable
             { new(0xB2C8FC90, 0xE77DB9D6), new(null, typeof(float)) },
 
