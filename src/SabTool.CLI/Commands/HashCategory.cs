@@ -32,6 +32,7 @@ namespace SabTool.CLI.Commands
                 }
 
                 Console.WriteLine("\"{0}\" => 0x{1:X8}", arguments.ElementAt(0), Hash.FNV32string(arguments.ElementAt(0)));
+                Console.WriteLine();
                 return true;
             }
         }
@@ -68,8 +69,10 @@ namespace SabTool.CLI.Commands
                 }
                 else
                 {
-                    Console.WriteLine("\"0x{0}\" => <NO STRING FOUND FOR THIS HASH>", hashStr, value);
+                    Console.WriteLine("\"0x{0}\" => <NO STRING FOUND FOR THIS HASH>", hashStr);
                 }
+
+                Console.WriteLine();
                 
                 return true;
             }
