@@ -1009,6 +1009,8 @@ namespace SabTool.Containers.GameTemplates
             { new(0xFC8B1DA2, 0x46EB60BF), new(null, typeof(float)) },
             { new(0xFC8B1DA2, 0x2E978372), new(null, typeof(Crc)) },
             { new(0xFC8B1DA2, 0x3904F4E4), new(null, typeof(int)) },
+            { new(0xFC8B1DA2, 0xC3AEB321), new(null, typeof(float)) },
+            { new(0xFC8B1DA2, 0xC6FF3C76), new(null, typeof(int)) },
 
             // PhysicsVehicle
             { new(0x0E6FC89C, 0xBF667004), new(null, typeof(Crc)) },
