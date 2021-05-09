@@ -929,6 +929,13 @@ namespace SabTool.Containers.GameTemplates
             { new(0x38D88BB8, 0x5B724250), new(null, typeof(Crc)) },
             { new(0x38D88BB8, 0xAE1ED17F), new(null, typeof(bool)) },
 
+            // ParticleEffect
+            { new(0x4B19B750, 0x8479BBE5), new(null, typeof(int)) },
+            { new(0x4B19B750, 0x848096A5), new(null, typeof(string)) },
+            { new(0x4B19B750, 0x3B07AD90), new(null, typeof(int)) },
+            { new(0x4B19B750, 0x1870458B), new(null, typeof(int)) },
+            { new(0x4B19B750, 0x37077436), new(null, typeof(Crc)) },
+
             // PhysicsParticle
             { new(0xFC8B1DA2, 0x9C323CFD), new(null, typeof(float)) },
             { new(0xFC8B1DA2, 0x5B724250), new(null, typeof(Crc)) },
