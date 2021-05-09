@@ -649,6 +649,17 @@ namespace SabTool.Containers.GameTemplates
             { new(0x6898A77D, 0x354694DB), new(null, typeof(float)) },
             { new(0x6898A77D, 0x7617FD5B), new(null, typeof(float)) },
 
+            // Decal
+            { new(0x209311CC, 0xD3485F14), new(null, typeof(float)) },
+            { new(0x209311CC, 0xC6EC1E86), new(null, typeof(float)) },
+            { new(0x209311CC, 0x9DB73D8F), new(null, typeof(float)) },
+            { new(0x209311CC, 0x7172B7AE), new(null, typeof(Crc)) },
+            { new(0x209311CC, 0x8C3654C2), new(null, typeof(float)) },
+            { new(0x209311CC, 0xF011157A), new(null, typeof(Crc)) },
+            { new(0x209311CC, 0xD7D8D464), new(null, typeof(float)) },
+            { new(0x209311CC, 0xDF3262F2), new(null, typeof(FloatVector3)) },
+            { new(0x209311CC, 0xFA4C29B8), new(null, typeof(FloatVector4)) },
+
             // EventConversation
 
             // FxHumanBodyPart
