@@ -247,7 +247,7 @@ namespace SabTool.Containers.GameTemplates
         {
             public override string ToString()
             {
-                return $"(R: {(Value >> 24) & 0xFF:X2}, G: {(Value >> 16) & 0xFF:X2}, B: {(Value >> 8) & 0xFF:X2}, A: {Value & 0xFF:X2})";
+                return $"(R: {Value & 0xFF:X2}, G: {(Value >> 8) & 0xFF:X2}, B: {(Value >> 16) & 0xFF:X2}, A: {(Value >> 24) & 0xFF:X2})";
             }
         }
 
