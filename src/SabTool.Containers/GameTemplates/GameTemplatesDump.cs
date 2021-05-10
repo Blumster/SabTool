@@ -516,6 +516,9 @@ namespace SabTool.Containers.GameTemplates
             { new(0x669746CA, 0x076B2507), new(null, typeof(FloatVector2)) },
             { new(0x669746CA, 0x22CC5267), new(null, typeof(bool)) },
 
+            // AIChatterSet
+            //{ new(0xD414DC12, ), new(null, typeof()) },
+
             // AICombatParams
             { new(0xC43B697D, 0x5EA66EEA), new(null, typeof(float)) },
             { new(0xC43B697D, 0x54D3213D), new(null, typeof(FloatVector2)) },
@@ -539,6 +542,12 @@ namespace SabTool.Containers.GameTemplates
             { new(0xC43B697D, 0xE47C51B0), new(null, typeof(float)) },
             { new(0xC43B697D, 0xFA03EB28), new(null, typeof(float)) },
 
+            // AIController
+            //{ new(0x001BAB2B, ), new(null, typeof()) },
+
+            // AICrowdBlocker
+            //{ new(0x4751C524, ), new(null, typeof()) },
+
             // Aimer
             { new(0x1F18A531, 0x6DA3DB23), new(null, typeof(float)) },
             { new(0x1F18A531, 0x42BC590B), new(null, typeof(float)) },
@@ -554,6 +563,24 @@ namespace SabTool.Containers.GameTemplates
             { new(0x1F18A531, 0xE88FD118), new(null, typeof(float)) },
             { new(0x1F18A531, 0xF8640116), new(null, typeof(FloatVector2)) },
             { new(0x1F18A531, 0xFC971D7F), new(null, typeof(float)) },
+
+            // AIRoad
+            //{ new(0x2E0750D5, ), new(null, typeof()) },
+
+            // AISpawner
+            //{ new(0xAD3EFBE5, ), new(null, typeof()) },
+
+            // Ammo
+            //{ new(0xBA16485F, ), new(null, typeof()) },
+
+            // AnimatedObject
+            //{ new(0x3F615DD3, ), new(null, typeof()) },
+
+            // AnimatedTransition
+            //{ new(0x153A0DF7, ), new(null, typeof()) },
+
+            // APC
+            //{ new(0x9CDBD62D, ), new(null, typeof()) },
 
             // AttrPtAttachable
             { new(0xB88094A3, 0xDC46BC02), new(null, typeof(float)) },
@@ -575,6 +602,21 @@ namespace SabTool.Containers.GameTemplates
             { new(0xCC1EE14D, 0xAFCE4BA2), new(null, typeof(int)) },
             { new(0xCC1EE14D, 0xEC8964B3), new(null, typeof(int)) },
             { new(0xCC1EE14D, 0xE94E8608), new(null, typeof(int)) },
+
+            // BigMap
+            //{ new(0x3E85904D, ), new(null, typeof()) },
+
+            // Bird
+            //{ new(0xFF22E748, ), new(null, typeof()) },
+
+            // BridgeController
+            //{ new(0x22DC02B6, ), new(null, typeof()) },
+
+            // bullet
+            //{ new(0x74FD1BA9, ), new(null, typeof()) },
+
+            // ButtonPrompt
+            //{ new(0x35899B4F, ), new(null, typeof()) },
 
             // CameraSet
             { new(0xF66B2194, 0xE9B2AF5C), new(null, typeof(Crc)) },
@@ -609,8 +651,26 @@ namespace SabTool.Containers.GameTemplates
             { new(0xF66B2194, 0x1EA825AC), new(null, typeof(Crc)) },
             { new(0xF66B2194, 0xB5C6777D), new(null, typeof(Crc)) },
 
+            // CameraSettings
+            //{ new(0x0BB693A3, ), new(null, typeof()) },
+
+            // CameraSettingsMisc
+            //{ new(0xB8F740AF, ), new(null, typeof()) },
+
             // Car
             { new(0xCE27C791, 0x12649314), new(null, typeof(bool)) },
+
+            // Cinematics
+            //{ new(0x0F7BD3F7, ), new(null, typeof()) },
+
+            // CivilianProp
+            //{ new(0xE7B1D609, ), new(null, typeof()) },
+
+            // ClothForce
+            //{ new(0x060FD1B4, ), new(null, typeof()) },
+
+            // ClothObject
+            //{ new(0x56A984DE, ), new(null, typeof()) },
 
             // Common
             { new(0x2447DFFA, 0x6302F1CC), new(null, typeof(bool)) },
@@ -623,6 +683,9 @@ namespace SabTool.Containers.GameTemplates
             { new(0x2C70C910, 0xFB31F1EF), new(null, typeof(Crc)) },
             { new(0x2C70C910, 0x404D1343), new(null, typeof(Crc)) },
             { new(0x2C70C910, 0xDB0F705C), new(null, typeof(LuaParam)) },
+
+            // CreditName
+            //{ new(0xFE44888F, ), new(null, typeof()) },
 
             // Damageable
             { new(0x6068DB46, 0xB37BF5B2), new(null, typeof(float)) },
@@ -684,16 +747,46 @@ namespace SabTool.Containers.GameTemplates
             { new(0x209311CC, 0xDF3262F2), new(null, typeof(FloatVector3)) },
             { new(0x209311CC, 0xFA4C29B8), new(null, typeof(FloatVector4)) },
 
+            // DetailObject
+            //{ new(0xFC92396B, ), new(null, typeof()) },
+
+            // Difficulty
+            //{ new(0x4C38AB2E, ), new(null, typeof()) },
+
+            // ElasticTransition
+            //{ new(0xDC07C4C3, ), new(null, typeof()) },
+
+            // Escalation
+            //{ new(0xF69DEC26, ), new(null, typeof()) },
+
+            // EscHWTF
+            //{ new(0x954C883D, ), new(null, typeof()) },
+
             // EventConversation
+
+            // Explosion
+            //{ new(0x16930AFE, ), new(null, typeof()) },
 
             // FaceExpression
             { new(0x5A8EE34C, 0x216E8465), new(null, typeof(float)) },
             { new(0x5A8EE34C, 0xC023ACD3), new(null, typeof(Crc)) },
             { new(0x5A8EE34C, 0xC2161E01), new(null, typeof(float)) },
 
+            // FlameOrdnance
+            //{ new(0x9961B9C6, ), new(null, typeof()) },
+
             // FlashMovie
             { new(0x9CC86FE3, 0x9CAA0ADF), new(null, typeof(Crc)) },
             { new(0x9CC86FE3, 0xA1F61387), new(null, typeof(int)) },
+
+            // Foliage
+            //{ new(0x34612F86, ), new(null, typeof()) },
+
+            // FoliageFx
+            //{ new(0xD26EF074, ), new(null, typeof()) },
+
+            // FxBoneStateList
+            //{ new(0x6D73FB6C, ), new(null, typeof()) },
 
             // FxHumanBodyPart
             { new(0x08271F91, 0x679CD9A1), new(null, typeof(int)) },
@@ -744,6 +837,15 @@ namespace SabTool.Containers.GameTemplates
             { new(0x7DAB4B80, 0x1CBA8055), new(null, typeof(int)) },
             { new(0x7DAB4B80, 0x1CF649BB), new(null, typeof(Crc)) },
 
+            // GlobalHumanParams
+            //{ new(0x9BD2B975, ), new(null, typeof()) },
+
+            // GroupCameraSettings
+            //{ new(0x175F15E4, ), new(null, typeof()) },
+
+            // GroupTransition
+            //{ new(0xAAA2D2A7, ), new(null, typeof()) },
+
             // GunnerSeat
             { new(0x1A8CEE3F, 0x6CE6C69A), new(null, typeof(FloatVector2)) },
             { new(0x1A8CEE3F, 0x6C36BA37), new(null, typeof(float)) },
@@ -787,6 +889,12 @@ namespace SabTool.Containers.GameTemplates
             { new(0x1A8CEE3F, 0xEABA3AEF), new(null, typeof(float)) },
             { new(0x1A8CEE3F, 0xF79298AE), new(null, typeof(float)) },
             { new(0x1A8CEE3F, 0xFB9E20AE), new(null, typeof(float)) },
+
+            // HealthEffectFilter
+            //{ new(0x932C532A, ), new(null, typeof()) },
+
+            // Highlight
+            //{ new(0x1CC87777, ), new(null, typeof()) },
 
             // Human
             { new(0xAD431BF0, 0x7E4E77E0), new(null, typeof(Crc)) },
@@ -870,6 +978,12 @@ namespace SabTool.Containers.GameTemplates
             { new(0xAD431BF0, 0x14A81A29), new(null, typeof(Crc)) },
             { new(0xAD431BF0, 0x16E3526A), new(null, typeof(Crc)) },
 
+            // HumanBodyPart
+            //{ new(0x52EF7807, ), new(null, typeof()) },
+
+            // HumanBodySetup
+            //{ new(0x4DED4763, ), new(null, typeof()) },
+
             // HumanPhysics
             { new(0xCB248263, 0xCB248263), new(null, typeof(Crc)) },
             { new(0xCB248263, 0x725A3658), new(null, typeof(bool)) },
@@ -880,6 +994,9 @@ namespace SabTool.Containers.GameTemplates
             { new(0x5822D085, 0xC5C50C7F), new(null, typeof(float)) },
             { new(0x5822D085, 0x5B724250), new(null, typeof(Crc)) },
             { new(0x5822D085, 0x1598D00C), new(null, typeof(int)) },
+
+            // ImageFolder
+            //{ new(0xD8E3E358, ), new(null, typeof()) },
 
             // Item
             { new(0x71798A24, 0x953C60F5), new(null, typeof(float)) },
@@ -899,6 +1016,12 @@ namespace SabTool.Containers.GameTemplates
             { new(0x71798A24, 0x0F59CD06), new(null, typeof(Crc)) },
             { new(0x71798A24, 0x06DA8775), new(null, typeof(Crc)) },
             { new(0x71798A24, 0x0D111AB7), new(null, typeof(Crc)) },
+
+            // ItemCache
+            //{ new(0x50C4254A, ), new(null, typeof()) },
+
+            // LeafSpawner
+            //{ new(0x32B6B82F, ), new(null, typeof()) },
 
             // LightAttachement
             { new(0xA3613F4D, 0xC25641DF), new(null, typeof(int)) },
@@ -1019,6 +1142,18 @@ namespace SabTool.Containers.GameTemplates
             { new(0x7A55C8F8, 0xC8AF0E75), new(null, typeof(Color)) },
             { new(0x7A55C8F8, 0xCB7BA603), new(null, typeof(float)) },
 
+            // LightVolume
+            //{ new(0xD3DFD699, ), new(null, typeof()) },
+
+            // Melee
+            //{ new(0x0A9A5883, ), new(null, typeof()) },
+
+            // MeleeWeapon
+            //{ new(0x07370953, ), new(null, typeof()) },
+
+            // MiniGame
+            //{ new(0xBBDF8DF6, ), new(null, typeof()) },
+
             // ModelRenderable
             { new(0x38D88BB8, 0x5B724250), new(null, typeof(Crc)) },
             { new(0x38D88BB8, 0xAE1ED17F), new(null, typeof(bool)) },
@@ -1029,6 +1164,18 @@ namespace SabTool.Containers.GameTemplates
             { new(0x4B19B750, 0x3B07AD90), new(null, typeof(int)) },
             { new(0x4B19B750, 0x1870458B), new(null, typeof(int)) },
             { new(0x4B19B750, 0x37077436), new(null, typeof(Crc)) },
+
+            // ParticleEffectSpawner
+            //{ new(0x9DCC91D0, ), new(null, typeof()) },
+
+            // PerkFactors
+            //{ new(0xBDAA3FB7, ), new(null, typeof()) },
+
+            // Perks
+            //{ new(0xA8CF8D40, ), new(null, typeof()) },
+
+            // PhysicalOrdnance
+            //{ new(0x284C8026, ), new(null, typeof()) },
 
             // PhysicsParticle
             { new(0xFC8B1DA2, 0x9C323CFD), new(null, typeof(float)) },
@@ -1042,6 +1189,9 @@ namespace SabTool.Containers.GameTemplates
             { new(0xFC8B1DA2, 0x3904F4E4), new(null, typeof(int)) },
             { new(0xFC8B1DA2, 0xC3AEB321), new(null, typeof(float)) },
             { new(0xFC8B1DA2, 0xC6FF3C76), new(null, typeof(int)) },
+
+            // PhysicsParticleSet
+            //{ new(0xC30934DA, ), new(null, typeof()) },
 
             // PhysicsVehicle
             { new(0x0E6FC89C, 0xBF667004), new(null, typeof(Crc)) },
@@ -1111,6 +1261,15 @@ namespace SabTool.Containers.GameTemplates
             { new(0x600E3B1E, 0xAC6A5E5F), new(null, typeof(float)) },
             { new(0x600E3B1E, 0xAE85A3E9), new(null, typeof(float)) },
 
+            // PlayerCollision
+            //{ new(0x05568616, ), new(null, typeof()) },
+
+            // Prop
+            //{ new(0xCEB60D96, ), new(null, typeof()) },
+
+            // RadialBlur
+            //{ new(0x72F138CF, ), new(null, typeof()) },
+
             // RandomObj
             { new(0x75F73A4F, 0xDFAFCDA6), new(null, typeof(int)) },
             { new(0x75F73A4F, 0xF0C7DA5F), new(null, typeof(string)) },
@@ -1120,6 +1279,21 @@ namespace SabTool.Containers.GameTemplates
             { new(0x75F73A4F, 0x0AA3E5D9), new(null, typeof(int)) },
             { new(0x75F73A4F, 0x3EECCF6B), new(null, typeof(Crc)) },
             { new(0x75F73A4F, 0x84F14707), new(null, typeof(Crc)) },
+
+            // Ricochet
+            //{ new(0x73393C4A, ), new(null, typeof()) },
+
+            // Rocket
+            //{ new(0x5434C7ED, ), new(null, typeof()) },
+
+            // Rumble
+            //{ new(0xF49470BA, ), new(null, typeof()) },
+
+            // SabotageTarget
+            //{ new(0xC5B4B2B6, ), new(null, typeof()) },
+
+            // ScopeTransition
+            //{ new(0x148C19AA, ), new(null, typeof()) },
 
             // ScriptController
             { new(0x7A6E9D28, 0xE0B01D9F), new(null, typeof(string)) },
@@ -1161,6 +1335,9 @@ namespace SabTool.Containers.GameTemplates
             { new(0x7A6E9D28, 0x07B13063), new(null, typeof(int)) },
             { new(0x7A6E9D28, 0x165C1FD7), new(null, typeof(int)) },
 
+            // Searcher
+            //{ new(0xB6475758, ), new(null, typeof()) },
+
             // SearcherSeat
             { new(0xA95AADD7, 0x585F7DB9), new(null, typeof(float)) },
             { new(0xA95AADD7, 0x27B2EBEE), new(null, typeof(byte)) },
@@ -1177,6 +1354,9 @@ namespace SabTool.Containers.GameTemplates
             { new(0xA95AADD7, 0xD3330089), new(null, typeof(float)) },
             { new(0xA95AADD7, 0xE4D991E9), new(null, typeof(int)) },
             { new(0xA95AADD7, 0xFB9E20AE), new(null, typeof(float)) },
+
+            // SearchTurret
+            //{ new(0x1F72E643, ), new(null, typeof()) },
 
             // Seat
             { new(0x10B39BE6, 0x6C9E76F1), new(null, typeof(Crc)) },
@@ -1221,8 +1401,38 @@ namespace SabTool.Containers.GameTemplates
             { new(0x10B39BE6, 0xF079328D), new(null, typeof(Crc)) },
             { new(0x10B39BE6, 0xF23C0127), new(null, typeof(Crc)) },
 
+            // SeatAnimations
+            //{ new(0xA964185F, ), new(null, typeof()) },
+
+            // SeatAnimationsDriver
+            //{ new(0x98F0845D, ), new(null, typeof()) },
+
+            // SeatAnimationsGunner
+            //{ new(0xC59EAF6A, ), new(null, typeof()) },
+
+            // SeatAnimationsPassenger
+            //{ new(0xD30EC2FD, ), new(null, typeof()) },
+
+            // SeatAnimationsSearche
+            //{ new(0xD6D46BCC, ), new(null, typeof()) },
+
             // SeatWithMount
             { new(0x77F3BA45, 0x62FF4512), new(null, typeof(Crc)) },
+
+            // Shop
+            //{ new(0x6C266E39, ), new(null, typeof()) },
+
+            // SlowMotionCamera
+            //{ new(0xE0BB7B09, ), new(null, typeof()) },
+
+            // Sound
+            //{ new(0xDD62BA1A, ), new(null, typeof()) },
+
+            // Spore
+            //{ new(0xBF708C00, ), new(null, typeof()) },
+
+            // Tank
+            //{ new(0xC686AE99, ), new(null, typeof()) },
 
             // Targetable
             { new(0xF0DDFE9E, 0x99327D6F), new(null, typeof(float)) },
@@ -1250,8 +1460,29 @@ namespace SabTool.Containers.GameTemplates
             { new(0x0C8FC411, 0x183AD396), new(null, typeof(float)) },
             { new(0x0C8FC411, 0x2CB865CD), new(null, typeof(float)) },
 
+            // Train
+            //{ new(0xB1796D79, ), new(null, typeof()) },
+
+            // TrainCarriage
+            //{ new(0x28DBEF3F, ), new(null, typeof()) },
+
+            // TrainEngine
+            //{ new(0x060D8FC7, ), new(null, typeof()) },
+
+            // TrainItem
+            //{ new(0xE2E68598, ), new(null, typeof()) },
+
+            // TrainList
+            //{ new(0x3F7ED4CD, ), new(null, typeof()) },
+
             // Trappable
             { new(0xB2C8FC90, 0xE77DB9D6), new(null, typeof(float)) },
+
+            // Truck
+            //{ new(0xFA10EAC6, ), new(null, typeof()) },
+
+            // Turret
+            //{ new(0x01212327, ), new(null, typeof()) },
 
             // TweakableColors
             { new(0x1935B883, 0x734DDB10), new(null, typeof(int)) },
@@ -1365,6 +1596,18 @@ namespace SabTool.Containers.GameTemplates
             { new(0x2B8D1FDF, 0x04965406), new(null, typeof(Crc)) },
             { new(0x2B8D1FDF, 0x7F3BC5E3), new(null, typeof(Crc)) },
 
+            // VehicleCollision
+            //{ new(0x8848D9D1, ), new(null, typeof()) },
+
+            // VehicleWheelFX
+            //{ new(0x873E5AC6, ), new(null, typeof()) },
+
+            // VerletBoneObject
+            //{ new(0x5C4D7FF4, ), new(null, typeof()) },
+
+            // VirVehicleChassis
+            //{ new(0x30970D40, ), new(null, typeof()) },
+
             // VirVehicleEngine
             { new(0x91EB2C3E, 0x62474AD0), new(null, typeof(float)) },
             { new(0x91EB2C3E, 0x577141F3), new(null, typeof(float)) },
@@ -1384,6 +1627,12 @@ namespace SabTool.Containers.GameTemplates
             { new(0x798C1EC7, 0x072CEE8B), new(null, typeof(Crc)) },
             { new(0x798C1EC7, 0x0B187235), new(null, typeof(Crc)) },
 
+            // VirVehicleTransmission
+            //{ new(0xDD0A5AF8, ), new(null, typeof()) },
+
+            // VirVehicleWheel
+            //{ new(0xAFC35781, ), new(null, typeof()) },
+
             // WaterController
             { new(0x1AECDEB6, 0x95FF5441), new(null, typeof(Crc)) },
             { new(0x1AECDEB6, 0x3B2E2AA3), new(null, typeof(float)) },
@@ -1400,6 +1649,12 @@ namespace SabTool.Containers.GameTemplates
 
             // WaterFlow
             { new(0xE9162F96, 0x33E229EA), new(null, typeof(float)) },
+
+            // WaterParticleFx
+            //{ new(0x67B79A3A, ), new(null, typeof()) },
+
+            // WaterTexture
+            //{ new(0xD0B706D3, ), new(null, typeof()) },
 
             // Weapon
             { new(0x787C0871, 0x7C0B86B9), new(null, typeof(bool)) },
@@ -1551,6 +1806,12 @@ namespace SabTool.Containers.GameTemplates
             { new(0x787C0871, 0xBD8F9C00), new(null, typeof(float)) },
             { new(0x787C0871, 0xBFA35CB2), new(null, typeof(FloatVector2)) },
             { new(0x787C0871, 0xC40ED65B), new(null, typeof(int)) },
+
+            // WillToFight
+            //{ new(0xFE6CDF30, ), new(null, typeof()) },
+
+            // WillToFightNode
+            //{ new(0x0584B7F4, ), new(null, typeof()) },
 
             // sub_7FB4D0
             { new(0xD0C6D015, 0xE813FE45), new(null, typeof(int)) },
