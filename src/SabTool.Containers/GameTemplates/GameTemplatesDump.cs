@@ -577,7 +577,18 @@ namespace SabTool.Containers.GameTemplates
             { new(0x1F18A531, 0xFC971D7F), new(null, typeof(float)) },
 
             // AIRoad
-            //{ new(0x2E0750D5, ), new(null, typeof()) },
+            { new(0x2E0750D5, 0xCCC7E339), new(null, typeof(Crc)) },
+            { new(0x2E0750D5, 0xEA927AFE), new(null, typeof(int)) },
+            { new(0x2E0750D5, 0xCAD661E0), new(null, typeof(Crc)) },
+            { new(0x2E0750D5, 0xA1C6D3A0), new(null, typeof(bool)) },
+            { new(0x2E0750D5, 0xB1796D79), new(null, typeof(bool)) },
+            { new(0x2E0750D5, 0x921E50FF), new(null, typeof(Crc)) },
+            { new(0x2E0750D5, 0x41F557B1), new(null, typeof(float)) },
+            { new(0x2E0750D5, 0x0181869C), new(null, typeof(bool)) },
+            { new(0x2E0750D5, 0x0DD6CDB2), new(null, typeof(float)) },
+            { new(0x2E0750D5, 0x2B8D1FDF), new(null, typeof(Crc)) },
+            { new(0x2E0750D5, 0x5B8F052C), new(null, typeof(Crc)) },
+            { new(0x2E0750D5, 0x830107DA), new(null, typeof(int)) },
 
             // AISpawner
             //{ new(0xAD3EFBE5, ), new(null, typeof()) },
