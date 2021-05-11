@@ -669,6 +669,7 @@ namespace SabTool.Containers.GameTemplates
             { new(0x153A0DF7, 0xEB4DFB24), new(null, typeof(Crc)) },
 
             // AttrPtAttachable
+            { new(0xB88094A3, 0x92473A24), new(null, typeof(int)) },
             { new(0xB88094A3, 0xDC46BC02), new(null, typeof(float)) },
             { new(0xB88094A3, 0xA1B6ED7B), new(null, typeof(Crc)) },
             { new(0xB88094A3, 0x25580EC1), new(null, typeof(FloatVector3)) },
@@ -780,6 +781,7 @@ namespace SabTool.Containers.GameTemplates
             //{ new(0xFE44888F, ), new(null, typeof()) },
 
             // Damageable
+            { new(0x6068DB46, 0xA80C9145), new(null, typeof(Crc)) },
             { new(0x6068DB46, 0xB37BF5B2), new(null, typeof(float)) },
             { new(0x6068DB46, 0x97E0DB0F), new(null, typeof(float)) },
             { new(0x6068DB46, 0xA1B82BA7), new(null, typeof(Crc)) },
@@ -893,10 +895,10 @@ namespace SabTool.Containers.GameTemplates
 
             // FxHumanBodyPart
             { new(0x08271F91, 0x679CD9A1), new(null, typeof(int)) },
-            { new(0x08271F91, 0x1CBA8055), new(null, null) },
+            { new(0x08271F91, 0x1CBA8055), new(null, typeof(Crc)) },
             { new(0x08271F91, 0x05FBAB16), new(null, typeof(Crc)) },
             { new(0x08271F91, 0x18281B3B), new(null, typeof(byte)) },
-            { new(0x08271F91, 0x3FF4F976), new(null, null) },
+            { new(0x08271F91, 0x3FF4F976), new(null, typeof(Color)) },
             { new(0x08271F91, 0x62404569), new(null, typeof(Crc)) },
             { new(0x08271F91, 0xD9725C55), new(null, typeof(Crc)) },
             { new(0x08271F91, 0xCBA8D62C), new(null, typeof(Crc)) },
@@ -1503,6 +1505,7 @@ namespace SabTool.Containers.GameTemplates
             { new(0x10B39BE6, 0xEB4F93E7), new(null, typeof(int)) },
             { new(0x10B39BE6, 0xF079328D), new(null, typeof(Crc)) },
             { new(0x10B39BE6, 0xF23C0127), new(null, typeof(Crc)) },
+            { new(0x10B39BE6, 0x0ED9E1D3), new(null, typeof(Crc)) },
 
             // SeatAnimations
             //{ new(0xA964185F, ), new(null, typeof()) },
@@ -1694,10 +1697,11 @@ namespace SabTool.Containers.GameTemplates
             { new(0x2B8D1FDF, 0xC79DD5E1), new(null, typeof(Crc)) },
             { new(0x2B8D1FDF, 0xC7E44514), new(null, typeof(Crc)) },
             { new(0x2B8D1FDF, 0x8B206832), new(null, typeof(Crc)) },
-            { new(0x2B8D1FDF, 0xA80C9145), new(null, typeof(Crc)) },
             { new(0x2B8D1FDF, 0x37B68026), new(null, typeof(Crc)) },
             { new(0x2B8D1FDF, 0x04965406), new(null, typeof(Crc)) },
             { new(0x2B8D1FDF, 0x7F3BC5E3), new(null, typeof(Crc)) },
+            { new(0x2B8D1FDF, 0x0A1AF7EF), new(null, typeof(Crc)) },
+            { new(0x2B8D1FDF, 0xC795D87F), new(null, typeof(float)) },
 
             // VehicleCollision
             //{ new(0x8848D9D1, ), new(null, typeof()) },
