@@ -546,7 +546,16 @@ namespace SabTool.Containers.GameTemplates
             { new(0xC43B697D, 0xFA03EB28), new(null, typeof(float)) },
 
             // AIController
-            //{ new(0x001BAB2B, ), new(null, typeof()) },
+            { new(0x001BAB2B, 0xF2F462B6), new(null, typeof(float)) },
+            { new(0x001BAB2B, 0xE0B01D9F), new(null, typeof(string)) },
+            { new(0x001BAB2B, 0x9627B5A7), new(null, typeof(byte)) },
+            { new(0x001BAB2B, 0x9793CEAA), new(null, typeof(float)) },
+            { new(0x001BAB2B, 0x87C3B66F), new(null, typeof(float)) },
+            { new(0x001BAB2B, 0x49E6BFF9), new(null, typeof(float)) },
+            { new(0x001BAB2B, 0x7E4E77E0), new(null, typeof(Crc)) },
+            { new(0x001BAB2B, 0x316CC898), new(null, typeof(float)) },
+            { new(0x001BAB2B, 0x03C5822E), new(null, typeof(float)) },
+            { new(0x001BAB2B, 0x26510ECF), new(null, typeof(float)) },
 
             // AICrowdBlocker
             //{ new(0x4751C524, ), new(null, typeof()) },
