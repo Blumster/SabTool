@@ -691,7 +691,7 @@ namespace SabTool.Containers.GameTemplates
             { new(0xCC1EE14D, 0xE94E8608), new(null, typeof(int)) },
 
             // BigMap
-            //{ new(0x3E85904D, ), new(null, typeof()) },
+            { new(0x3E85904D, 0xF2BF3D0A), new(null, typeof(Crc)) },
 
             // Bird
             //{ new(0xFF22E748, ), new(null, typeof()) },
