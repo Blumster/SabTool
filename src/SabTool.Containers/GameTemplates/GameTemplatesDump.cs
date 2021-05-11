@@ -251,7 +251,6 @@ namespace SabTool.Containers.GameTemplates
             }
         }
 
-        // Damageable, Audible, ModelRenderable, Targetable, AIAttractionPt, Controllable
         private static Dictionary<string, HashSet<string>> Parents { get; } = new()
         {
             { "Weapon", new() { "Item", "Damageable", "Audible" } },
@@ -373,6 +372,7 @@ namespace SabTool.Containers.GameTemplates
 
             // Shared
             { "Damageable", new() { "DamageableRoot" } },
+            { "DamageableRoot", new() { "DamageablePart" } },
             { "Vehicle", new() { "ModelRenderable", "Damageable", "LightAttachement", "LightHaloAttachment", "Audible", "PhysicsVehicle", "Trappable", "GunnerSeat", "AttrPtAttachable", "TweakableColors", "Seat", "SearcherSeat" } },
             { "PhysicsVehicle", new() { "PhysicsVehicleWheel" } },
             { "GunnerSeat", new() { "SeatWithMount" } },
@@ -819,6 +819,30 @@ namespace SabTool.Containers.GameTemplates
             { new(0x6068DB46, 0x414631B3), new(null, typeof(int)) },
             { new(0x6068DB46, 0x8ECB69DB), new(null, typeof(float)) },
 
+            // DamageablePart
+            { new(0xAEE470F5, 0x6DD070B1), new(null, typeof(float)) },
+            { new(0xAEE470F5, 0x30812467), new(null, typeof(string)) },
+            { new(0xAEE470F5, 0x3885F292), new(null, typeof(bool)) },
+            { new(0xAEE470F5, 0x558C91D7), new(null, typeof(string)) },
+            { new(0xAEE470F5, 0x22650220), new(null, typeof(bool)) },
+            { new(0xAEE470F5, 0x03E19511), new(null, typeof(float)) },
+            { new(0xAEE470F5, 0x187B88F6), new(null, typeof(string)) },
+            { new(0xAEE470F5, 0x207FBA52), new(null, typeof(Crc)) },
+            { new(0xAEE470F5, 0x9465294B), new(null, typeof(float)) },
+            { new(0xAEE470F5, 0x7DB13D1F), new(null, typeof(string)) },
+            { new(0xAEE470F5, 0x86DE6639), new(null, typeof(bool)) },
+            { new(0xAEE470F5, 0x8D117B98), new(null, typeof(float)) },
+            { new(0xAEE470F5, 0xC4C441BD), new(null, typeof(float)) },
+            { new(0xAEE470F5, 0xDD2AA7AB), new(null, typeof(Crc)) },
+
+            // DamageableRoot
+            { new(0x755FC33E, 0x1AAC9531), new(null, typeof(Crc)) },
+            { new(0x755FC33E, 0xBB0BF4A2), new(null, typeof(Crc)) },
+            { new(0x755FC33E, 0xE3EB3242), new(null, typeof(int)) },
+            { new(0x755FC33E, 0xC8D0F617), new(null, typeof(Crc)) },
+            { new(0x755FC33E, 0x3C56B891), new(null, typeof(Crc)) },
+            { new(0x755FC33E, 0x49D5C2AE), new(null, typeof(Crc)) },
+
             // DamageRegion
             { new(0xC87F672A, 0x31C25320), new(null, typeof(float)) },
             { new(0xC87F672A, 0x216E8465), new(null, typeof(float)) },
@@ -964,7 +988,7 @@ namespace SabTool.Containers.GameTemplates
             { new(0x1A8CEE3F, 0x3E2755DD), new(null, typeof(float)) },
             { new(0x1A8CEE3F, 0x4E77E9BD), new(null, typeof(FloatVector2)) },
             { new(0x1A8CEE3F, 0x28EC4C13), new(null, typeof(float)) },
-            { new(0x1A8CEE3F, 0x27B2EBEE), new(null, typeof(byte)) },
+            { new(0x1A8CEE3F, 0x27B2EBEE), new(null, typeof(bool)) },
             { new(0x1A8CEE3F, 0x25CA9693), new(null, typeof(float)) },
             { new(0x1A8CEE3F, 0x1B9993D5), new(null, typeof(float)) },
             { new(0x1A8CEE3F, 0x215F258E), new(null, typeof(int)) },
@@ -994,6 +1018,7 @@ namespace SabTool.Containers.GameTemplates
             { new(0x1A8CEE3F, 0xEABA3AEF), new(null, typeof(float)) },
             { new(0x1A8CEE3F, 0xF79298AE), new(null, typeof(float)) },
             { new(0x1A8CEE3F, 0xFB9E20AE), new(null, typeof(float)) },
+            { new(0x1A8CEE3F, 0x31E1A9B0), new(null, typeof(Crc)) },
 
             // HealthEffectFilter
             //{ new(0x932C532A, ), new(null, typeof()) },
@@ -1445,7 +1470,7 @@ namespace SabTool.Containers.GameTemplates
 
             // SearcherSeat
             { new(0xA95AADD7, 0x585F7DB9), new(null, typeof(float)) },
-            { new(0xA95AADD7, 0x27B2EBEE), new(null, typeof(byte)) },
+            { new(0xA95AADD7, 0x27B2EBEE), new(null, typeof(bool)) },
             { new(0xA95AADD7, 0x341FFD9C), new(null, typeof(float)) },
             { new(0xA95AADD7, 0xB4E28AAF), new(null, typeof(float)) },
             { new(0xA95AADD7, 0xA419D2AA), new(null, typeof(float)) },
@@ -1459,6 +1484,13 @@ namespace SabTool.Containers.GameTemplates
             { new(0xA95AADD7, 0xD3330089), new(null, typeof(float)) },
             { new(0xA95AADD7, 0xE4D991E9), new(null, typeof(int)) },
             { new(0xA95AADD7, 0xFB9E20AE), new(null, typeof(float)) },
+            { new(0xA95AADD7, 0xEF40F693), new(null, typeof(Crc)) },
+            { new(0xA95AADD7, 0xA60E6230), new(null, typeof(float)) },
+            { new(0xA95AADD7, 0xE6468A9E), new(null, typeof(bool)) },
+            { new(0xA95AADD7, 0xF67559B9), new(null, typeof(Crc)) },
+            { new(0xA95AADD7, 0x70FE02AB), new(null, typeof(Crc)) },
+            { new(0xA95AADD7, 0x1BF8088F), new(null, typeof(Crc)) },
+            { new(0xA95AADD7, 0x6F14A6AD), new(null, typeof(Crc)) },
 
             // SearchTurret
             //{ new(0x1F72E643, ), new(null, typeof()) },
@@ -1506,6 +1538,15 @@ namespace SabTool.Containers.GameTemplates
             { new(0x10B39BE6, 0xF079328D), new(null, typeof(Crc)) },
             { new(0x10B39BE6, 0xF23C0127), new(null, typeof(Crc)) },
             { new(0x10B39BE6, 0x0ED9E1D3), new(null, typeof(Crc)) },
+            { new(0x10B39BE6, 0x8839711A), new(null, typeof(Crc)) },
+            { new(0x10B39BE6, 0xA9176462), new(null, typeof(Crc)) },
+            { new(0x10B39BE6, 0xB1BD8BDA), new(null, typeof(Crc)) },
+            { new(0x10B39BE6, 0x6350DF48), new(null, typeof(Crc)) },
+            { new(0x10B39BE6, 0x1A61709C), new(null, typeof(Crc)) },
+            { new(0x10B39BE6, 0x5D2923DF), new(null, typeof(Crc)) },
+            { new(0x10B39BE6, 0x6486E117), new(null, typeof(Crc)) },
+            { new(0x10B39BE6, 0x189208A6), new(null, typeof(Crc)) },
+
 
             // SeatAnimations
             //{ new(0xA964185F, ), new(null, typeof()) },
@@ -1702,6 +1743,7 @@ namespace SabTool.Containers.GameTemplates
             { new(0x2B8D1FDF, 0x7F3BC5E3), new(null, typeof(Crc)) },
             { new(0x2B8D1FDF, 0x0A1AF7EF), new(null, typeof(Crc)) },
             { new(0x2B8D1FDF, 0xC795D87F), new(null, typeof(float)) },
+            { new(0x2B8D1FDF, 0xBCECEBE4), new(null, typeof(float)) }, // unused?
 
             // VehicleCollision
             //{ new(0x8848D9D1, ), new(null, typeof()) },
