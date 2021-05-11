@@ -729,7 +729,26 @@ namespace SabTool.Containers.GameTemplates
             { new(0xFD1DAA2F, 0x39346352), new(null, typeof(Crc)) },
 
             // BridgeController
-            //{ new(0x22DC02B6, ), new(null, typeof()) },
+            { new(0x22DC02B6, 0x6A582E8F), new(null, typeof(float)) },
+            { new(0x22DC02B6, 0x30057699), new(null, typeof(string)) },
+            { new(0x22DC02B6, 0x2BF29A61), new(null, typeof(Crc)) },
+            { new(0x22DC02B6, 0x2B81C6D2), new(null, typeof(int)) },
+            { new(0x22DC02B6, 0x082C9DEA), new(null, typeof(float)) },
+            { new(0x22DC02B6, 0x20BDCCE5), new(null, typeof(Crc)) },
+            { new(0x22DC02B6, 0x537F205A), new(null, typeof(float)) },
+            { new(0x22DC02B6, 0x51C72ACE), new(null, typeof(Crc)) },
+            { new(0x22DC02B6, 0x41754A65), new(null, typeof(Crc)) },
+            { new(0x22DC02B6, 0x45C52D5C), new(null, typeof(byte)) },
+            { new(0x22DC02B6, 0xF15282D0), new(null, typeof(Crc)) },
+            { new(0x22DC02B6, 0xDE72B5FA), new(null, typeof(Crc)) },
+            { new(0x22DC02B6, 0xD81FD9CA), new(null, typeof(Crc)) },
+            { new(0x22DC02B6, 0xDCDC8BCA), new(null, typeof(float)) },
+            { new(0x22DC02B6, 0xA6E31CA5), new(null, typeof(Crc)) },
+            { new(0x22DC02B6, 0x9DC09A87), new(null, typeof(Crc)) },
+            { new(0x22DC02B6, 0xA3454BFF), new(null, typeof(Crc)) },
+            { new(0x22DC02B6, 0x9BDA60CA), new(null, typeof(float)) },
+            { new(0x22DC02B6, 0x6D32B59F), new(null, typeof(Crc)) },
+            { new(0x22DC02B6, 0x9AD419A5), new(null, typeof(Crc)) },
 
             // bullet
             //{ new(0x74FD1BA9, ), new(null, typeof()) },
