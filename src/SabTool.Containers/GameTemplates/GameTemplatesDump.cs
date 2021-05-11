@@ -517,7 +517,10 @@ namespace SabTool.Containers.GameTemplates
             { new(0x669746CA, 0x22CC5267), new(null, typeof(bool)) },
 
             // AIChatterSet
-            //{ new(0xD414DC12, ), new(null, typeof()) },
+            { new(0xD414DC12, 0xDF9C6FEF), new(null, typeof(Crc)) },
+            { new(0xD414DC12, 0x8D9F39B1), new(null, typeof(Crc)) },
+            { new(0xD414DC12, 0xBBA6EBA6), new(null, typeof(Crc)) },
+            { new(0xD414DC12, 0xD5638D90), new(null, typeof(int)) },
 
             // AICombatParams
             { new(0xC43B697D, 0x5EA66EEA), new(null, typeof(float)) },
