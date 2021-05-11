@@ -601,7 +601,14 @@ namespace SabTool.Containers.GameTemplates
             { new(0xAD3EFBE5, 0xC3496538), new(null, typeof(bool)) },
 
             // Ammo
-            //{ new(0xBA16485F, ), new(null, typeof()) },
+            { new(0xBA16485F, 0x6596A232), new(null, typeof(int)) },
+            { new(0xBA16485F, 0x0AA3E5D9), new(null, typeof(int)) },
+            { new(0xBA16485F, 0x1CC87777), new(null, typeof(Crc)) },
+            { new(0xBA16485F, 0x524FE4FC), new(null, typeof(int)) },
+            { new(0xBA16485F, 0xBF4C7045), new(null, typeof(int)) },
+            { new(0xBA16485F, 0xC84E7BEF), new(null, typeof(int)) },
+            { new(0xBA16485F, 0xDE11CA90), new(null, typeof(int)) },
+            { new(0xBA16485F, 0x71798A24), new(null, typeof(Crc)) },
 
             // AnimatedObject
             //{ new(0x3F615DD3, ), new(null, typeof()) },
