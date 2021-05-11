@@ -664,10 +664,9 @@ namespace SabTool.Containers.GameTemplates
             { new(0x3F615DD3, 0x6ADE730A), new(null, typeof(Crc)) },
 
             // AnimatedTransition
-            //{ new(0x153A0DF7, ), new(null, typeof()) },
-
-            // APC
-            //{ new(0x9CDBD62D, ), new(null, typeof()) },
+            { new(0x153A0DF7, 0x1EDFEE31), new(null, typeof(FloatVector3)) },
+            { new(0x153A0DF7, 0x5570EF5A), new(null, typeof(float)) },
+            { new(0x153A0DF7, 0xEB4DFB24), new(null, typeof(Crc)) },
 
             // AttrPtAttachable
             { new(0xB88094A3, 0xDC46BC02), new(null, typeof(float)) },
