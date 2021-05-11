@@ -847,7 +847,18 @@ namespace SabTool.Containers.GameTemplates
             //{ new(0x4C38AB2E, ), new(null, typeof()) },
 
             // ElasticTransition
-            //{ new(0xDC07C4C3, ), new(null, typeof()) },
+            { new(0xDC07C4C3, 0xDC07C4C3), new(null, typeof(Crc)) },
+            { new(0xDC07C4C3, 0x6F6C645F), new(null, typeof(FloatVector3)) },
+            { new(0xDC07C4C3, 0x4EF5360B), new(null, typeof(float)) },
+            { new(0xDC07C4C3, 0x55DD23A8), new(null, typeof(FloatVector3)) },
+            { new(0xDC07C4C3, 0x2DD64D12), new(null, typeof(FloatVector3)) },
+            { new(0xDC07C4C3, 0x04D112AC), new(null, typeof(float)) },
+            { new(0xDC07C4C3, 0x0E3ABED0), new(null, typeof(float)) },
+            { new(0xDC07C4C3, 0xF73B0955), new(null, typeof(FloatVector3)) },
+            { new(0xDC07C4C3, 0x8197FA7F), new(null, typeof(byte)) },
+            { new(0xDC07C4C3, 0xD6F1AB54), new(null, typeof(FloatVector3)) },
+            { new(0xDC07C4C3, 0xF741FF8D), new(null, typeof(float)) },
+            { new(0xDC07C4C3, 0xF823CD96), new(null, typeof(FloatVector3)) },
 
             // Escalation
             //{ new(0xF69DEC26, ), new(null, typeof()) },
