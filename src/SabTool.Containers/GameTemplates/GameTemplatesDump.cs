@@ -558,7 +558,7 @@ namespace SabTool.Containers.GameTemplates
             { new(0x001BAB2B, 0x26510ECF), new(null, typeof(float)) },
 
             // AICrowdBlocker
-            //{ new(0x4751C524, ), new(null, typeof()) },
+            { new(0x4751C524, 0x888F7A10), new(null, typeof(bool)) },
 
             // Aimer
             { new(0x1F18A531, 0x6DA3DB23), new(null, typeof(float)) },
