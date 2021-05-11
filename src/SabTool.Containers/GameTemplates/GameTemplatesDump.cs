@@ -216,6 +216,7 @@ namespace SabTool.Containers.GameTemplates
                 "FloatVector3" => new FloatVector3(reader.ReadFloat(), reader.ReadFloat(), reader.ReadFloat()),
                 "FloatVector4" => new FloatVector4(reader.ReadFloat(), reader.ReadFloat(), reader.ReadFloat(), reader.ReadFloat()),
                 "Color" => new Color(reader.ReadInt()),
+                "UnkBirdType" => new UnkBirdType(reader.ReadString(reader.ReadInt())),
                 _ => null
             };
         }
@@ -248,6 +249,13 @@ namespace SabTool.Containers.GameTemplates
             public override string ToString()
             {
                 return $"(R: {Value & 0xFF:X2}, G: {(Value >> 8) & 0xFF:X2}, B: {(Value >> 16) & 0xFF:X2}, A: {(Value >> 24) & 0xFF:X2})";
+            }
+        }
+        record UnkBirdType(string Str)
+        {
+            public override string ToString()
+            {
+                return $"({Str})";
             }
         }
 
@@ -348,7 +356,7 @@ namespace SabTool.Containers.GameTemplates
             { "Decal", new() { } },
             { "DetailObject", new() { } },
             { "CivilianProp", new() { } },
-            { "Bird", new() { "Audible" } },
+            { "Bird", new() { "Audible", "BirdSpawner" } },
             { "Escalation", new() { } },
             { "EscHWTF", new() { } },
             { "AIChatterSet", new() { } },
@@ -694,7 +702,25 @@ namespace SabTool.Containers.GameTemplates
             { new(0x3E85904D, 0xF2BF3D0A), new(null, typeof(Crc)) },
 
             // Bird
-            //{ new(0xFF22E748, ), new(null, typeof()) },
+            { new(0xFF22E748, 0x7741D08C), new(null, typeof(float)) },
+            { new(0xFF22E748, 0x1B8ABD66), new(null, typeof(float)) },
+            { new(0xFF22E748, 0x285807C8), new(null, typeof(Crc)) },
+            { new(0xFF22E748, 0x5B724250), new(null, typeof(Crc)) },
+            { new(0xFF22E748, 0xE8FBAB1F), new(null, typeof(float)) },
+            { new(0xFF22E748, 0xBD4A934E), new(null, typeof(float)) },
+            { new(0xFF22E748, 0xCD922F16), new(null, typeof(float)) },
+            { new(0xFF22E748, 0xEEE1A341), new(null, typeof(float)) },
+            { new(0xFF22E748, 0xAC11B453), new(null, typeof(Crc)) },
+            { new(0xFF22E748, 0x9F1233CA), new(null, typeof(float)) },
+            { new(0xFF22E748, 0xAAD8CCD8), new(null, typeof(FloatVector2)) },
+            { new(0xFF22E748, 0x86BF6C5B), new(null, typeof(Crc)) },
+            { new(0xFF22E748, 0x7D09FBF0), new(null, typeof(float)) },
+            { new(0xFF22E748, 0x8415C708), new(null, typeof(FloatVector2)) },
+
+            // BirdSpawner
+            { new(0x7E2A6F48, 0x3CDEDBED), new(null, typeof(bool)) },
+            { new(0x7E2A6F48, 0x5D78EDE2), new(null, typeof(UnkBirdType)) },
+            { new(0x7E2A6F48, 0x9FC92EBA), new(null, typeof(bool)) },
 
             // BonePair
             { new(0xFD1DAA2F, 0xFD1DAA2F), new(null, typeof(Crc)) },
