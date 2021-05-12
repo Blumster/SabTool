@@ -877,7 +877,13 @@ namespace SabTool.Containers.GameTemplates
             { new(0xCE27C791, 0x12649314), new(null, typeof(bool)) },
 
             // Cinematics
-            //{ new(0x0F7BD3F7, ), new(null, typeof()) },
+            { new(0x0F7BD3F7, 0x77B757B0), new(null, typeof(Crc)) },
+            { new(0x0F7BD3F7, 0x6018F238), new(null, typeof(byte)) },
+            { new(0x0F7BD3F7, 0xC79442F1), new(null, typeof(byte)) },
+            { new(0x0F7BD3F7, 0xE5746957), new(null, typeof(byte)) },
+            { new(0x0F7BD3F7, 0xF21424F2), new(null, typeof(byte)) },
+            { new(0x0F7BD3F7, 0x33D47464), new(null, typeof(Crc)) }, // unused?
+            { new(0x0F7BD3F7, 0x9965E3D4), new(null, typeof(int)) }, // unused?
 
             // CivilianProp
             //{ new(0xE7B1D609, ), new(null, typeof()) },
