@@ -812,7 +812,49 @@ namespace SabTool.Containers.GameTemplates
             { new(0xF66B2194, 0xB5C6777D), new(null, typeof(Crc)) },
 
             // CameraSettings
-            //{ new(0x0BB693A3, ), new(null, typeof()) },
+            { new(0x0BB693A3, 0x70092C52), new(null, typeof(Crc)) },
+            { new(0x0BB693A3, 0x2B88CF92), new(null, typeof(FloatVector3)) },
+            { new(0x0BB693A3, 0x1B457A75), new(null, typeof(bool)) },
+            { new(0x0BB693A3, 0x1C5A8313), new(null, typeof(float)) },
+            { new(0x0BB693A3, 0x225331E5), new(null, typeof(float)) },
+            { new(0x0BB693A3, 0x14804B69), new(null, typeof(FloatVector3)) },
+            { new(0x0BB693A3, 0x0F98B2A1), new(null, typeof(float)) },
+            { new(0x0BB693A3, 0x0F5A6D51), new(null, typeof(FloatVector3)) },
+            { new(0x0BB693A3, 0x05D2A6D9), new(null, typeof(float)) },
+            { new(0x0BB693A3, 0x0EEC368F), new(null, typeof(FloatVector3)) },
+            { new(0x0BB693A3, 0x4C38DE5E), new(null, typeof(bool)) },
+            { new(0x0BB693A3, 0x38940C6B), new(null, typeof(float)) },
+            { new(0x0BB693A3, 0x3634D93E), new(null, typeof(float)) },
+            { new(0x0BB693A3, 0x30C25EA4), new(null, typeof(float)) },
+            { new(0x0BB693A3, 0x3258D692), new(null, typeof(float)) },
+            { new(0x0BB693A3, 0x5021D09E), new(null, typeof(float)) },
+            { new(0x0BB693A3, 0x58265A64), new(null, typeof(float)) },
+            { new(0x0BB693A3, 0x5832E0D8), new(null, typeof(Crc)) },
+            { new(0x0BB693A3, 0x7B70B843), new(null, typeof(bool)) },
+            { new(0x0BB693A3, 0x7228C1E9), new(null, typeof(float)) },
+            { new(0x0BB693A3, 0xAB302655), new(null, typeof(FloatVector2)) },
+            { new(0x0BB693A3, 0x9D03C800), new(null, typeof(float)) },
+            { new(0x0BB693A3, 0x9E6C6E7C), new(null, typeof(FloatVector2)) },
+            { new(0x0BB693A3, 0xA4F21228), new(null, typeof(bool)) },
+            { new(0x0BB693A3, 0x8D52E4E6), new(null, typeof(FloatVector3)) },
+            { new(0x0BB693A3, 0x7D41B349), new(null, typeof(Crc)) },
+            { new(0x0BB693A3, 0x85622E42), new(null, typeof(float)) },
+            { new(0x0BB693A3, 0x8D4ED835), new(null, typeof(float)) },
+            { new(0x0BB693A3, 0xEA87B9F7), new(null, typeof(FloatVector3)) },
+            { new(0x0BB693A3, 0xAF555903), new(null, typeof(FloatVector3)) },
+            { new(0x0BB693A3, 0xC3C4BCD8), new(null, typeof(float)) },
+            { new(0x0BB693A3, 0xE3B96771), new(null, typeof(float)) },
+            { new(0x0BB693A3, 0xF2795A1E), new(null, typeof(FloatVector3)) },
+            { new(0x0BB693A3, 0xFA7DE3E4), new(null, typeof(FloatVector3)) },
+            { new(0x0BB693A3, 0xFBC31529), new(null, typeof(FloatVector3)) },
+            { new(0x0BB693A3, 0x94114E8C), new(null, typeof(Crc)) }, // unused
+            { new(0x0BB693A3, 0x58BCB46C), new(null, typeof(int)) }, // unused?
+            { new(0x0BB693A3, 0xEACA428D), new(null, typeof(Crc)) }, // unused?
+            { new(0x0BB693A3, 0xF5C8F95D), new(null, typeof(Crc)) }, // unused?
+            { new(0x0BB693A3, 0x79AD9888), new(null, typeof(FloatVector3)) }, // unused?
+            { new(0x0BB693A3, 0xB2AE0289), new(null, typeof(float)) }, // unused?
+            { new(0x0BB693A3, 0x652B734C), new(null, typeof(float)) }, // unused?
+            { new(0x0BB693A3, 0xD43131F3), new(null, typeof(float)) }, // unused?
 
             // CameraSettingsMisc
             //{ new(0xB8F740AF, ), new(null, typeof()) },
