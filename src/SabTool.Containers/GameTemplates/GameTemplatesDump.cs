@@ -886,7 +886,12 @@ namespace SabTool.Containers.GameTemplates
             { new(0x0F7BD3F7, 0x9965E3D4), new(null, typeof(int)) }, // unused?
 
             // CivilianProp
-            //{ new(0xE7B1D609, ), new(null, typeof()) },
+            { new(0xE7B1D609, 0x5E93C871), new(null, typeof(bool)) },
+            { new(0xE7B1D609, 0x8C4CDBA1), new(null, typeof(Crc)) },
+            { new(0xE7B1D609, 0x5B724250), new(null, typeof(Crc)) },
+            { new(0xE7B1D609, 0x06DA8775), new(null, typeof(Crc)) },
+            { new(0xE7B1D609, 0x19B0426A), new(null, typeof(Crc)) },
+            { new(0xE7B1D609, 0x2D0720BF), new(null, typeof(Crc)) },
 
             // ClothForce
             //{ new(0x060FD1B4, ), new(null, typeof()) },
