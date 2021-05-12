@@ -751,7 +751,27 @@ namespace SabTool.Containers.GameTemplates
             { new(0x22DC02B6, 0x9AD419A5), new(null, typeof(Crc)) },
 
             // bullet
-            //{ new(0x74FD1BA9, ), new(null, typeof()) },
+            { new(0x74FD1BA9, 0x69DCA2B6), new(null, typeof(Crc)) },
+            { new(0x74FD1BA9, 0x5E6A93DB), new(null, typeof(bool)) },
+            { new(0x74FD1BA9, 0x4F7CB322), new(null, typeof(int)) },
+            { new(0x74FD1BA9, 0x3FF4F976), new(null, typeof(Color)) },
+            { new(0x74FD1BA9, 0x4C2B3699), new(null, typeof(float)) },
+            { new(0x74FD1BA9, 0x32FDED30), new(null, typeof(bool)) },
+            { new(0x74FD1BA9, 0x232BC103), new(null, typeof(float)) },
+            { new(0x74FD1BA9, 0x231C955C), new(null, typeof(FloatVector2)) },
+            { new(0x74FD1BA9, 0x08775F0D), new(null, typeof(float)) },
+            { new(0x74FD1BA9, 0x15BA509E), new(null, typeof(float)) },
+            { new(0x74FD1BA9, 0xD2D52E54), new(null, typeof(float)) },
+            { new(0x74FD1BA9, 0xBA52C3D5), new(null, typeof(float)) },
+            { new(0x74FD1BA9, 0xAF0D6C64), new(null, typeof(FloatVector2)) },
+            { new(0x74FD1BA9, 0x73393C4A), new(null, typeof(Crc)) },
+            { new(0x74FD1BA9, 0x785523D3), new(null, typeof(FloatVector2)) },
+            { new(0x74FD1BA9, 0xE47A9E34), new(null, typeof(float)) },
+            { new(0x74FD1BA9, 0xD4F11960), new(null, typeof(float)) },
+            { new(0x74FD1BA9, 0xD850F531), new(null, typeof(Crc)) },
+            { new(0x74FD1BA9, 0xF2D66F4B), new(null, typeof(FloatVector2)) },
+            { new(0x74FD1BA9, 0x81349EE6), new(null, typeof(float)) }, // unused?
+            { new(0x74FD1BA9, 0x80B6A0E5), new(null, typeof(float)) }, // unused?
 
             // ButtonPrompt
             //{ new(0x35899B4F, ), new(null, typeof()) },
@@ -1332,6 +1352,24 @@ namespace SabTool.Containers.GameTemplates
             // ModelRenderable
             { new(0x38D88BB8, 0x5B724250), new(null, typeof(Crc)) },
             { new(0x38D88BB8, 0xAE1ED17F), new(null, typeof(bool)) },
+
+            // Ordnance
+            { new(0x277B8B55, 0x58D3A5D8), new(null, typeof(Crc)) },
+            { new(0x277B8B55, 0x336E0ADA), new(null, typeof(float)) },
+            { new(0x277B8B55, 0x33E229EA), new(null, typeof(float)) },
+            { new(0x277B8B55, 0x2D7DD5DB), new(null, typeof(Crc)) },
+            { new(0x277B8B55, 0x01807ACA), new(null, typeof(Crc)) },
+            { new(0x277B8B55, 0x0B33F994), new(null, typeof(Crc)) },
+            { new(0x277B8B55, 0x28C035AC), new(null, typeof(Crc)) },
+            { new(0x277B8B55, 0xD6663C5E), new(null, typeof(Crc)) },
+            { new(0x277B8B55, 0xD2D52E54), new(null, typeof(float)) },
+            { new(0x277B8B55, 0xD27E3887), new(null, typeof(Crc)) },
+            { new(0x277B8B55, 0x6945C955), new(null, typeof(Crc)) },
+            { new(0x277B8B55, 0x903BB20C), new(null, typeof(float)) },
+            { new(0x277B8B55, 0xF251F970), new(null, typeof(float)) },
+            { new(0x277B8B55, 0xE9DBFBD0), new(null, typeof(float)) },
+            { new(0x277B8B55, 0xEFF83A31), new(null, typeof(FloatVector2)) },
+            { new(0x277B8B55, 0xF4434ADE), new(null, typeof(float)) },
 
             // ParticleEffect
             { new(0x4B19B750, 0x8479BBE5), new(null, typeof(int)) },
