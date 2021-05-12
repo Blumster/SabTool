@@ -857,7 +857,21 @@ namespace SabTool.Containers.GameTemplates
             { new(0x0BB693A3, 0xD43131F3), new(null, typeof(float)) }, // unused?
 
             // CameraSettingsMisc
-            //{ new(0xB8F740AF, ), new(null, typeof()) },
+            { new(0xB8F740AF, 0x61F41981), new(null, typeof(float)) },
+            { new(0xB8F740AF, 0x4CA29FD3), new(null, typeof(float)) },
+            { new(0xB8F740AF, 0x2B9B7B11), new(null, typeof(float)) },
+            { new(0xB8F740AF, 0x069650EE), new(null, typeof(float)) },
+            { new(0xB8F740AF, 0x2387D0AD), new(null, typeof(float)) },
+            { new(0xB8F740AF, 0xB0F78533), new(null, typeof(float)) },
+            { new(0xB8F740AF, 0x930F51B6), new(null, typeof(FloatVector2)) },
+            { new(0xB8F740AF, 0x88E6A6CA), new(null, typeof(float)) },
+            { new(0xB8F740AF, 0x75DED125), new(null, typeof(FloatVector2)) },
+            { new(0xB8F740AF, 0x87107D9E), new(null, typeof(float)) },
+            { new(0xB8F740AF, 0xDD0719F5), new(null, typeof(float)) },
+            { new(0xB8F740AF, 0xB99955C4), new(null, typeof(float)) },
+            { new(0xB8F740AF, 0xCDD597DD), new(null, typeof(float)) },
+            { new(0xB8F740AF, 0xF4219F95), new(null, typeof(float)) },
+            { new(0xB8F740AF, 0x94114E8C), new(null, typeof(Crc)) }, // unused
 
             // Car
             { new(0xCE27C791, 0x12649314), new(null, typeof(bool)) },
