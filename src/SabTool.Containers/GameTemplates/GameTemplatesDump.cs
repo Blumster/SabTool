@@ -894,7 +894,16 @@ namespace SabTool.Containers.GameTemplates
             { new(0xE7B1D609, 0x2D0720BF), new(null, typeof(Crc)) },
 
             // ClothForce
-            //{ new(0x060FD1B4, ), new(null, typeof()) },
+            { new(0x060FD1B4, 0x40359952), new(null, typeof(Crc)) },
+            { new(0x060FD1B4, 0xE0AA99D6), new(null, typeof(float)) },
+            { new(0x060FD1B4, 0xD88D5899), new(null, typeof(float)) },
+            { new(0x060FD1B4, 0xCEDABF19), new(null, typeof(float)) },
+            { new(0x060FD1B4, 0xCFF89665), new(null, typeof(float)) },
+            { new(0x060FD1B4, 0x810318DB), new(null, typeof(float)) },
+            { new(0x060FD1B4, 0x6DCDF8F7), new(null, typeof(float)) },
+            { new(0x060FD1B4, 0x50C3B0B7), new(null, typeof(float)) },
+            { new(0x060FD1B4, 0x08D78FD0), new(null, typeof(float)) },
+            { new(0x060FD1B4, 0x47A03D28), new(null, typeof(float)) },
 
             // ClothObject
             //{ new(0x56A984DE, ), new(null, typeof()) },
