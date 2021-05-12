@@ -774,7 +774,9 @@ namespace SabTool.Containers.GameTemplates
             { new(0x74FD1BA9, 0x80B6A0E5), new(null, typeof(float)) }, // unused?
 
             // ButtonPrompt
-            //{ new(0x35899B4F, ), new(null, typeof()) },
+            { new(0x35899B4F, 0x067FDFF6), new(null, typeof(float)) },
+            { new(0x35899B4F, 0x216E8465), new(null, typeof(float)) },
+            { new(0x35899B4F, 0x888505C3), new(null, typeof(Crc)) },
 
             // CameraSet
             { new(0xF66B2194, 0xE9B2AF5C), new(null, typeof(Crc)) },
