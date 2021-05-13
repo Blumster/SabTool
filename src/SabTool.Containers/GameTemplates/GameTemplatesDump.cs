@@ -906,7 +906,33 @@ namespace SabTool.Containers.GameTemplates
             { new(0x060FD1B4, 0x47A03D28), new(null, typeof(float)) },
 
             // ClothObject
-            //{ new(0x56A984DE, ), new(null, typeof()) },
+            { new(0x56A984DE, 0x5B724250), new(null, typeof(Crc)) },
+            { new(0x56A984DE, 0x2FBC51C3), new(null, typeof(Crc)) },
+            { new(0x56A984DE, 0x5700AB72), new(null, typeof(int)) },
+            { new(0x56A984DE, 0x523AFE65), new(null, typeof(Crc)) },
+            { new(0x56A984DE, 0x060FD1B4), new(null, typeof(Crc)) },
+            { new(0x56A984DE, 0x8A7EA61A), new(null, typeof(byte)) },
+            { new(0x56A984DE, 0xE0B51584), new(null, typeof(Crc)) },
+            { new(0x56A984DE, 0xE3AEC3CD), new(null, typeof(int)) },
+            { new(0x56A984DE, 0x3EEACE1A), new(null, typeof(int)) },
+            { new(0x56A984DE, 0x283C9626), new(null, typeof(int)) },
+            { new(0x56A984DE, 0x23A31F18), new(null, typeof(int)) },
+            { new(0x56A984DE, 0x6C89C416), new(null, typeof(int)) },
+            { new(0x56A984DE, 0xE11B7999), new(null, typeof(Crc)) }, // unused?
+            // ClothObject - sub_7F7580
+            { new(0x56A984DE, 0x1D679AEB), new(null, typeof(float)) },
+            { new(0x56A984DE, 0x305856DF), new(null, typeof(float)) },
+            // ClothObject - sub_7F7480
+            { new(0x56A984DE, 0xEFE5D990), new(null, typeof(Crc)) },
+            { new(0x56A984DE, 0xEAFC3A7D), new(null, typeof(Crc)) },
+            { new(0x56A984DE, 0x69A86828), new(null, typeof(int)) },
+            { new(0x56A984DE, 0x5AC2612B), new(null, typeof(FloatVector3)) },
+            { new(0x56A984DE, 0xA0D456CB), new(null, typeof(int)) },
+            { new(0x56A984DE, 0xC3AEB321), new(null, typeof(float)) },
+            { new(0x56A984DE, 0xCBE8ED58), new(null, typeof(float)) },
+            // ClothObject - sub_7F6F10
+            { new(0x56A984DE, 0x982589A0), new(null, typeof(float)) },
+            { new(0x56A984DE, 0xB9C2B47A), new(null, typeof(Crc)) },
 
             // Common
             { new(0x2447DFFA, 0x6302F1CC), new(null, typeof(bool)) },
