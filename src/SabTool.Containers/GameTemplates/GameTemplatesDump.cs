@@ -1037,7 +1037,15 @@ namespace SabTool.Containers.GameTemplates
             { new(0x209311CC, 0xFA4C29B8), new(null, typeof(FloatVector4)) },
 
             // DetailObject
-            //{ new(0xFC92396B, ), new(null, typeof()) },
+            { new(0xFC92396B, 0xA90C7E48), new(null, typeof(float)) },
+            { new(0xFC92396B, 0x440E11D7), new(null, typeof(float)) },
+            { new(0xFC92396B, 0x5B724250), new(null, typeof(Crc)) },
+            { new(0xFC92396B, 0x6DA91CF2), new(null, typeof(float)) },
+            { new(0xFC92396B, 0xB7A38021), new(null, typeof(float)) },
+            { new(0xFC92396B, 0xE0193B96), new(null, typeof(bool)) },
+            { new(0xFC92396B, 0xF0FA376C), new(null, typeof(float)) },
+            { new(0xFC92396B, 0x87DD9796), new(null, typeof(bool)) }, // unused?
+            { new(0xFC92396B, 0x8A09514E), new(null, typeof(bool)) }, // unused?
 
             // Difficulty
             //{ new(0x4C38AB2E, ), new(null, typeof()) },
