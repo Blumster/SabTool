@@ -1831,7 +1831,12 @@ namespace SabTool.Containers.GameTemplates
             { new(0x0A9A5883, 0xAED9B020), new(null, typeof(float)) },
 
             // MeleeWeapon
-            //{ new(0x07370953, ), new(null, typeof()) },
+            { new(0x07370953, 0x47B9DF6F), new(null, typeof(int)) },
+            { new(0x07370953, 0x2543907B), new(null, typeof(bool)) },
+            { new(0x07370953, 0xAE1ED17F), new(null, typeof(bool)) },
+            { new(0x07370953, 0xD1DD6599), new(null, typeof(Crc)) },
+            { new(0x07370953, 0xE7F9EA87), new(null, typeof(float)) },
+            { new(0x07370953, 0xF535722A), new(null, typeof(Crc)) },
 
             // MiniGame
             //{ new(0xBBDF8DF6, ), new(null, typeof()) },
