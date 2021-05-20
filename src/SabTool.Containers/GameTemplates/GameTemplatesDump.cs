@@ -1429,7 +1429,10 @@ namespace SabTool.Containers.GameTemplates
             { new(0x9BD2B975, 0xFE2A72E3), new(null, typeof(float)) },
 
             // GroupCameraSettings
-            //{ new(0x175F15E4, ), new(null, typeof()) },
+            { new(0x175F15E4, 0x6C9D228B), new(null, typeof(float)) },
+            { new(0x175F15E4, 0x28AE3225), new(null, typeof(FloatVector3)) },
+            { new(0x175F15E4, 0x6A0804C0), new(null, typeof(float)) },
+            { new(0x175F15E4, 0x88533AA0), new(null, typeof(float)) },
 
             // GroupTransition
             //{ new(0xAAA2D2A7, ), new(null, typeof()) },
