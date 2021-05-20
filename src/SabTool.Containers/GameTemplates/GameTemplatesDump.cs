@@ -1107,7 +1107,15 @@ namespace SabTool.Containers.GameTemplates
             { new(0xF69DEC26, 0x8C1C4A5B), new(null, typeof(bool)) },
 
             // EscHWTF
-            //{ new(0x954C883D, ), new(null, typeof()) },
+            { new(0x954C883D, 0xF661BD0B), new(null, typeof(FloatVector2)) },
+            { new(0x954C883D, 0xF705A3AA), new(null, typeof(float)) },
+            { new(0x954C883D, 0xDA6B4D87), new(null, typeof(int)) },
+            { new(0x954C883D, 0x89FAEAC2), new(null, typeof(Crc)) },
+            { new(0x954C883D, 0xC37246F2), new(null, typeof(Crc)) },
+            { new(0x954C883D, 0xD9A213BF), new(null, typeof(float)) },
+            { new(0x954C883D, 0x7C0CF3AA), new(null, typeof(Crc)) },
+            { new(0x954C883D, 0x49212E5A), new(null, typeof(int)) },
+            { new(0x954C883D, 0x56D60972), new(null, typeof(Crc)) },
 
             // EventConversation
 
