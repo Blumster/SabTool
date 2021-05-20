@@ -1598,7 +1598,20 @@ namespace SabTool.Containers.GameTemplates
             { new(0x52EF7807, 0xD6D31661), new(null, typeof(int)) },
 
             // HumanBodySetup
-            //{ new(0x4DED4763, ), new(null, typeof()) },
+            { new(0x4DED4763, 0x7D02A1B6), new(null, typeof(FloatVector2)) },
+            { new(0x4DED4763, 0xA1757F0A), new(null, typeof(Crc)) },
+            { new(0x4DED4763, 0x622DD842), new(null, typeof(Crc)) },
+            { new(0x4DED4763, 0xED8FC40C), new(null, typeof(float)) },
+            { new(0x4DED4763, 0xD594DB5B), new(null, typeof(float)) },
+            { new(0x4DED4763, 0x2BD6448A), new(null, typeof(Crc)) },
+            { new(0x4DED4763, 0xC57D2B43), new(null, typeof(Crc)) },
+            { new(0x4DED4763, 0x5E2436B9), new(null, typeof(int)) },
+            { new(0x4DED4763, 0x44C27FCB), new(null, typeof(int)) },
+            { new(0x4DED4763, 0xBEE9A66D), new(null, typeof(int)) },
+            { new(0x4DED4763, 0x2A485698), new(null, typeof(int)) },
+            { new(0x4DED4763, 0x9E288655), new(null, typeof(int)) },
+            { new(0x4DED4763, 0xFC20CB8A), new(null, typeof(int)) },
+            { new(0x4DED4763, 0x1E233FA7), new(null, typeof(int)) },
 
             // HumanPhysics
             { new(0xCB248263, 0xCB248263), new(null, typeof(Crc)) },
