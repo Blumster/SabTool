@@ -947,7 +947,9 @@ namespace SabTool.Containers.GameTemplates
             { new(0x2C70C910, 0xDB0F705C), new(null, typeof(LuaParam)) },
 
             // CreditName
-            //{ new(0xFE44888F, ), new(null, typeof()) },
+            { new(0xFE44888F, 0x6C72334B), new(null, typeof(int)) },
+            { new(0xFE44888F, 0xBFC5652D), new(null, typeof(float)) },
+            { new(0xFE44888F, 0xE1AE04B8), new(null, typeof(float)) },
 
             // Damageable
             { new(0x6068DB46, 0xA80C9145), new(null, typeof(Crc)) },
