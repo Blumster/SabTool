@@ -1589,7 +1589,13 @@ namespace SabTool.Containers.GameTemplates
             { new(0xAD431BF0, 0x16E3526A), new(null, typeof(Crc)) },
 
             // HumanBodyPart
-            //{ new(0x52EF7807, ), new(null, typeof()) },
+            { new(0x52EF7807, 0x5B724250), new(null, typeof(Crc)) },
+            { new(0x52EF7807, 0x331CDBFD), new(null, typeof(Crc)) },
+            { new(0x52EF7807, 0x3FF4F976), new(null, typeof(Color)) },
+            { new(0x52EF7807, 0xD6A5096B), new(null, typeof(float)) },
+            { new(0x52EF7807, 0x1CBA8055), new(null, typeof(Crc)) },
+            { new(0x52EF7807, 0x7B7EDB56), new(null, typeof(int)) },
+            { new(0x52EF7807, 0xD6D31661), new(null, typeof(int)) },
 
             // HumanBodySetup
             //{ new(0x4DED4763, ), new(null, typeof()) },
