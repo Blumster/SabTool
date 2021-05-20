@@ -1435,7 +1435,7 @@ namespace SabTool.Containers.GameTemplates
             { new(0x175F15E4, 0x88533AA0), new(null, typeof(float)) },
 
             // GroupTransition
-            //{ new(0xAAA2D2A7, ), new(null, typeof()) },
+            { new(0xAAA2D2A7, 0xEB4DFB24), new(null, typeof(Crc)) },
 
             // GunnerSeat
             { new(0x1A8CEE3F, 0x6CE6C69A), new(null, typeof(FloatVector2)) },
