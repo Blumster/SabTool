@@ -2024,7 +2024,20 @@ namespace SabTool.Containers.GameTemplates
             { new(0xFC8B1DA2, 0xC6FF3C76), new(null, typeof(int)) },
 
             // PhysicsParticleSet
-            //{ new(0xC30934DA, ), new(null, typeof()) },
+            { new(0xC30934DA, 0xB03F89C9), new(null, typeof(FloatVector2)) },
+            { new(0xC30934DA, 0x9C323CFD), new(null, typeof(float)) },
+            { new(0xC30934DA, 0xA26C3D31), new(null, typeof(Crc)) },
+            { new(0xC30934DA, 0x95A91C36), new(null, typeof(FloatVector2)) },
+            { new(0xC30934DA, 0x7DDC5783), new(null, typeof(float)) },
+            { new(0xC30934DA, 0x91C23C14), new(null, typeof(FloatVector2)) },
+            { new(0xC30934DA, 0xDD6A4A63), new(null, typeof(FloatVector2)) },
+            { new(0xC30934DA, 0xC6E3EED3), new(null, typeof(FloatVector2)) },
+            { new(0xC30934DA, 0xC877BD3B), new(null, typeof(FloatVector3_2)) },
+            { new(0xC30934DA, 0xE7D5FF9D), new(null, typeof(FloatVector3)) },
+            { new(0xC30934DA, 0xEEFE4FBF), new(null, typeof(float)) },
+            { new(0xC30934DA, 0x59A23D57), new(null, typeof(int)) },
+            { new(0xC30934DA, 0x1870458B), new(null, typeof(Crc)) },
+            { new(0xC30934DA, 0x1CDE14DB), new(null, typeof(float)) },
 
             // PhysicsVehicle
             { new(0x0E6FC89C, 0xBF667004), new(null, typeof(Crc)) },
