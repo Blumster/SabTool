@@ -1483,7 +1483,25 @@ namespace SabTool.Containers.GameTemplates
             //{ new(0x932C532A, ), new(null, typeof()) },
 
             // Highlight
-            //{ new(0x1CC87777, ), new(null, typeof()) },
+            { new(0x1CC87777, 0xEB42BD07), new(null, typeof(int)) },
+            { new(0x1CC87777, 0x64CD994E), new(null, typeof(Crc)) },
+            { new(0x1CC87777, 0xDED701DD), new(null, typeof(bool)) },
+            { new(0x1CC87777, 0x9DF1F45D), new(null, typeof(bool)) },
+            { new(0x1CC87777, 0x2B6FE1AE), new(null, typeof(float)) },
+            { new(0x1CC87777, 0xD2D52E54), new(null, typeof(float)) },
+            { new(0x1CC87777, 0x674AE58A), new(null, typeof(float)) },
+            { new(0x1CC87777, 0x22F2C045), new(null, typeof(float)) },
+            { new(0x1CC87777, 0x43B43E44), new(null, typeof(Color)) },
+            { new(0x1CC87777, 0x09CA3AD5), new(null, typeof(float)) },
+            { new(0x1CC87777, 0x02CF30C4), new(null, typeof(Color)) },
+            { new(0x1CC87777, 0x0952A055), new(null, typeof(float)) },
+            { new(0x1CC87777, 0x9CCC519B), new(null, typeof(Color)) },
+            { new(0x1CC87777, 0x67C2800A), new(null, typeof(float)) },
+            { new(0x1CC87777, 0x9469454A), new(null, typeof(float)) },
+            { new(0x1CC87777, 0xC0EB6A3A), new(null, typeof(float)) },
+            { new(0x1CC87777, 0xDDB15F1B), new(null, typeof(Color)) },
+            { new(0x1CC87777, 0xE823F441), new(null, typeof(float)) },
+            { new(0x1CC87777, 0x661C6BD6), new(null, typeof(float)) },
 
             // Human
             { new(0xAD431BF0, 0x7E4E77E0), new(null, typeof(Crc)) },
