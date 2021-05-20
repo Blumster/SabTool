@@ -1810,7 +1810,25 @@ namespace SabTool.Containers.GameTemplates
             { new(0xD3DFD699, 0x622DA6EE), new(null, typeof(Crc)) },
 
             // Melee
-            //{ new(0x0A9A5883, ), new(null, typeof()) },
+            { new(0x0A9A5883, 0x5AAB6EAD), new(null, typeof(FloatVector2)) },
+            { new(0x0A9A5883, 0x30BE46C0), new(null, typeof(float)) },
+            { new(0x0A9A5883, 0x3136E3E8), new(null, typeof(float)) },
+            { new(0x0A9A5883, 0x1A1FE631), new(null, typeof(Crc)) },
+            { new(0x0A9A5883, 0x0248C942), new(null, typeof(FloatVector2)) },
+            { new(0x0A9A5883, 0x199C9C74), new(null, typeof(float)) },
+            { new(0x0A9A5883, 0xAA2917AB), new(null, typeof(bool)) },
+            { new(0x0A9A5883, 0x9FD0A9F5), new(null, typeof(Crc)) },
+            { new(0x0A9A5883, 0x9FD572BB), new(null, typeof(float)) },
+            { new(0x0A9A5883, 0x8ADB7BC5), new(null, typeof(float)) },
+            { new(0x0A9A5883, 0x6ED40AE1), new(null, typeof(float)) },
+            { new(0x0A9A5883, 0x864A458B), new(null, typeof(FloatVector2)) },
+            { new(0x0A9A5883, 0xCF5205EA), new(null, typeof(float)) },
+            { new(0x0A9A5883, 0xAF867032), new(null, typeof(bool)) },
+            { new(0x0A9A5883, 0xBB81AE95), new(null, typeof(float)) },
+            { new(0x0A9A5883, 0xE04FC10A), new(null, typeof(float)) },
+            { new(0x0A9A5883, 0xE4091E54), new(null, typeof(float)) },
+            { new(0x0A9A5883, 0x723CFFB0), new(null, typeof(float)) },
+            { new(0x0A9A5883, 0xAED9B020), new(null, typeof(float)) },
 
             // MeleeWeapon
             //{ new(0x07370953, ), new(null, typeof()) },
