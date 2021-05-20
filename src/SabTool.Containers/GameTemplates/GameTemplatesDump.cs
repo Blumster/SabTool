@@ -1048,7 +1048,22 @@ namespace SabTool.Containers.GameTemplates
             { new(0xFC92396B, 0x8A09514E), new(null, typeof(bool)) }, // unused?
 
             // Difficulty
-            //{ new(0x4C38AB2E, ), new(null, typeof()) },
+            { new(0x4C38AB2E, 0x7F1A3641), new(null, typeof(float)) },
+            { new(0x4C38AB2E, 0x3208D523), new(null, typeof(float)) },
+            { new(0x4C38AB2E, 0x54586368), new(null, typeof(float)) },
+            { new(0x4C38AB2E, 0x6CA5A28E), new(null, typeof(float)) },
+            { new(0x4C38AB2E, 0x30ECF5DC), new(null, typeof(int)) },
+            { new(0x4C38AB2E, 0x224AD76D), new(null, typeof(float)) },
+            { new(0x4C38AB2E, 0x1C985C43), new(null, typeof(float)) },
+            { new(0x4C38AB2E, 0x01EB8596), new(null, typeof(float)) },
+            { new(0x4C38AB2E, 0x1045459A), new(null, typeof(float)) },
+            { new(0x4C38AB2E, 0xB0D67841), new(null, typeof(float)) },
+            { new(0x4C38AB2E, 0x80235C30), new(null, typeof(int)) },
+            { new(0x4C38AB2E, 0x860E70A3), new(null, typeof(float)) },
+            { new(0x4C38AB2E, 0xA892B18B), new(null, typeof(float)) },
+            { new(0x4C38AB2E, 0xCC919414), new(null, typeof(float)) },
+            { new(0x4C38AB2E, 0xD7C38E8D), new(null, typeof(float)) },
+            { new(0x4C38AB2E, 0xDFB27B14), new(null, typeof(int)) },
 
             // ElasticTransition
             { new(0xDC07C4C3, 0xDC07C4C3), new(null, typeof(Crc)) },
