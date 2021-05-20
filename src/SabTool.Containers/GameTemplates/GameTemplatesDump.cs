@@ -1145,7 +1145,9 @@ namespace SabTool.Containers.GameTemplates
             { new(0x5A8EE34C, 0xC2161E01), new(null, typeof(float)) },
 
             // FlameOrdnance
-            //{ new(0x9961B9C6, ), new(null, typeof()) },
+            { new(0x9961B9C6, 0x2F2D4561), new(null, typeof(Crc)) },
+            { new(0x9961B9C6, 0x84C839C8), new(null, typeof(float)) },
+            { new(0x9961B9C6, 0xC6F33E78), new(null, typeof(float)) },
 
             // FlashMovie
             { new(0x9CC86FE3, 0x9CAA0ADF), new(null, typeof(Crc)) },
