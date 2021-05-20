@@ -1120,7 +1120,24 @@ namespace SabTool.Containers.GameTemplates
             // EventConversation
 
             // Explosion
-            //{ new(0x16930AFE, ), new(null, typeof()) },
+            { new(0x16930AFE, 0xEE0E25BA), new(null, typeof(float)) },
+            { new(0x16930AFE, 0xEBB0A63E), new(null, typeof(float)) },
+            { new(0x16930AFE, 0xD8727836), new(null, typeof(bool)) },
+            { new(0x16930AFE, 0xDD62BA1A), new(null, typeof(string)) },
+            { new(0x16930AFE, 0xA1ED7451), new(null, typeof(float)) },
+            { new(0x16930AFE, 0x9F710C1B), new(null, typeof(float)) },
+            { new(0x16930AFE, 0x848096A5), new(null, typeof(Crc)) },
+            { new(0x16930AFE, 0x79BA2FD0), new(null, typeof(float)) },
+            { new(0x16930AFE, 0x82EDC825), new(null, typeof(bool)) },
+            { new(0x16930AFE, 0x74F54615), new(null, typeof(float)) },
+            { new(0x16930AFE, 0x47E338FE), new(null, typeof(float)) },
+            { new(0x16930AFE, 0x5E244327), new(null, typeof(float)) },
+            { new(0x16930AFE, 0x62E0AFDE), new(null, typeof(bool)) },
+            { new(0x16930AFE, 0x349BF324), new(null, typeof(float)) },
+            { new(0x16930AFE, 0x2EBA9DF8), new(null, typeof(float)) },
+            { new(0x16930AFE, 0x14282B50), new(null, typeof(int)) },
+            { new(0x16930AFE, 0x0FCE73F0), new(null, typeof(float)) },
+            { new(0x16930AFE, 0x12BB20A1), new(null, typeof(float)) },
 
             // FaceExpression
             { new(0x5A8EE34C, 0x216E8465), new(null, typeof(float)) },
