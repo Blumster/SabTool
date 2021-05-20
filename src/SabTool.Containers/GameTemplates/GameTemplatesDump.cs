@@ -215,6 +215,7 @@ namespace SabTool.Containers.GameTemplates
                 "FloatVector2" => new FloatVector2(reader.ReadFloat(), reader.ReadFloat()),
                 "FloatVector3" => new FloatVector3(reader.ReadFloat(), reader.ReadFloat(), reader.ReadFloat()),
                 "FloatVector4" => new FloatVector4(reader.ReadFloat(), reader.ReadFloat(), reader.ReadFloat(), reader.ReadFloat()),
+                "FloatVector3_2" => new FloatVector3_2(new FloatVector3(reader.ReadFloat(), reader.ReadFloat(), reader.ReadFloat()), new FloatVector3(reader.ReadFloat(), reader.ReadFloat(), reader.ReadFloat())),
                 "Color" => new Color(reader.ReadInt()),
                 "UnkBirdType" => new UnkBirdType(reader.ReadString(reader.ReadInt())),
                 _ => null
@@ -235,6 +236,13 @@ namespace SabTool.Containers.GameTemplates
             public override string ToString()
             {
                 return $"({Val1}, {Val2}, {Val3})";
+            }
+        }
+        record FloatVector3_2(FloatVector3 Vec1, FloatVector3 Vec2)
+        {
+            public override string ToString()
+            {
+                return $"({Vec1}, {Vec2})";
             }
         }
         record FloatVector4(float Val1, float Val2, float Val3, float Val4)
@@ -1154,7 +1162,78 @@ namespace SabTool.Containers.GameTemplates
             { new(0x9CC86FE3, 0xA1F61387), new(null, typeof(int)) },
 
             // Foliage
-            //{ new(0x34612F86, ), new(null, typeof()) },
+            { new(0x34612F86, 0x7D4B28A4), new(null, typeof(float)) },
+            { new(0x34612F86, 0x4C77AA6B), new(null, typeof(float)) },
+            { new(0x34612F86, 0x33A5B563), new(null, typeof(float)) },
+            { new(0x34612F86, 0x28E10525), new(null, typeof(Crc)) },
+            { new(0x34612F86, 0x19A14C78), new(null, typeof(Crc)) },
+            { new(0x34612F86, 0x1AAC9531), new(null, typeof(Crc)) },
+            { new(0x34612F86, 0x1C0AEE5E), new(null, typeof(FloatVector3)) },
+            { new(0x34612F86, 0x2B39F30E), new(null, typeof(float)) },
+            { new(0x34612F86, 0x30C712EE), new(null, typeof(Color)) },
+            { new(0x34612F86, 0x333C2126), new(null, typeof(FloatVector2)) },
+            { new(0x34612F86, 0x41CE3C45), new(null, typeof(float)) },
+            { new(0x34612F86, 0x442FED33), new(null, typeof(float)) },
+            { new(0x34612F86, 0x44416D71), new(null, typeof(bool)) },
+            { new(0x34612F86, 0x3FF4F976), new(null, typeof(FloatVector3_2)) },
+            { new(0x34612F86, 0x342F95F3), new(null, typeof(float)) },
+            { new(0x34612F86, 0x354694DB), new(null, typeof(float)) },
+            { new(0x34612F86, 0x366C9D39), new(null, typeof(float)) },
+            { new(0x34612F86, 0x6540AEA9), new(null, typeof(float)) },
+            { new(0x34612F86, 0x5B724250), new(null, typeof(Crc)) },
+            { new(0x34612F86, 0x5F7E3483), new(null, typeof(float)) },
+            { new(0x34612F86, 0x5B5DA35C), new(null, typeof(float)) },
+            { new(0x34612F86, 0x5651715A), new(null, typeof(float)) },
+            { new(0x34612F86, 0x58CDFFFA), new(null, typeof(float)) },
+            { new(0x34612F86, 0x5A32105C), new(null, typeof(float)) },
+            { new(0x34612F86, 0x772B0B2F), new(null, typeof(FloatVector2)) },
+            { new(0x34612F86, 0x7A0C0640), new(null, typeof(Crc)) },
+            { new(0x34612F86, 0x706C9B59), new(null, typeof(float)) },
+            { new(0x34612F86, 0x6A759B0E), new(null, typeof(float)) },
+            { new(0x34612F86, 0x6B451DDE), new(null, typeof(float)) },
+            { new(0x34612F86, 0x6B58EE52), new(null, typeof(float)) },
+            { new(0x34612F86, 0xBF58B73D), new(null, typeof(float)) },
+            { new(0x34612F86, 0xB858C765), new(null, typeof(float)) },
+            { new(0x34612F86, 0xBB4D8134), new(null, typeof(Crc)) },
+            { new(0x34612F86, 0xBC653EB9), new(null, typeof(int)) },
+            { new(0x34612F86, 0xB66A6C44), new(null, typeof(int)) },
+            { new(0x34612F86, 0xB276FBA3), new(null, typeof(float)) },
+            { new(0x34612F86, 0xAF895BE5), new(null, typeof(FloatVector3)) },
+            { new(0x34612F86, 0xA5FBBC36), new(null, typeof(int)) },
+            { new(0x34612F86, 0xAD96C3CD), new(null, typeof(float)) },
+            { new(0x34612F86, 0x9DE9171D), new(null, typeof(float)) },
+            { new(0x34612F86, 0x98508662), new(null, typeof(bool)) },
+            { new(0x34612F86, 0x982222A6), new(null, typeof(float)) },
+            { new(0x34612F86, 0x8B266E12), new(null, typeof(bool)) },
+            { new(0x34612F86, 0x8C3654C2), new(null, typeof(FloatVector4)) },
+            { new(0x34612F86, 0x8AC3D33F), new(null, typeof(FloatVector3)) },
+            { new(0x34612F86, 0x85EF4DEF), new(null, typeof(float)) },
+            { new(0x34612F86, 0x83944318), new(null, typeof(float)) },
+            { new(0x34612F86, 0x7ED37781), new(null, typeof(float)) },
+            { new(0x34612F86, 0x835BA097), new(null, typeof(float)) },
+            { new(0x34612F86, 0xEE7814DA), new(null, typeof(int)) },
+            { new(0x34612F86, 0xE3C7C6F2), new(null, typeof(int)) },
+            { new(0x34612F86, 0xEAD94CF1), new(null, typeof(FloatVector2)) },
+            { new(0x34612F86, 0xEB506256), new(null, typeof(FloatVector2)) },
+            { new(0x34612F86, 0xE3518BA6), new(null, typeof(FloatVector2)) },
+            { new(0x34612F86, 0xD9DA3DC3), new(null, typeof(float)) },
+            { new(0x34612F86, 0xC37D6213), new(null, typeof(FloatVector2)) },
+            { new(0x34612F86, 0xCCA9F9FC), new(null, typeof(float)) },
+            { new(0x34612F86, 0xE1F9CCD5), new(null, typeof(FloatVector3)) },
+            { new(0x34612F86, 0xFB91EBD1), new(null, typeof(FloatVector2)) },
+            { new(0x34612F86, 0xF6D9B967), new(null, typeof(float)) },
+            { new(0x34612F86, 0xF55BB92D), new(null, typeof(float)) },
+            { new(0x34612F86, 0xF011157A), new(null, typeof(Crc)) },
+            { new(0x34612F86, 0xF37790E1), new(null, typeof(FloatVector3_2)) },
+            { new(0x34612F86, 0xFC3E92A7), new(null, typeof(int)) },
+            { new(0x34612F86, 0xFC48FDD6), new(null, typeof(FloatVector3)) },
+            { new(0x34612F86, 0xFD44ECDE), new(null, typeof(float)) },
+            { new(0x34612F86, 0x1B4C6669), new(null, typeof(float)) }, // unused?
+            { new(0x34612F86, 0x5E34DB53), new(null, typeof(FloatVector3)) }, // unused?
+            { new(0x34612F86, 0x359DAEF0), new(null, typeof(int)) }, // unused?
+            { new(0x34612F86, 0x6B118329), new(null, typeof(int)) }, // unused?
+            { new(0x34612F86, 0x0397834F), new(null, typeof(int)) }, // unused?
+            { new(0x34612F86, 0x9AB5E710), new(null, typeof(int)) }, // unused?
 
             // FoliageFx
             //{ new(0xD26EF074, ), new(null, typeof()) },
