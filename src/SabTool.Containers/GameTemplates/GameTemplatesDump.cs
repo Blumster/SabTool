@@ -820,6 +820,7 @@ namespace SabTool.Containers.GameTemplates
             { new(0xF66B2194, 0xB5C6777D), new(null, typeof(Crc)) },
 
             // CameraSettings
+            { new(0x0BB693A3, 0x0BB693A3), new(null, typeof(Crc)) },
             { new(0x0BB693A3, 0x70092C52), new(null, typeof(Crc)) },
             { new(0x0BB693A3, 0x2B88CF92), new(null, typeof(FloatVector3)) },
             { new(0x0BB693A3, 0x1B457A75), new(null, typeof(bool)) },
@@ -1483,7 +1484,6 @@ namespace SabTool.Containers.GameTemplates
             { new(0x1A8CEE3F, 0x31E1A9B0), new(null, typeof(Crc)) },
 
             // HealthEffectFilter
-            //{ new(0x932C532A, ), new(null, typeof()) },
 
             // Highlight
             { new(0x1CC87777, 0xEB42BD07), new(null, typeof(int)) },
@@ -1625,7 +1625,6 @@ namespace SabTool.Containers.GameTemplates
             { new(0x5822D085, 0x1598D00C), new(null, typeof(int)) },
 
             // ImageFolder
-            //{ new(0xD8E3E358, ), new(null, typeof()) },
 
             // Item
             { new(0x71798A24, 0x953C60F5), new(null, typeof(float)) },
@@ -1647,10 +1646,13 @@ namespace SabTool.Containers.GameTemplates
             { new(0x71798A24, 0x0D111AB7), new(null, typeof(Crc)) },
 
             // ItemCache
-            //{ new(0x50C4254A, ), new(null, typeof()) },
+            { new(0x50C4254A, 0x97AC8632), new(null, typeof(Crc)) },
+            { new(0x50C4254A, 0x97EE12C6), new(null, typeof(bool)) },
 
             // LeafSpawner
-            //{ new(0x32B6B82F, ), new(null, typeof()) },
+            { new(0x32B6B82F, 0x14E198F5), new(null, typeof(Crc)) },
+            { new(0x32B6B82F, 0x354694DB), new(null, typeof(float)) },
+            { new(0x32B6B82F, 0x9DB73D8F), new(null, typeof(float)) },
 
             // LightAttachement
             { new(0xA3613F4D, 0xC25641DF), new(null, typeof(int)) },
@@ -1804,6 +1806,7 @@ namespace SabTool.Containers.GameTemplates
             { new(0x277B8B55, 0xE9DBFBD0), new(null, typeof(float)) },
             { new(0x277B8B55, 0xEFF83A31), new(null, typeof(FloatVector2)) },
             { new(0x277B8B55, 0xF4434ADE), new(null, typeof(float)) },
+            { new(0x277B8B55, 0xBF4C7045), new(null, typeof(int)) },
 
             // ParticleEffect
             { new(0x4B19B750, 0x8479BBE5), new(null, typeof(int)) },
