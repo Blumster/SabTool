@@ -1992,7 +1992,23 @@ namespace SabTool.Containers.GameTemplates
             { new(0xA8CF8D40, 0xDB67DD79), new(null, typeof(int)) },
 
             // PhysicalOrdnance
-            //{ new(0x284C8026, ), new(null, typeof()) },
+            { new(0x284C8026, 0xC5A6FA42), new(null, typeof(float)) },
+            { new(0x284C8026, 0x7BF01635), new(null, typeof(bool)) },
+            { new(0x284C8026, 0x7FD9A169), new(null, typeof(float)) },
+            { new(0x284C8026, 0x97AC8632), new(null, typeof(Crc)) },
+            { new(0x284C8026, 0xC87F672A), new(null, typeof(Crc)) },
+            { new(0x284C8026, 0xCBE8ED58), new(null, typeof(float)) },
+            { new(0x284C8026, 0xE52E6A81), new(null, typeof(float)) },
+            { new(0x284C8026, 0x7BE5AA43), new(null, typeof(float)) },
+            { new(0x284C8026, 0x58B8D4B3), new(null, typeof(float)) },
+            { new(0x284C8026, 0x4E03A742), new(null, typeof(FloatVector2)) },
+            { new(0x284C8026, 0x354694DB), new(null, typeof(float)) },
+            { new(0x284C8026, 0x05D171EA), new(null, typeof(float)) },
+            { new(0x284C8026, 0x16930AFE), new(null, typeof(Crc)) },
+            { new(0x284C8026, 0x5B724250), new(null, typeof(Crc)) },
+            { new(0x284C8026, 0x6ADE730A), new(null, typeof(Crc)) },
+            { new(0x284C8026, 0x6D93689C), new(null, typeof(float)) },
+            { new(0x284C8026, 0x2D595F06), new(null, typeof(float)) },
 
             // PhysicsParticle
             { new(0xFC8B1DA2, 0x9C323CFD), new(null, typeof(float)) },
