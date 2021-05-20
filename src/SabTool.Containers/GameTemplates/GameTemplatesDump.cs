@@ -2108,7 +2108,10 @@ namespace SabTool.Containers.GameTemplates
             { new(0x600E3B1E, 0xAE85A3E9), new(null, typeof(float)) },
 
             // PlayerCollision
-            //{ new(0x05568616, ), new(null, typeof()) },
+            { new(0x05568616, 0xC0C16868), new(null, typeof(float)) },
+            { new(0x05568616, 0x28BBFBF2), new(null, typeof(float)) },
+            { new(0x05568616, 0x4ABE700F), new(null, typeof(float)) },
+            { new(0x05568616, 0xD5C76750), new(null, typeof(bool)) },
 
             // Prop
             //{ new(0xCEB60D96, ), new(null, typeof()) },
