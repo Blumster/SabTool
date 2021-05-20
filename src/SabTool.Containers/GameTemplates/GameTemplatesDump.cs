@@ -1907,7 +1907,12 @@ namespace SabTool.Containers.GameTemplates
             { new(0x4B19B750, 0x37077436), new(null, typeof(Crc)) },
 
             // ParticleEffectSpawner
-            //{ new(0x9DCC91D0, ), new(null, typeof()) },
+            { new(0x9DCC91D0, 0x6633CC0A), new(null, typeof(Crc)) },
+            { new(0x9DCC91D0, 0x4B19B750), new(null, typeof(Crc)) },
+            { new(0x9DCC91D0, 0xD43DE771), new(null, typeof(FloatVector2)) },
+            { new(0x9DCC91D0, 0xD2D52E54), new(null, typeof(float)) },
+            { new(0x9DCC91D0, 0xA4C1B1C3), new(null, typeof(Crc)) },
+            { new(0x9DCC91D0, 0xC8EA585D), new(null, typeof(int)) },
 
             // PerkFactors
             //{ new(0xBDAA3FB7, ), new(null, typeof()) },
