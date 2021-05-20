@@ -1236,7 +1236,12 @@ namespace SabTool.Containers.GameTemplates
             { new(0x34612F86, 0x9AB5E710), new(null, typeof(int)) }, // unused?
 
             // FoliageFx
-            //{ new(0xD26EF074, ), new(null, typeof()) },
+            { new(0xD26EF074, 0x664DE09A), new(null, typeof(int)) },
+            { new(0xD26EF074, 0x0C8091C3), new(null, typeof(int)) },
+            { new(0xD26EF074, 0x12AABDBB), new(null, typeof(int)) },
+            { new(0xD26EF074, 0x8E499CBD), new(null, typeof(int)) },
+            { new(0xD26EF074, 0xC3D9DCE4), new(null, typeof(int)) },
+            { new(0xD26EF074, 0xE33015E8), new(null, typeof(int)) },
 
             // FxBoneStateList
             //{ new(0x6D73FB6C, ), new(null, typeof()) },
