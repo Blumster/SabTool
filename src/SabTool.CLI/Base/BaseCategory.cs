@@ -19,30 +19,50 @@ namespace SabTool.CLI.Base
 
             foreach (var type in GetType().GetNestedTypes())
             {
-                if (!type.IsClass)
-                    continue;
+                SetupType(type);
+            }
+        }
 
-                if (type.GetInterfaces().Contains(typeof(ICommand)))
+        public void SetupWithTypes(params Type[] types)
+        {
+            _commands.Clear();
+
+            foreach (var type in GetType().GetNestedTypes())
+            {
+                SetupType(type);
+            }
+
+            foreach (var type in types)
+            {
+                SetupType(type);
+            }
+        }
+
+        private void SetupType(Type type)
+        {
+            if (!type.IsClass)
+                return;
+
+            if (type.GetInterfaces().Contains(typeof(ICommand)))
+            {
+                var newInstance = Activator.CreateInstance(type) as ICommand;
+
+                if (_commands.ContainsKey(newInstance.Key))
                 {
-                    var newInstance = Activator.CreateInstance(type) as ICommand;
-
-                    if (_commands.ContainsKey(newInstance.Key))
-                    {
-                        Console.WriteLine($"ERROR: Command {Key} already has subcommand key {newInstance.Key} defined in the commands list! Skipping command...");
-                        continue;
-                    }
-
-                    if (_commands.ContainsKey(newInstance.Shortcut))
-                    {
-                        Console.WriteLine($"ERROR: Command {Key} already has subcommand shortcut {newInstance.Shortcut} defined in the commands list! Skipping command...");
-                        continue;
-                    }
-
-                    _commands.Add(newInstance.Key, newInstance);
-                    _commands.Add(newInstance.Shortcut, newInstance);
-
-                    newInstance.Setup();
+                    Console.WriteLine($"ERROR: Command {Key} already has subcommand key {newInstance.Key} defined in the commands list! Skipping command...");
+                    return;
                 }
+
+                if (_commands.ContainsKey(newInstance.Shortcut))
+                {
+                    Console.WriteLine($"ERROR: Command {Key} already has subcommand shortcut {newInstance.Shortcut} defined in the commands list! Skipping command...");
+                    return;
+                }
+
+                _commands.Add(newInstance.Key, newInstance);
+                _commands.Add(newInstance.Shortcut, newInstance);
+
+                newInstance.Setup();
             }
         }
 
@@ -106,6 +126,7 @@ namespace SabTool.CLI.Base
         protected void AddInstance(ICommand command)
         {
             _commands.Add(command.Key, command);
+            _commands.Add(command.Shortcut, command);
 
             command.Setup();
         }

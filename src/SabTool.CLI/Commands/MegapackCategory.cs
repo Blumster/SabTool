@@ -13,12 +13,7 @@
 
         public override void Setup()
         {
-            _commands.Clear();
-
-            AddInstance<MegapackGlobalCategory>();
-            AddInstance<MegapackFranceCategory>();
-            AddInstance<MegapackDLCGlobalCategory>();
-            AddInstance<MegapackDLCFranceCategory>();
+            SetupWithTypes(typeof(MegapackGlobalCategory), typeof(MegapackFranceCategory), typeof(MegapackDLCGlobalCategory), typeof(MegapackDLCFranceCategory));
         }
     }
 }

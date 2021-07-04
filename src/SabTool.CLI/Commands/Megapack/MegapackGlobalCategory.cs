@@ -6,8 +6,7 @@ using System.Linq;
 namespace SabTool.CLI.Commands.Megapack
 {
     using Base;
-    using Containers.LooseFiles;
-    using Containers.Megapacks.Global;
+    using Data.LooseFiles;
 
     public class MegapackGlobalCategory : BaseCategory
     {
@@ -81,7 +80,7 @@ namespace SabTool.CLI.Commands.Megapack
                     return false;
                 }
 
-                var globalMap = new Map();
+                /*var globalMap = new Map();
 
                 using (var ms = new MemoryStream(globalMapEntry.Data))
                     globalMap.Read(ms);
@@ -109,7 +108,7 @@ namespace SabTool.CLI.Commands.Megapack
                 foreach (var megapack in megapacks)
                 {
                     // TODO: extract when we have the proper file reading methods
-                }
+                }*/
 
                 Console.WriteLine("Successfully unpacked the global megapacks!");
                 return true;

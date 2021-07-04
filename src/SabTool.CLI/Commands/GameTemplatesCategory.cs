@@ -6,8 +6,8 @@ using System.Linq;
 namespace SabTool.CLI.Commands
 {
     using Base;
-    using Containers.GameTemplates;
-    using Containers.LooseFiles;
+    using Data.GameTemplates;
+    using Data.LooseFiles;
 
     public class GameTemplatesCategory : BaseCategory
     {
@@ -61,10 +61,10 @@ namespace SabTool.CLI.Commands
                     return false;
                 }
 
-                var gameTemplates = new GameTemplates();
+                /*var gameTemplates = new GameTemplates();
 
                 using (var ms = new MemoryStream(gameTemplatesEntry.Data))
-                    gameTemplates.Read(ms);
+                    gameTemplates.Read(ms);*/
 
                 return true;
             }

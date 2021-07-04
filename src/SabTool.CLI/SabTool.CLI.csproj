@@ -8,12 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SabTool.Containers\SabTool.Containers.csproj" />
-    <ProjectReference Include="..\SabTool.Parsers\SabTool.Parsers.csproj" />
+    <None Include="..\.editorconfig" Link=".editorconfig" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\.editorconfig" Link=".editorconfig" />
+    <ProjectReference Include="..\SabTool.Data\SabTool.Data.csproj" />
+    <ProjectReference Include="..\SabTool.Utils\SabTool.Utils.csproj" />
   </ItemGroup>
 
 </Project>
