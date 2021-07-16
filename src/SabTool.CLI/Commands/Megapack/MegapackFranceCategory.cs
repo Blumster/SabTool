@@ -6,7 +6,7 @@ using System.Linq;
 namespace SabTool.CLI.Commands.Megapack
 {
     using Base;
-    using Data.LooseFiles;
+    using Data;
 
     public class MegapackFranceCategory : BaseCategory
     {

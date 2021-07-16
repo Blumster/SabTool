@@ -6,8 +6,8 @@ using System.Linq;
 namespace SabTool.CLI.Commands
 {
     using Base;
+    using Data;
     using Data.GameTemplates;
-    using Data.LooseFiles;
 
     public class GameTemplatesCategory : BaseCategory
     {

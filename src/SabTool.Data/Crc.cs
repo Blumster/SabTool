@@ -1,4 +1,4 @@
-﻿namespace SabTool.Data.Misc
+﻿namespace SabTool.Data
 {
     using Utils;
 

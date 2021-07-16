@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
-namespace SabTool.Data.LooseFiles
+namespace SabTool.Data
 {
-    using System.IO;
     using Utils.Extensions;
 
     public class LooseFile
@@ -62,6 +62,32 @@ namespace SabTool.Data.LooseFiles
                         bw.Write((byte)0);
                 }
             }
+        }
+    }
+
+    public class LooseFileEntry
+    {
+        public uint Crc { get; set; }
+        public string Name { get; set; }
+        public byte[] Data { get; set; }
+
+        public LooseFileEntry(uint crc, string fileName, string filePath)
+        {
+            Crc = crc;
+            Name = fileName;
+            Data = File.ReadAllBytes(filePath);
+        }
+
+        public LooseFileEntry(uint crc, string fileName, byte[] data)
+        {
+            Crc = crc;
+            Name = fileName;
+            Data = data;
+        }
+
+        public override string ToString()
+        {
+            return $"LooseFileEntry(Crc: 0x{Crc:X8}, Name: \"{Name}\", Size: {Data.Length})";
         }
     }
 }

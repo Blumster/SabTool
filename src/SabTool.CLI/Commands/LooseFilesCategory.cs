@@ -6,7 +6,7 @@ using System.Linq;
 namespace SabTool.CLI.Commands
 {
     using Base;
-    using Data.LooseFiles;
+    using Data;
 
     public class LooseFilesCategory : BaseCategory
     {
