@@ -6,8 +6,6 @@ using System.Threading.Tasks;
 
 namespace SabTool.Data.Graphics
 {
-    using Misc;
-
     public class WSModel
     {
         public WSModel()
@@ -19,7 +17,33 @@ namespace SabTool.Data.Graphics
         {
             reader.BaseStream.Position += 0x4C;
 
-            var vector3 = new Vector3(reader);
+            var vector3_4C = new Vector3(reader);
+            var vector4_58 = new Vector4(reader);
+            var int_68 = reader.ReadUInt32();
+
+            reader.BaseStream.Position += 0xC;
+
+            var int_78 = reader.ReadUInt32();
+
+            reader.BaseStream.Position += 0x18;
+
+            var crc_94 = reader.ReadUInt32();
+
+            reader.BaseStream.Position += 0x18;
+
+            var int_B0 = reader.ReadUInt32();
+
+            reader.BaseStream.Position += 0x8;
+
+            var byte_B9 = reader.ReadByte();
+
+            reader.BaseStream.Position += 0x4;
+
+            var byte_BB = reader.ReadByte();
+
+            reader.BaseStream.Position += 0x3;
+
+            var byte_BF = reader.ReadByte();
         }
     }
 }
