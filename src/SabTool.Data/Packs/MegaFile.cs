@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace SabTool.Data.Megapacks
+namespace SabTool.Data.Packs
 {
     using Utils.Extensions;
 
@@ -72,6 +72,11 @@ namespace SabTool.Data.Megapacks
             }
 
             return true;
+        }
+
+        public void ReadStreamBlocks()
+        {
+
         }
 
         public void Export()

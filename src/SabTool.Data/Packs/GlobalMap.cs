@@ -1,21 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 
-namespace SabTool.Client.Streaming
+namespace SabTool.Data.Packs
 {
     using Utils.Extensions;
-    using Utils.Misc;
 
-    public class WSStreamingManager : Singleton<WSStreamingManager>
+    public class GlobalMap
     {
         public uint NumTotalBlocks { get; set; }
         public uint NumPalettes { get; set; }
-
-        public WSStreamingManager()
-            : base()
-        {
-        }
 
         public bool ReadMap1(BinaryReader br, string mapFileName)
         {
@@ -96,7 +92,7 @@ namespace SabTool.Client.Streaming
             if (unkCount <= 0)
                 return;
 
-            // gibebrish?
+            // gibberish?
 
             while (true)
             {
