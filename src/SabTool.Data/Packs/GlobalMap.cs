@@ -11,11 +11,13 @@ namespace SabTool.Data.Packs
     public class GlobalMap
     {
         public uint NumTotalBlocks { get; set; }
-        public uint NumPalettes { get; set; }
+        public uint NumStreamBlocks { get; set; }
+        public StreamBlock[][] StreamBlockArray { get; set; } = new StreamBlock[2][];
+        public Dictionary<Crc, StreamBlock> DynamicBlocks { get; } = new();
 
-        public bool ReadMap1(BinaryReader br, string mapFileName)
+        public bool Read(BinaryReader br, string mapFileName)
         {
-            if (br.CheckHeaderString("MAP6", reversed: true))
+            if (!br.CheckHeaderString("MAP6", reversed: true))
                 return false;
 
             var mapFileNameWithoutExtension = Path.GetFileNameWithoutExtension(mapFileName);
@@ -27,11 +29,11 @@ namespace SabTool.Data.Packs
 
             do
             {
-                NumPalettes = br.ReadUInt32();
+                NumStreamBlocks = br.ReadUInt32();
 
-                //StreamBlockArray[streamBlockArrayIdx] = new WSStreamBlockNode[NumPalettes];
+                StreamBlockArray[streamBlockArrayIdx] = new StreamBlock[NumStreamBlocks];
 
-                if (NumPalettes == 0)
+                if (NumStreamBlocks == 0)
                 {
                     ++streamBlockArrayIdx;
                     continue;
@@ -42,40 +44,39 @@ namespace SabTool.Data.Packs
 
                 do
                 {
-                    var crc = br.ReadInt32();
+                    var crc = new Crc(br.ReadUInt32());
                     var strLen = br.ReadUInt16();
                     var tempName = br.ReadStringWithMaxLength(strLen);
                     var nameWithItr = string.Format("{0}{1}", tempName, itrCount);
 
-                    /*var node = StreamBlockArray[streamBlockArrayIdx][i] = new WSStreamBlockNode(crc);
-                    node.StreamBlock.Field198_CRC = crc;
+                    var streamBlock = new StreamBlock
+                    {
+                        Id = crc,
+                        Midpoint = new(0.0f, 0.0f, 0.0f),
+                        FieldC0 = BitConverter.ToSingle(BitConverter.GetBytes(0xFFFFFFFF), 0)
+                    };
+
+                    streamBlock.Extents[0] = new(-10000.0f, -10000.0f, -10000.0f);
+                    streamBlock.Extents[1] = new(10000.0f, 10000.0f, 10000.0f);
 
                     // Skipping two blocks on unused data
                     br.BaseStream.Position += 12 * 2;
 
-                    node.StreamBlock.SetFileNameFromFormat("{0}\\{1}", mapFileNameWithoutExtension, nameWithItr);
+                    streamBlock.FileName = $"{mapFileNameWithoutExtension}\\{nameWithItr}";
 
                     // SKipping two unused shorts
                     br.BaseStream.Position += 2 * 2;
 
-                    node.StreamBlock.Flags = (unkFlagStuff | node.StreamBlock.Flags & 0xFFFFE3FF) & 0xFFFFFF3F;
-                    node.StreamBlock.FieldA4 = 0.0f;
-                    node.StreamBlock.FieldA8 = 0.0f;
-                    node.StreamBlock.FieldAC = 0.0f;
-                    node.StreamBlock.FieldCC = -10000.0f;
-                    node.StreamBlock.FieldD0 = -10000.0f;
-                    node.StreamBlock.FieldD4 = -10000.0f;
-                    node.StreamBlock.FieldDC = 10000.0f;
-                    node.StreamBlock.FieldE0 = 10000.0f;
-                    node.StreamBlock.FieldE4 = 10000.0f;
-                    node.StreamBlock.FieldC0 = BitConverter.ToSingle(BitConverter.GetBytes(0xFFFFFFFF), 0);
+                    streamBlock.Flags = (unkFlagStuff | streamBlock.Flags & 0xFFFFE3FF) & 0xFFFFFF3F;
 
-                    node.StreamBlock.ReadSomeArrays(br);
-                    node.StreamBlock.Sub659F20(br);
+                    streamBlock.ReadTextureInfo(br);
+                    streamBlock.ReadEntries(br);
 
-                    node.StreamBlock.Flags = (node.StreamBlock.Flags & 0xFFFFFFF8) | 0x100;*/
+                    streamBlock.Flags = (streamBlock.Flags & 0xFFFFFFF8) | 0x100;
+
+                    StreamBlockArray[streamBlockArrayIdx][i] = streamBlock;
                 }
-                while (++i < NumPalettes);
+                while (++i < NumStreamBlocks);
 
                 ++streamBlockArrayIdx;
                 ++itrCount;
@@ -87,20 +88,64 @@ namespace SabTool.Data.Packs
             return true;
         }
 
-        public void LoadBlocksFromMapFile(BinaryReader br, uint unkCount, string mapFileNameWithoutExtension, bool unk)
+        public void LoadBlocksFromMapFile(BinaryReader br, uint count, string mapFileNameWithoutExtension, bool removeExisting)
         {
-            if (unkCount <= 0)
+            if (count <= 0)
                 return;
 
-            // gibberish?
-
-            while (true)
+            for (var i = 0; i < count; ++i)
             {
-                var unkInt = br.ReadUInt32();
+                var blockCrc = new Crc(br.ReadUInt32());
 
                 var strLen = br.ReadUInt16();
-                var str = br.ReadStringWithMaxLength(strLen);
+                var blockName = "";
+
+                if (strLen > 0)
+                    blockName = br.ReadStringWithMaxLength(strLen);
+
+                var fArr1 = new float[3];
+                fArr1[0] = br.ReadSingle();
+                fArr1[1] = br.ReadSingle();
+                fArr1[2] = br.ReadSingle();
+
+                var fArr2 = new float[3];
+                fArr2[0] = br.ReadSingle();
+                fArr2[1] = br.ReadSingle();
+                fArr2[2] = br.ReadSingle();
+
+                br.ReadInt16();
+
+                var v22 = br.ReadInt16();
+
+                if (removeExisting && DynamicBlocks.ContainsKey(blockCrc))
+                    DynamicBlocks.Remove(blockCrc);
+
+                var block = new StreamBlock();
+                block.Flags |= 8;
+                block.Id = blockCrc;
+                block.FileName = $"{mapFileNameWithoutExtension}\\{blockName}";
+
+                // Do not override it. If removeExisting is true, existing ones will be removed
+                if (!DynamicBlocks.ContainsKey(blockCrc))
+                {
+                    DynamicBlocks.Add(blockCrc, block);
+                }
+                else
+                {
+                    Console.WriteLine($"DEBUG: Trying to add {blockCrc} (${block.FileName}) to dictionary, but it already exists!");
+                }
+
+                block.Extents[0] = new(fArr1[0], 0.0f, fArr1[2]);
+                block.Extents[1] = new(fArr2[0], 0.0f, fArr2[2]);
+                block.Midpoint = new(GetMiddlePoint(fArr1[0], fArr2[0]), GetMiddlePoint(0.0f, 0.0f), GetMiddlePoint(fArr1[2], fArr2[2]));
+                block.Flags = (block.Flags & 0xFFFFE33F) | (uint)((v22 & 7) << 10);
+                block.Flags &= 0xFFFFFEF8;
+
+                block.ReadTextureInfo(br);
+                block.ReadEntries(br);
             }
+
+            static float GetMiddlePoint(float f1, float f2) => f1 + ((f2 - f1) / 2.0f);
         }
     }
 }

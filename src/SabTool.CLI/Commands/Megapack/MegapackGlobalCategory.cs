@@ -7,6 +7,7 @@ namespace SabTool.CLI.Commands.Megapack
 {
     using Base;
     using Data;
+    using Data.Packs;
 
     public class MegapackGlobalCategory : BaseCategory
     {
@@ -18,7 +19,7 @@ namespace SabTool.CLI.Commands.Megapack
 
         public class UnpackCommand : BaseCommand
         {
-            public static readonly List<string> Megapacks = new List<string>()
+            public static readonly List<string> Megapacks = new()
             {
                 @"Global\Dynamic0.megapack",
                 @"Global\palettes0.megapack",
@@ -80,12 +81,16 @@ namespace SabTool.CLI.Commands.Megapack
                     return false;
                 }
 
-                /*var globalMap = new Map();
+                var globalMap = new GlobalMap();
 
                 using (var ms = new MemoryStream(globalMapEntry.Data))
-                    globalMap.Read(ms);
+                {
+                    using var reader = new BinaryReader(ms);
 
-                var megapacks = new List<Megapack>();
+                    globalMap.Read(reader, "global.map");
+                }
+
+                /*var megapacks = new List<Megapack>();
 
                 foreach (var filePath in Megapacks)
                 {

@@ -6,7 +6,7 @@ namespace SabTool.Data.Packs
 {
     using Utils.Extensions;
 
-    public class MegaFile
+    public class GlobalMegaFile
     {
         public Dictionary<int, FileEntry> FileEntries { get; set; } = new Dictionary<int, FileEntry>();
         public uint FileCount { get; set; }

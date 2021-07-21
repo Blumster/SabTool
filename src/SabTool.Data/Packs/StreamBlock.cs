@@ -7,12 +7,16 @@ using System.Threading.Tasks;
 
 namespace SabTool.Data.Packs
 {
+    using Data;
     using Utils.Extensions;
 
     public class StreamBlock
     {
         public string FileName { get; set; }
-        public uint[] Palettes { get; set; } = new uint[32];
+        public uint[] Palettes { get; } = new uint[32];
+        public Vector3 Midpoint { get; set; }
+        public float FieldC0 { get; set; }
+        public Vector3[] Extents { get; } = new Vector3[2];
         public uint TotalTextureSize { get; set; }
         public uint CountF4 { get; set; }
         public uint CountF8 { get; set; }
@@ -27,8 +31,9 @@ namespace SabTool.Data.Packs
         public uint[] EntryCounts { get; } = new uint[9];
         public Dictionary<uint, uint[]> FenceTree { get; } = new();
         public uint Count1ACFor1B0And1B4_1AC { get; set; }
-        public uint[] Array1B0 { get; set; }
+        public Crc[] Array1B0 { get; set; }
         public byte[] Array1B4 { get; set; }
+        public Crc Id { get; set; }
         public ushort CountFor1B0_19C { get; set; }
 
 
@@ -71,7 +76,8 @@ namespace SabTool.Data.Packs
 
                 for (var i = 0; i < TextureCount; ++i)
                 {
-                    TextureInfoArray[i].Crc = reader.ReadUInt32();
+                    TextureInfoArray[i] = new();
+                    TextureInfoArray[i].Crc = new(reader.ReadUInt32());
                     TextureInfoArray[i].UncompressedSize = reader.ReadUInt32();
 
                     TotalTextureSize += TextureInfoArray[i].UncompressedSize;
@@ -85,7 +91,8 @@ namespace SabTool.Data.Packs
 
                 for (var i = 0; i < CountFor128_124; ++i)
                 {
-                    Array128[i].Crc = reader.ReadUInt32();
+                    Array128[i] = new();
+                    Array128[i].Crc = new(reader.ReadUInt32());
                     Array128[i].UncompressedSize = reader.ReadUInt32();
 
                     TotalTextureSize += Array128[i].UncompressedSize;
@@ -103,12 +110,12 @@ namespace SabTool.Data.Packs
             Count1ACFor1B0And1B4_1AC = br.ReadUInt32();
             if (Count1ACFor1B0And1B4_1AC > 0)
             {
-                Array1B0 = new uint[4 * Count1ACFor1B0And1B4_1AC];
+                Array1B0 = new Crc[4 * Count1ACFor1B0And1B4_1AC];
                 Array1B4 = new byte[Count1ACFor1B0And1B4_1AC];
 
                 for (var i = 0; i < Count1ACFor1B0And1B4_1AC; ++i)
                 {
-                    Array1B0[i] = br.ReadUInt32();
+                    Array1B0[i] = new(br.ReadUInt32());
                     Array1B4[i] = 0;
                 }
             }
@@ -122,7 +129,7 @@ namespace SabTool.Data.Packs
 
                 for (var i = 0; i < CountFor1B0_19C; ++i)
                 {
-                    var streamBlockId = br.ReadInt32();
+                    var streamBlockId = new Crc(br.ReadUInt32());
 
                     //var v14 = StreamingManager.Instance.Sub9EE6B0(streamBlockId, (Flags & 0x1C00) == 0x800);
 
@@ -176,8 +183,13 @@ namespace SabTool.Data.Packs
 
         public class TextureInfo
         {
-            public uint Crc { get; set; }
+            public Crc Crc { get; set; }
             public uint UncompressedSize { get; set; }
+
+            public override string ToString()
+            {
+                return $"TextureInfo({Crc}, {UncompressedSize})";
+            }
         }
     }
 }
