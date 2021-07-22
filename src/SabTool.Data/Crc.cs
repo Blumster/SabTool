@@ -11,6 +11,11 @@
             Value = value;
         }
 
+        public string GetString()
+        {
+            return Hash.HashToString(Value);
+        }
+
         public override string ToString()
         {
             return $"0x{Value:X8} ({Hash.HashToString(Value)})";
