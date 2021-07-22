@@ -19,7 +19,7 @@ namespace SabTool.CLI.Commands.Megapack
 
         public class UnpackCommand : BaseCommand
         {
-            public static readonly List<string> Megapacks = new()
+            public static readonly List<string> Megafiles = new()
             {
                 @"Global\Dynamic0.megapack",
                 @"Global\palettes0.megapack",
@@ -58,7 +58,7 @@ namespace SabTool.CLI.Commands.Megapack
                     return false;
                 }
 
-                foreach (var filePath in Megapacks)
+                foreach (var filePath in Megafiles)
                 {
                     var fullPath = Path.Combine(basePath, filePath);
 
@@ -87,33 +87,31 @@ namespace SabTool.CLI.Commands.Megapack
                 {
                     using var reader = new BinaryReader(ms);
 
-                    globalMap.Read(reader, "global.map");
+                    globalMap.Read(reader, globalMapEntry.Name);
                 }
 
-                /*var megapacks = new List<Megapack>();
+                var megaFiles = new List<GlobalMegaFile>();
 
-                foreach (var filePath in Megapacks)
+                foreach (var filePath in Megafiles)
                 {
                     var fullPath = Path.Combine(basePath, filePath);
 
                     if (!File.Exists(fullPath))
                         continue;
 
-                    var megapack = new Megapack(globalMap);
+                    using var fs = new FileStream(fullPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+                    using var reader = new BinaryReader(fs);
 
-                    using (var fs = new FileStream(fullPath, FileMode.Open, FileAccess.Read, FileShare.Read))
-                    {
-                        Console.WriteLine($"Reading: {Path.GetFileName(fullPath)}");
-                        megapack.Read(fs);
-                    }
+                    var megafile = new GlobalMegaFile(globalMap);
+                    megafile.Read(reader);
 
-                    megapacks.Add(megapack);
+                    megaFiles.Add(megafile);
                 }
-
-                foreach (var megapack in megapacks)
+                
+                foreach (var megafile in megaFiles)
                 {
                     // TODO: extract when we have the proper file reading methods
-                }*/
+                }
 
                 Console.WriteLine("Successfully unpacked the global megapacks!");
                 return true;
