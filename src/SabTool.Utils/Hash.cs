@@ -46,15 +46,21 @@ namespace SabTool.Utils
 
             /* Debug code: It writes back the contents of the lookup table. This way redundant entries can be filtered out after addig rows to the file.
              * Notice: It will overwrite the file that was copied to the output directory, not the one in the project files!
+            Save();
+            */
+        }
+
+        public static void Save()
+        {
             var lines = new string[lookupTable.Count];
             var i = 0;
+
             foreach (var pair in lookupTable)
             {
                 lines[i++] = $"0x{pair.Key:X8}:{pair.Value}";
             }
 
             File.WriteAllLines("Hashes.txt", lines);
-            */
         }
 
         public static uint FNV32string(string source, int maxLen = -1)
@@ -81,9 +87,9 @@ namespace SabTool.Utils
 
         public static uint StringToHash(string source)
         {
-            foreach (var pair in lookupTable)
+            /*foreach (var pair in lookupTable)
                 if (pair.Value.ToLowerInvariant() == source.ToLowerInvariant())
-                    return pair.Key;
+                    return pair.Key;*/
 
             var hash = FNV32string(source);
 
@@ -104,7 +110,7 @@ namespace SabTool.Utils
         }
 
         private const int CharCount = 45;
-        private static char[] Characters = new char[CharCount] {
+        private static readonly char[] Characters = new char[CharCount] {
             'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
             'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
             'u', 'v', 'w', 'x', 'y', 'z',

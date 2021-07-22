@@ -77,7 +77,7 @@ namespace SabTool.CLI.Base
             Console.WriteLine();
 
             var commandKey = commandParts.FirstOrDefault();
-            if (!_commands.ContainsKey(commandKey))
+            if (commandKey == null || !_commands.ContainsKey(commandKey))
             {
                 Console.WriteLine("ERROR: Unknown command!");
                 Console.WriteLine();

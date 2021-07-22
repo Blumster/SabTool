@@ -63,7 +63,7 @@ namespace SabTool.CLI.Commands
 
                 var value = Hash.HashToString(hash);
 
-                if (!string.IsNullOrEmpty(value))
+                if (value != null)
                 {
                     Console.WriteLine("\"0x{0}\" => {1}", hashStr, value);
                 }
@@ -107,6 +107,20 @@ namespace SabTool.CLI.Commands
 
                 Console.WriteLine("ERROR: Invalid length argument given!");
                 return false;
+            }
+        }
+
+        public class SaveCommand : BaseCommand
+        {
+            public override string Key { get; } = "save";
+            public override string Shortcut { get; } = "s";
+            public override string Usage { get; } = "";
+
+            public override bool Execute(IEnumerable<string> arguments)
+            {
+                Hash.Save();
+
+                return true;
             }
         }
 
