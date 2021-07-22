@@ -94,9 +94,24 @@ namespace SabTool.Data.Packs
 
         }
 
-        public void Export()
+        public void Export(BinaryReader reader, string outputPath)
         {
+            foreach (var entry in FileEntries)
+            {
+                var fileName = string.IsNullOrWhiteSpace(entry.Key.GetString()) ? $"0x{entry.Key.Value:X8}.dynpack" : entry.Key.GetString();
+                var outputFilePath = Path.Combine(outputPath, fileName);
+                Directory.CreateDirectory(Path.GetDirectoryName(outputFilePath));
 
+                var startOff = reader.BaseStream.Position;
+
+                reader.BaseStream.Position = entry.Value.Offset;
+
+                var data = reader.ReadBytes(entry.Value.Size);
+
+                File.WriteAllBytes(outputFilePath, data);
+
+                reader.BaseStream.Position = startOff;
+            }
         }
     }
 
@@ -132,15 +147,15 @@ namespace SabTool.Data.Packs
     {
         public Crc Crc { get; set; }
         public Crc Crc2 { get; set; }
-        public uint Size { get; set; }
-        public ulong Offset { get; set; }
+        public int Size { get; set; }
+        public long Offset { get; set; }
 
         public FileEntry(BinaryReader br)
         {
             Crc = new(br.ReadUInt32());
             Crc2 = new(br.ReadUInt32());
-            Size = br.ReadUInt32();
-            Offset = br.ReadUInt64();
+            Size = br.ReadInt32();
+            Offset = br.ReadInt64();
         }
     }
 }

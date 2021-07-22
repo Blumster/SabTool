@@ -90,11 +90,10 @@ namespace SabTool.CLI.Commands.Megapack
                     globalMap.Read(reader, globalMapEntry.Name);
                 }
 
-                var megaFiles = new List<GlobalMegaFile>();
-
                 foreach (var filePath in Megafiles)
                 {
                     var fullPath = Path.Combine(basePath, filePath);
+                    var megaOutDir = Path.Combine(outputDir, Path.GetFileName(fullPath));
 
                     if (!File.Exists(fullPath))
                         continue;
@@ -103,14 +102,9 @@ namespace SabTool.CLI.Commands.Megapack
                     using var reader = new BinaryReader(fs);
 
                     var megafile = new GlobalMegaFile(globalMap);
-                    megafile.Read(reader);
 
-                    megaFiles.Add(megafile);
-                }
-                
-                foreach (var megafile in megaFiles)
-                {
-                    // TODO: extract when we have the proper file reading methods
+                    megafile.Read(reader);
+                    megafile.Export(reader, megaOutDir);
                 }
 
                 Console.WriteLine("Successfully unpacked the global megapacks!");
