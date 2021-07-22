@@ -1,18 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 
 namespace SabTool.Data.Packs
 {
+    using Utils;
     using Utils.Extensions;
 
     public class GlobalMegaFile
     {
-        public Dictionary<int, FileEntry> FileEntries { get; set; } = new Dictionary<int, FileEntry>();
+        public Dictionary<Crc, FileEntry> FileEntries { get; set; } = new();
         public uint FileCount { get; set; }
-        public int[] Array3D8 { get; set; }
+        public uint[] Array3D8 { get; set; }
+        public GlobalMap Map { get; }
 
-        public bool ReadHeader(BinaryReader br)
+        public GlobalMegaFile(GlobalMap map)
+        {
+            Map = map;
+        }
+
+        public bool Read(BinaryReader br)
         {
             if (!br.CheckHeaderString("MP00", reversed: true))
                 return false;
@@ -22,6 +30,13 @@ namespace SabTool.Data.Packs
             for (var i = 0; i < FileCount; ++i)
             {
                 var entry = new FileEntry(br);
+
+                // Store the hashes
+                if (!string.IsNullOrEmpty(entry.Crc2.GetString()))
+                {
+                    Hash.StringToHash($"global\\{entry.Crc2.GetString()}.dynpack");
+                    Hash.StringToHash($"global\\{entry.Crc2.GetString()}.palettepack");
+                }
 
                 FileEntries.Add(entry.Crc, entry);
 
@@ -39,19 +54,19 @@ namespace SabTool.Data.Packs
                     Console.WriteLine($"Adding unknown entry: 0x{crc:X8} => 0x{crc2:X8}");*/
             }
 
-            Array3D8 = new int[2 * FileCount];
+            Array3D8 = new uint[2 * FileCount];
 
             for (var i = 0; i < FileCount; ++i)
             {
-                Array3D8[2 * i] = br.ReadInt32();
-                Array3D8[2 * i + 1] = br.ReadInt32();
+                Array3D8[2 * i] = br.ReadUInt32();
+                Array3D8[2 * i + 1] = br.ReadUInt32();
 
-                var entryCrc = Array3D8[2 * i];
-                var crc2 = Array3D8[2 * i + 1];
+                var entryCrc = new Crc(Array3D8[2 * i]);
+                var crc2 = new Crc(Array3D8[2 * i + 1]);
 
                 if (!FileEntries.ContainsKey(entryCrc))
                 {
-                    Console.WriteLine($"ERROR: 0x{entryCrc:X8} => 0x{crc2:X8} is not a valid fileentry!");
+                    Console.WriteLine($"ERROR: {entryCrc} => {crc2} is not a valid fileentry!");
                     continue;
                 }
 
@@ -115,17 +130,17 @@ namespace SabTool.Data.Packs
 
     public class FileEntry
     {
-        public int Crc { get; set; }
-        public int Crc2 { get; set; }
+        public Crc Crc { get; set; }
+        public Crc Crc2 { get; set; }
         public uint Size { get; set; }
-        public long Offset { get; set; }
+        public ulong Offset { get; set; }
 
         public FileEntry(BinaryReader br)
         {
-            Crc = br.ReadInt32();
-            Crc2 = br.ReadInt32();
+            Crc = new(br.ReadUInt32());
+            Crc2 = new(br.ReadUInt32());
             Size = br.ReadUInt32();
-            Offset = br.ReadInt64();
+            Offset = br.ReadUInt64();
         }
     }
 }

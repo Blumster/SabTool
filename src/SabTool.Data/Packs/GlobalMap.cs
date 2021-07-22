@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace SabTool.Data.Packs
 {
+    using Utils;
     using Utils.Extensions;
 
     public class GlobalMap
@@ -44,16 +45,17 @@ namespace SabTool.Data.Packs
 
                 do
                 {
-                    var crc = new Crc(br.ReadUInt32());
+                    var blockId = new Crc(br.ReadUInt32());
                     var strLen = br.ReadUInt16();
-                    var tempName = br.ReadStringWithMaxLength(strLen);
-                    var nameWithItr = string.Format("{0}{1}", tempName, itrCount);
+                    var name = br.ReadStringWithMaxLength(strLen);
+                    var nameWithItr = string.Format("{0}{1}", name, itrCount);
 
                     var streamBlock = new StreamBlock
                     {
-                        Id = crc,
+                        Id = blockId,
                         Midpoint = new(0.0f, 0.0f, 0.0f),
-                        FieldC0 = BitConverter.ToSingle(BitConverter.GetBytes(0xFFFFFFFF), 0)
+                        FieldC0 = BitConverter.ToSingle(BitConverter.GetBytes(0xFFFFFFFF), 0),
+                        FileName = $"{mapFileNameWithoutExtension}\\{nameWithItr}"
                     };
 
                     streamBlock.Extents[0] = new(-10000.0f, -10000.0f, -10000.0f);
@@ -61,8 +63,6 @@ namespace SabTool.Data.Packs
 
                     // Skipping two blocks on unused data
                     br.BaseStream.Position += 12 * 2;
-
-                    streamBlock.FileName = $"{mapFileNameWithoutExtension}\\{nameWithItr}";
 
                     // SKipping two unused shorts
                     br.BaseStream.Position += 2 * 2;
@@ -120,29 +120,36 @@ namespace SabTool.Data.Packs
                 if (removeExisting && DynamicBlocks.ContainsKey(blockCrc))
                     DynamicBlocks.Remove(blockCrc);
 
-                var block = new StreamBlock();
-                block.Flags |= 8;
-                block.Id = blockCrc;
-                block.FileName = $"{mapFileNameWithoutExtension}\\{blockName}";
+                var streamBlock = new StreamBlock
+                {
+                    Id = blockCrc,
+                    FileName = $"{mapFileNameWithoutExtension}\\{blockName}"
+                };
+
+                streamBlock.Flags |= 8;
+
+                // Save the string into the lookup table for later use
+                Hash.StringToHash(blockName);
+                Hash.StringToHash($"{mapFileNameWithoutExtension}\\{blockName}.palettepack");
 
                 // Do not override it. If removeExisting is true, existing ones will be removed
                 if (!DynamicBlocks.ContainsKey(blockCrc))
                 {
-                    DynamicBlocks.Add(blockCrc, block);
+                    DynamicBlocks.Add(blockCrc, streamBlock);
                 }
                 else
                 {
-                    Console.WriteLine($"DEBUG: Trying to add {blockCrc} (${block.FileName}) to dictionary, but it already exists!");
+                    Console.WriteLine($"DEBUG: Trying to add {blockCrc} (${streamBlock.FileName}) to dictionary, but it already exists!");
                 }
 
-                block.Extents[0] = new(fArr1[0], 0.0f, fArr1[2]);
-                block.Extents[1] = new(fArr2[0], 0.0f, fArr2[2]);
-                block.Midpoint = new(GetMiddlePoint(fArr1[0], fArr2[0]), GetMiddlePoint(0.0f, 0.0f), GetMiddlePoint(fArr1[2], fArr2[2]));
-                block.Flags = (block.Flags & 0xFFFFE33F) | (uint)((v22 & 7) << 10);
-                block.Flags &= 0xFFFFFEF8;
+                streamBlock.Extents[0] = new(fArr1[0], 0.0f, fArr1[2]);
+                streamBlock.Extents[1] = new(fArr2[0], 0.0f, fArr2[2]);
+                streamBlock.Midpoint = new(GetMiddlePoint(fArr1[0], fArr2[0]), GetMiddlePoint(0.0f, 0.0f), GetMiddlePoint(fArr1[2], fArr2[2]));
+                streamBlock.Flags = (streamBlock.Flags & 0xFFFFE33F) | (uint)((v22 & 7) << 10);
+                streamBlock.Flags &= 0xFFFFFEF8;
 
-                block.ReadTextureInfo(br);
-                block.ReadEntries(br);
+                streamBlock.ReadTextureInfo(br);
+                streamBlock.ReadEntries(br);
             }
 
             static float GetMiddlePoint(float f1, float f2) => f1 + ((f2 - f1) / 2.0f);
