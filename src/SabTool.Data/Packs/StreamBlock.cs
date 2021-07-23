@@ -12,6 +12,8 @@ namespace SabTool.Data.Packs
 
     public class StreamBlock
     {
+        private static readonly uint[] OffIndices = new uint[9] { 6, 7, 0, 2, 8, 4, 3, 1, 5 };
+
         public string FileName { get; set; }
         public uint[] Palettes { get; } = new uint[32];
         public Vector3 Midpoint { get; set; }
@@ -29,13 +31,168 @@ namespace SabTool.Data.Packs
         public uint CountFor128_124 { get; set; }
         public TextureInfo[] Array128 { get; set; }
         public uint[] EntryCounts { get; } = new uint[9];
+        public Entry[][] Entries { get; } = new Entry[9][];
         public Dictionary<uint, uint[]> FenceTree { get; } = new();
         public uint Count1ACFor1B0And1B4_1AC { get; set; }
         public Crc[] Array1B0 { get; set; }
         public byte[] Array1B4 { get; set; }
         public Crc Id { get; set; }
         public ushort CountFor1B0_19C { get; set; }
+        public uint HeaderEnd { get; set; }
 
+
+        public void Read(BinaryReader reader)
+        {
+            if (!reader.CheckHeaderString("SBLA", reversed: true))
+                throw new Exception("Invalid file fourcc found!");
+
+            ReadHeader(reader);
+        }
+
+        public void Export(string outputPath)
+        {
+            var offInd = 0;
+
+            do
+            {
+                var off = OffIndices[offInd];
+
+                if (EntryCounts[off] == 0)
+                {
+                    ++offInd;
+                    continue;
+                }
+
+                for (var i = 0; i < EntryCounts[off]; ++i)
+                {
+                    var entry = Entries[off][i];
+
+                    var extension = "bin";
+
+                    switch (off)
+                    {
+                        case 0: // mesh
+                            extension = "mesh";
+                            break;
+
+                        case 1:
+                            extension = "texture";
+                            break;
+
+                        case 2:
+                            extension = "physics";
+                            break;
+
+                        case 3:
+                            extension = "pathgraph";
+                            Console.WriteLine("PATHGRAPH! {0}", string.IsNullOrWhiteSpace(entry.Crc.GetString()) ? $"0x{entry.Crc.Value:X8}.{extension}" : $"{entry.Crc.GetString()}.{extension}");
+                            break;
+
+                        case 4:
+                            extension = "aifence";
+                            Console.WriteLine("AIFENCE! {0}", string.IsNullOrWhiteSpace(entry.Crc.GetString()) ? $"0x{entry.Crc.Value:X8}.{extension}" : $"{entry.Crc.GetString()}.{extension}");
+                            break;
+
+                        case 5:
+                            extension = "unknown";
+                            Console.WriteLine("UNK! {0}", string.IsNullOrWhiteSpace(entry.Crc.GetString()) ? $"0x{entry.Crc.Value:X8}.{extension}" : $"{entry.Crc.GetString()}.{extension}");
+                            break;
+
+                        case 6:
+                            extension = "soundbank";
+                            Console.WriteLine("SOUNDBANK! {0}", string.IsNullOrWhiteSpace(entry.Crc.GetString()) ? $"0x{entry.Crc.Value:X8}.{extension}" : $"{entry.Crc.GetString()}.{extension}");
+                            break;
+
+                        case 7:
+                            extension = "flashmovie";
+                            Console.WriteLine("FLASHMOVIE! {0}", string.IsNullOrWhiteSpace(entry.Crc.GetString()) ? $"0x{entry.Crc.Value:X8}.{extension}" : $"{entry.Crc.GetString()}.{extension}");
+                            break;
+
+                        case 8:
+                            extension = "wsd";
+                            Console.WriteLine("WSD! {0}", string.IsNullOrWhiteSpace(entry.Crc.GetString()) ? $"0x{entry.Crc.Value:X8}.{extension}" : $"{entry.Crc.GetString()}.{extension}");
+                            break;
+                    }
+
+                    var crcString = entry.Crc.GetString();
+
+                    var fileName = string.IsNullOrWhiteSpace(crcString) ? $"0x{entry.Crc.Value:X8}.{extension}" : $"{crcString}.{extension}";
+                    fileName = fileName.Replace("(", "").Replace(")", "");
+
+                    var outputFilePath = Path.Combine(outputPath, fileName);
+
+                    Directory.CreateDirectory(Path.GetDirectoryName(outputFilePath));
+
+                    File.WriteAllBytes(outputFilePath, entry.Payload);
+                }
+
+                ++offInd;
+            }
+            while (offInd < 9);
+        }
+
+        public void ReadHeader(BinaryReader reader)
+        {
+            HeaderEnd = reader.ReadUInt32();
+
+            if (HeaderEnd > 0)
+                ReadHeaderData(reader);
+
+            HeaderEnd += 4;
+
+            var offInd = 0;
+
+            do
+            {
+                var off = OffIndices[offInd];
+
+                if (EntryCounts[off] == 0)
+                {
+                    ++offInd;
+                    continue;
+                }
+
+                var entries = new Entry[EntryCounts[off]];
+
+                for (var i = 0; i < entries.Length; ++i)
+                {
+                    entries[i] = new Entry(reader);
+                }
+
+                Entries[off] = entries;
+
+                HeaderEnd += 24 * EntryCounts[off];
+
+                ++offInd;
+            }
+            while (offInd < 9);
+
+            HeaderEnd += 4;
+
+            offInd = 0;
+            do
+            {
+                var off = OffIndices[offInd];
+
+                if (EntryCounts[off] == 0)
+                {
+                    ++offInd;
+                    continue;
+                }
+
+                for (var i = 0; i < EntryCounts[off]; ++i)
+                {
+                    var entry = Entries[off][i];
+
+                    reader.BaseStream.Position = HeaderEnd + entry.Offset;
+
+                    entry.Payload = reader.ReadBytes(entry.CompressedSize);
+                }
+
+                ++offInd;
+            }
+            while (offInd < 9);
+        }
 
         public void ReadHeaderData(BinaryReader reader)
         {
@@ -189,6 +346,26 @@ namespace SabTool.Data.Packs
             public override string ToString()
             {
                 return $"TextureInfo({Crc}, {UncompressedSize})";
+            }
+        }
+
+        public class Entry
+        {
+            public Crc Crc { get; set; }
+            public int Offset { get; set; }
+            public int CompressedSize { get; set; }
+            public int UncompressedSize { get; set; }
+            public byte[] Payload { get; set; }
+            public Crc UnkCrc { get; set; }
+
+            public Entry(BinaryReader reader)
+            {
+                Crc = new(reader.ReadUInt32());
+                Offset = reader.ReadInt32();
+                CompressedSize = reader.ReadInt32();
+                UncompressedSize = reader.ReadInt32();
+                _ = reader.ReadInt32();
+                UnkCrc = new(reader.ReadUInt32());
             }
         }
     }

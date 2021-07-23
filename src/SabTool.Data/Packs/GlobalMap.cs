@@ -154,5 +154,13 @@ namespace SabTool.Data.Packs
 
             static float GetMiddlePoint(float f1, float f2) => f1 + ((f2 - f1) / 2.0f);
         }
+    
+        public StreamBlock GetDynamicBlock(Crc crc)
+        {
+            if (DynamicBlocks.TryGetValue(crc, out StreamBlock res))
+                return res;
+
+            return null;
+        }
     }
 }
