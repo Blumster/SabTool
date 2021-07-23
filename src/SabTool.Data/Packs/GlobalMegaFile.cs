@@ -89,16 +89,16 @@ namespace SabTool.Data.Packs
             return true;
         }
 
-        public void ReadStreamBlocks()
-        {
-
-        }
-
         public void Export(BinaryReader reader, string outputPath)
         {
             foreach (var entry in FileEntries)
             {
-                var fileName = string.IsNullOrWhiteSpace(entry.Key.GetString()) ? $"0x{entry.Key.Value:X8}.dynpack" : entry.Key.GetString();
+                // hack, use Streamblocks to determine
+                var ext = "dynpack";
+                if (outputPath.Contains("palettes"))
+                    ext = "palettepack";
+
+                var fileName = string.IsNullOrWhiteSpace(entry.Key.GetString()) ? $"global\\0x{entry.Key.Value:X8}.{ext}" : entry.Key.GetString();
                 var outputFilePath = Path.Combine(outputPath, fileName);
                 Directory.CreateDirectory(Path.GetDirectoryName(outputFilePath));
 
