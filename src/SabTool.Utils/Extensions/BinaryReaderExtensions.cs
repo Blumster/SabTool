@@ -1,6 +1,7 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Text;
+
+using Ionic.Zlib;
 
 namespace SabTool.Utils.Extensions
 {
@@ -76,6 +77,19 @@ namespace SabTool.Utils.Extensions
             }
 
             return sb.ToString();
+        }
+
+        public static byte[] ReadDecompressedBytes(this BinaryReader reader, int compressedLength)
+        {
+            var sourceBuff = reader.ReadBytes(compressedLength);
+
+            using var mStream = new MemoryStream(sourceBuff);
+            using var unzip = new ZlibStream(mStream, CompressionMode.Decompress);
+            using var outStream = new MemoryStream();
+
+            unzip.CopyTo(outStream);
+
+            return outStream.ToArray();
         }
     }
 }

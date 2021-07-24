@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SabTool.Data.Packs
 {
     using Data;
+    using Export;
     using Utils.Extensions;
 
     public class StreamBlock
@@ -68,6 +66,7 @@ namespace SabTool.Data.Packs
                     var entry = Entries[off][i];
 
                     var extension = "bin";
+                    IStreamBlockExportable export = null;
 
                     switch (off)
                     {
@@ -76,7 +75,8 @@ namespace SabTool.Data.Packs
                             break;
 
                         case 1:
-                            extension = "texture";
+                            export = new TextureExport();
+                            export.Read(new MemoryStream(entry.Payload, false));
                             break;
 
                         case 2:
@@ -112,6 +112,12 @@ namespace SabTool.Data.Packs
                             extension = "wsd";
                             Console.WriteLine("WSD! {0}", string.IsNullOrWhiteSpace(entry.Crc.GetString()) ? $"0x{entry.Crc.Value:X8}.{extension}" : $"{entry.Crc.GetString()}.{extension}");
                             break;
+                    }
+
+                    if (export != null)
+                    {
+                        export.Export(outputPath);
+                        continue;
                     }
 
                     var crcString = entry.Crc.GetString();
@@ -368,5 +374,11 @@ namespace SabTool.Data.Packs
                 UnkCrc = new(reader.ReadUInt32());
             }
         }
+    }
+
+    public interface IStreamBlockExportable
+    {
+        bool Read(MemoryStream reader);
+        void Export(string outputPath);
     }
 }
