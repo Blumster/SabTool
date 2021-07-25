@@ -12,7 +12,7 @@ namespace SabTool.Data.Packs
     {
         public Dictionary<Crc, FileEntry> FileEntries { get; set; } = new();
         public uint FileCount { get; set; }
-        public uint[] Array3D8 { get; set; }
+        public Tuple<Crc, Crc>[] BlockPathToNameCrcs { get; set; }
         public GlobalMap Map { get; }
 
         public GlobalMegaFile(GlobalMap map)
@@ -39,51 +39,26 @@ namespace SabTool.Data.Packs
                 }
 
                 FileEntries.Add(entry.Crc, entry);
-
-                var crc = entry.Crc;
-                var crc2 = entry.Crc2;
-
-                /*var block = StreamingManager.GetStreamBlockByCRC(crc, out string source);
-                if (block != null)
-                    Console.WriteLine($"Adding entry: 0x{entry.Crc:X8} => {block.FileName,-45} through {source}");
-
-                block = StreamingManager.GetStreamBlockByCRC(crc2, out string source2);
-                if (block != null)
-                    Console.WriteLine($"Adding entry: 0x{crc:X8} => 0x{crc2:X8} => {block.FileName,-45} through {source2}");
-                else
-                    Console.WriteLine($"Adding unknown entry: 0x{crc:X8} => 0x{crc2:X8}");*/
             }
 
-            Array3D8 = new uint[2 * FileCount];
+            BlockPathToNameCrcs = new Tuple<Crc, Crc>[FileCount];
 
             for (var i = 0; i < FileCount; ++i)
             {
-                Array3D8[2 * i] = br.ReadUInt32();
-                Array3D8[2 * i + 1] = br.ReadUInt32();
+                BlockPathToNameCrcs[i] = new(new(br.ReadUInt32()), new(br.ReadUInt32()));
 
-                var entryCrc = new Crc(Array3D8[2 * i]);
-                var crc2 = new Crc(Array3D8[2 * i + 1]);
-
-                if (!FileEntries.ContainsKey(entryCrc))
+                if (!FileEntries.ContainsKey(BlockPathToNameCrcs[i].Item1))
                 {
-                    Console.WriteLine($"ERROR: {entryCrc} => {crc2} is not a valid fileentry!");
+                    Console.WriteLine($"ERROR: {BlockPathToNameCrcs[i].Item1} => {BlockPathToNameCrcs[i].Item2} is not a valid fileentry!");
                     continue;
                 }
 
-                var entry = FileEntries[entryCrc];
-                if (entry.Crc == entryCrc && entry.Crc2 == crc2)
+                var entry = FileEntries[BlockPathToNameCrcs[i].Item1];
+                if (entry.Crc == BlockPathToNameCrcs[i].Item1 && entry.Crc2 == BlockPathToNameCrcs[i].Item2)
+                {
+                    Console.WriteLine($"BlockPathToNameCrcs Crc mismatch! {entry.Crc} != {BlockPathToNameCrcs[i].Item1} || {entry.Crc2} != {BlockPathToNameCrcs[i].Item2}");
                     continue;
-
-                /*string source;
-                var block = StreamingManager.GetStreamBlockByCRC(entryCrc, out source);
-                if (block != null)
-                    Console.WriteLine($"Map entry: 0x{entryCrc:X8} => {block.FileName,-45} through {source}");
-
-                block = StreamingManager.GetStreamBlockByCRC(crc2, out source);
-                if (block != null)
-                    Console.WriteLine($"Map entry: 0x{entryCrc:X8} 0x{crc2:X8} => {block.FileName,-45} through {source}");
-                else
-                    Console.WriteLine($"Map unknown entry: 0x{entryCrc:X8} => 0x{crc2:X8}");*/
+                }
             }
 
             return true;
@@ -95,7 +70,8 @@ namespace SabTool.Data.Packs
             {
                 // hack, use Streamblocks to determine
                 var ext = "dynpack";
-                if (outputPath.Contains("palettes"))
+
+                if (outputPath.Contains("palette"))
                     ext = "palettepack";
 
                 var fileName = string.IsNullOrWhiteSpace(entry.Key.GetString()) ? $"global\\0x{entry.Key.Value:X8}.{ext}" : entry.Key.GetString();
