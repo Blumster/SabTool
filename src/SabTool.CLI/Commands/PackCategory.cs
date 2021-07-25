@@ -13,7 +13,7 @@
 
         public override void Setup()
         {
-            SetupWithTypes(typeof(DynpackCategory), typeof(PalettepackCategory));
+            SetupWithTypes(typeof(DynpackCategory), typeof(PalettepackCategory), typeof(PackDLCDynpackCategory));
         }
     }
 }
