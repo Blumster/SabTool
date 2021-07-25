@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
-using System.Threading.Tasks;
+using System.Linq;
 
 namespace SabTool.Data.Packs
 {
@@ -37,6 +36,7 @@ namespace SabTool.Data.Packs
                 if (NumStreamBlocks == 0)
                 {
                     ++streamBlockArrayIdx;
+                    ++itrCount;
                     continue;
                 }
 
@@ -57,6 +57,10 @@ namespace SabTool.Data.Packs
                         FieldC0 = BitConverter.ToSingle(BitConverter.GetBytes(0xFFFFFFFF), 0),
                         FileName = $"{mapFileNameWithoutExtension}\\{nameWithItr}"
                     };
+
+                    Hash.StringToHash(name);
+                    Hash.StringToHash(nameWithItr);
+                    Hash.StringToHash(streamBlock.FileName);
 
                     streamBlock.Extents[0] = new(-10000.0f, -10000.0f, -10000.0f);
                     streamBlock.Extents[1] = new(10000.0f, 10000.0f, 10000.0f);
@@ -130,7 +134,7 @@ namespace SabTool.Data.Packs
 
                 // Save the string into the lookup table for later use
                 Hash.StringToHash(blockName);
-                Hash.StringToHash($"{mapFileNameWithoutExtension}\\{blockName}.palettepack");
+                Hash.StringToHash($"{mapFileNameWithoutExtension}\\{blockName}.dynpack");
 
                 // Do not override it. If removeExisting is true, existing ones will be removed
                 if (!DynamicBlocks.ContainsKey(blockCrc))
@@ -159,6 +163,20 @@ namespace SabTool.Data.Packs
         {
             if (DynamicBlocks.TryGetValue(crc, out StreamBlock res))
                 return res;
+
+            return null;
+        }
+
+        public StreamBlock GetStaticBlock(Crc crc)
+        {
+            for (var i = 0; i < StreamBlockArray.Length; ++i)
+            {
+                for (var j = 0; j < StreamBlockArray[i].Length; ++j)
+                {
+                    if (StreamBlockArray[i][j].Id.Value == crc.Value)
+                        return StreamBlockArray[i][j];
+                }
+            }
 
             return null;
         }
