@@ -104,7 +104,7 @@ namespace SabTool.Data.Packs
                             break;
 
                         case 7:
-                            extension = "flashmovie";
+                            extension = "gfx";
                             Console.WriteLine("FLASHMOVIE! {0}", string.IsNullOrWhiteSpace(entry.Crc.GetString()) ? $"0x{entry.Crc.Value:X8}.{extension}" : $"{entry.Crc.GetString()}.{extension}");
                             break;
 
