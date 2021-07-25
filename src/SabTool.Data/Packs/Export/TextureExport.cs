@@ -102,7 +102,7 @@ namespace SabTool.Data.Packs.Export
                 
                     ddsWriter.Write(ddsData, 24, ddsDataLength);
                 }
-                catch (Exception e)
+                catch
                 {
                     DDSFiles[i] = null;
                 }
