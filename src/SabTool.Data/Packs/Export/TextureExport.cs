@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 
 namespace SabTool.Data.Packs.Export
 {
     using Packs;
+    using Utils;
     using Utils.Extensions;
 
     public class TextureExport : IStreamBlockExportable
@@ -18,10 +18,11 @@ namespace SabTool.Data.Packs.Export
             using var reader = new BinaryReader(data);
 
             Name = reader.ReadStringFromCharArray(reader.ReadInt32());
+
+            Hash.StringToHash(Name); // save to the lookup table
+
             if (Name.Contains('~'))
             {
-                //Debugger.Break();
-
                 Name = Name.Substring(0, Name.IndexOf('~'));
             }
 
