@@ -344,6 +344,11 @@ namespace SabTool.Data.Packs
             }
         }
 
+        public override string ToString()
+        {
+            return $"StreamBlock({Id})";
+        }
+
         public class TextureInfo
         {
             public Crc Crc { get; set; }
