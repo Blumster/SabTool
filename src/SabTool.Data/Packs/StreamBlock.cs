@@ -70,7 +70,7 @@ namespace SabTool.Data.Packs
 
                     switch (off)
                     {
-                        case 0: // mesh
+                        case 0:
                             extension = "mesh";
                             break;
 
@@ -105,7 +105,6 @@ namespace SabTool.Data.Packs
 
                         case 7:
                             extension = "gfx";
-                            Console.WriteLine("FLASHMOVIE! {0}", string.IsNullOrWhiteSpace(entry.Crc.GetString()) ? $"0x{entry.Crc.Value:X8}.{extension}" : $"{entry.Crc.GetString()}.{extension}");
                             break;
 
                         case 8:
