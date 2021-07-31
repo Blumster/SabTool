@@ -7,7 +7,7 @@ namespace SabTool.Data.Packs.Export
     using Utils;
     using Utils.Extensions;
 
-    public class TextureExport : IStreamBlockExportable
+    public class TextureAssets : IStreamBlockAsset
     {
         public string Name { get; set; }
 
@@ -116,6 +116,16 @@ namespace SabTool.Data.Packs.Export
             }
 
             return true;
+        }
+
+        public bool Write(MemoryStream writer)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Import(string filePath)
+        {
+            throw new NotImplementedException();
         }
 
         public void Export(string outputPath)

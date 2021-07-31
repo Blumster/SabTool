@@ -75,7 +75,7 @@ namespace SabTool.Data.Packs
                             break;
 
                         case 1:
-                            export = new TextureExport();
+                            export = new TextureAsset();
                             export.Read(new MemoryStream(entry.Payload, false));
                             break;
 
@@ -380,9 +380,11 @@ namespace SabTool.Data.Packs
         }
     }
 
-    public interface IStreamBlockExportable
+    public interface IStreamBlockAsset
     {
         bool Read(MemoryStream reader);
+        bool Write(MemoryStream writer);
+        void Import(string filePath);
         void Export(string outputPath);
     }
 }
