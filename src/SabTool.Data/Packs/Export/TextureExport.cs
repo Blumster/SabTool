@@ -52,9 +52,7 @@ namespace SabTool.Data.Packs.Export
                 {
                     var ddsData = reader.ReadDecompressedBytes(reader.ReadInt32());
 
-                    var ddsDataLength = BitConverter.ToInt32(ddsData, 20);
-
-                    DDSFiles[i] = new byte[128 + ddsDataLength];
+                    DDSFiles[i] = new byte[128 + ddsData.Length - numMipmaps * 24];
 
                     using var ddsStream = new MemoryStream(DDSFiles[i], true);
                     using var ddsWriter = new BinaryWriter(ddsStream);
@@ -76,7 +74,7 @@ namespace SabTool.Data.Packs.Export
                     ddsWriter.Write(0); // dwDepth
                     ddsWriter.Write((int)numMipmaps); // dwMipMapCount
 
-                    for (var j = 0; j < 11; ++j)
+                    for (var k = 0; k < 11; ++k)
                     {
                         ddsWriter.Write(0); // dwReserved[11]
                     }
@@ -99,8 +97,17 @@ namespace SabTool.Data.Packs.Export
                     ddsWriter.Write(0); // dwReserved2
 
                     // DDS_HEADER end
-                
-                    ddsWriter.Write(ddsData, 24, ddsDataLength);
+
+                    var ddsDataOff = 0;
+
+                    for (var j = 0; j < numMipmaps; ++j)
+                    {
+                        var ddsDataLength = BitConverter.ToInt32(ddsData, ddsDataOff + 20);
+
+                        ddsWriter.Write(ddsData, ddsDataOff + 24, ddsDataLength);
+
+                        ddsDataOff += ddsDataLength + 24;
+                    }
                 }
                 catch
                 {
