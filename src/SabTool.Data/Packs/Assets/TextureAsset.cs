@@ -1,13 +1,13 @@
 ﻿using System;
 using System.IO;
 
-namespace SabTool.Data.Packs.Export
+namespace SabTool.Data.Packs.Assets
 {
     using Packs;
     using Utils;
     using Utils.Extensions;
 
-    public class TextureAssets : IStreamBlockAsset
+    public class TextureAsset : IStreamBlockAsset
     {
         public string Name { get; set; }
 

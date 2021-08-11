@@ -4,8 +4,8 @@ using System.IO;
 
 namespace SabTool.Data.Packs
 {
+    using Assets;
     using Data;
-    using Export;
     using Utils.Extensions;
 
     public class StreamBlock
@@ -66,12 +66,13 @@ namespace SabTool.Data.Packs
                     var entry = Entries[off][i];
 
                     var extension = "bin";
-                    IStreamBlockExportable export = null;
+                    IStreamBlockAsset export = null;
 
                     switch (off)
                     {
                         case 0:
-                            extension = "mesh";
+                            export = new MeshAsset();
+                            export.Read(new MemoryStream(entry.Payload, false));
                             break;
 
                         case 1:
