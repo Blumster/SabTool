@@ -18,7 +18,7 @@ namespace SabTool.Data.Graphics
             reader.BaseStream.Position += 0x4C;
 
             var vector3_4C = new Vector3(reader);
-            var vector4_58 = new Vector4(reader);
+            var boxAndRadius = new Vector4(reader);
             var int_68 = reader.ReadUInt32();
 
             reader.BaseStream.Position += 0xC;
@@ -33,11 +33,11 @@ namespace SabTool.Data.Graphics
 
             var int_B0 = reader.ReadUInt32();
 
-            reader.BaseStream.Position += 0x8;
+            reader.BaseStream.Position += 0x5;
 
             var byte_B9 = reader.ReadByte();
 
-            reader.BaseStream.Position += 0x4;
+            reader.BaseStream.Position += 0x1;
 
             var byte_BB = reader.ReadByte();
 
