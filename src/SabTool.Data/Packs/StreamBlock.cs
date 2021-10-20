@@ -71,8 +71,12 @@ namespace SabTool.Data.Packs
                     switch (off)
                     {
                         case 0:
+                            Console.WriteLine("Mesh: {0}", string.IsNullOrWhiteSpace(entry.Crc.GetString()) ? $"0x{entry.Crc.Value:X8}.{extension}" : $"{entry.Crc.GetString()}");
+
                             export = new MeshAsset();
                             export.Read(new MemoryStream(entry.Payload, false));
+
+                            Console.WriteLine();
                             break;
 
                         case 1:
