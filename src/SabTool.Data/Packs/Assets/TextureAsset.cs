@@ -4,14 +4,21 @@ using System.IO;
 namespace SabTool.Data.Packs.Assets
 {
     using Packs;
+    using Structures;
     using Utils;
     using Utils.Extensions;
 
     public class TextureAsset : IStreamBlockAsset
     {
+        public Crc NameCrc { get; }
         public string Name { get; set; }
 
         public byte[][] DDSFiles { get; private set; }
+
+        public TextureAsset(Crc nameCrc)
+        {
+            NameCrc = nameCrc;
+        }
 
         public bool Read(MemoryStream data)
         {

@@ -1,15 +1,25 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 
 namespace SabTool.Data.Packs.Assets
 {
+    using Graphics;
     using Packs;
+    using Structures;
     using Utils;
     using Utils.Extensions;
 
     public class MeshAsset : IStreamBlockAsset
     {
+        public Crc Name { get; }
+        public Model Model { get; set; }
+        public Mesh Mesh { get; set; }
+
+        public MeshAsset(Crc name)
+        {
+            Name = name;
+        }
+
         public bool Read(MemoryStream data)
         {
             using var reader = new BinaryReader(data);
@@ -27,6 +37,8 @@ namespace SabTool.Data.Packs.Assets
             var name = reader.ReadStringFromCharArray(256);
 
             var headerData = reader.ReadDecompressedBytes(headerCompressedSize);
+            File.WriteAllBytes(Path.Combine(@"X:\Projects\The_Saboteur\testoutmesh", $"{name}.header"), headerData);
+
             using (var headerReader = new BinaryReader(new MemoryStream(headerData, false)))
             {
                 if (!ReadHeader(headerReader))
@@ -37,6 +49,8 @@ namespace SabTool.Data.Packs.Assets
             }
 
             var vertexData = reader.ReadDecompressedBytes(vertexCompressedSize);
+            File.WriteAllBytes(Path.Combine(@"X:\Projects\The_Saboteur\testoutmesh", $"{name}.vertex"), vertexData);
+
             using (var vertexReader = new BinaryReader(new MemoryStream(vertexData, false)))
             {
                 if (!ReadVertices(vertexReader))
@@ -51,125 +65,46 @@ namespace SabTool.Data.Packs.Assets
 
         private bool ReadHeader(BinaryReader reader)
         {
-            // WSModel
+            Console.WriteLine("Mesh: {0}", string.IsNullOrWhiteSpace(Name.GetString()) ? $"0x{Name.Value:X8}" : $"{Name.GetString()}");
+
+            Model = new Model();
+            if (!Model.Read(reader))
+                return false;
+
+            Mesh = new Mesh();
+            if (!Mesh.Read(reader))
+                return false;
+
+            if (Mesh.NumBones <= 1)
+            {
+                Mesh.Skeleton = Skeleton.SingleBoneInstance;
+            }
+            else
+            {
+                Mesh.Skeleton = new Skeleton
+                {
+                    NumBones = Mesh.NumBones
+                };
+
+                if (!Mesh.Skeleton.Read(reader))
+                    return false;
+            }
+
             var currentStart = reader.BaseStream.Position;
 
-            reader.BaseStream.Position += 0x4C;
-
-            var model_vector3_4C = new Vector3(reader);
-            var boxAndRadius = new Vector4(reader);
-            var model_int_68 = reader.ReadUInt32();
-
-            reader.BaseStream.Position += 0xC;
-
-            var model_int_78 = reader.ReadUInt32();
-
-            reader.BaseStream.Position += 0x18;
-
-            var model_crc_94 = reader.ReadUInt32();
-            var name = Hash.HashToString(model_crc_94);
-
-            reader.BaseStream.Position += 0x18;
-
-            var model_int_B0 = reader.ReadUInt32();
-
-            reader.BaseStream.Position += 0x5;
-
-            var model_byte_B9 = reader.ReadByte();
-
-            reader.BaseStream.Position += 0x1;
-
-            var model_byte_BB = reader.ReadByte();
-
-            reader.BaseStream.Position += 0x3;
-
-            var model_byte_BF = reader.ReadByte();
-
-            if (currentStart + 0xC0 != reader.BaseStream.Position)
-            {
-                Console.WriteLine($"Under or orver read of the model part of the mesh asset! Pos: {reader.BaseStream.Position} | Expected: {currentStart + 0xC0}");
-                return false;
-            }
-
-            // Win32Mesh
-            // OdinMesh
-            currentStart = reader.BaseStream.Position;
-
-            reader.BaseStream.Position += 0xC;
-
-            var numBones = reader.ReadUInt32();
-
-            var mesh_int_10 = reader.ReadUInt32();
-            var mesh_int_14 = reader.ReadUInt32();
-            var unk4_count = reader.ReadUInt16();
-            var primitive_count = reader.ReadUInt16();
-            var unk3_count = reader.ReadUInt16();
-            var mesh_short_1E = reader.ReadUInt16();
-
-            reader.BaseStream.Position += 0x8;
-
-            var numSegments = reader.ReadUInt16();
-            var mesh_byte_2A = reader.ReadByte();
-            var mesh_byte_2B = reader.ReadByte();
-
-            // Win32Mesh
-            var mesh_int_2C = reader.ReadUInt32();
-            var mesh_byte_30 = reader.ReadByte();
-            var mesh_byte_31 = reader.ReadByte();
-            var mesh_byte_32 = reader.ReadByte();
-            var mesh_byte_33 = reader.ReadByte();
-
-            if (currentStart + 0x34 != reader.BaseStream.Position)
-            {
-                Console.WriteLine($"Under or orver read of the model part of the mesh asset! Pos: {reader.BaseStream.Position} | Expected: {currentStart + 0x34}");
-                return false;
-            }
-
-            if (numBones > 1)
-            {
-                Console.WriteLine("TODO: numBones > 1 is not yet supported!");
-                return false;
-
-                // PclSkeleton
-                /*currentStart = reader.BaseStream.Position;
-
-                var skele_int_0 = reader.ReadUInt32(); // some extra offset to skip
-                var skele_int_4 = reader.ReadUInt32();
-                var skele_int_8 = reader.ReadUInt32();
-                var skele_int_C = reader.ReadUInt32(); // some count
-                var skele_int_10 = reader.ReadUInt32();
-                var skele_int_14 = reader.ReadUInt32();
-                var skele_int_18 = reader.ReadUInt32();
-                var skele_int_1C = reader.ReadUInt32();
-                var skele_int_20 = reader.ReadUInt32();
-                var skele_int_24 = reader.ReadUInt32();
-
-                reader.BaseStream.Position += 0x4;
-
-                // TODO
-
-                if (currentStart + 0x2C != reader.BaseStream.Position)
-                {
-                    Console.WriteLine($"Under or orver read of the skeleton part of the mesh asset! Pos: {reader.BaseStream.Position} | Expected: {currentStart + 0x2C}");
-                    return false;
-                }*/
-            }
-
-            currentStart = reader.BaseStream.Position;
-
-            if (mesh_int_10 > 0)
+            if (Mesh.NumUnk1 > 0)
             {
                 // TODO
                 reader.BaseStream.Position += 0x8;
 
-                reader.BaseStream.Position += 0x44 * mesh_int_10;
+                reader.BaseStream.Position += 0x44 * Mesh.NumUnk1;
 
                 // TODO: validate position
             }
 
             currentStart = reader.BaseStream.Position;
 
-            for (var i = 0; i < unk3_count; ++i)
+            for (var i = 0; i < Mesh.NumUnk3; ++i)
             {
                 // TODO
                 reader.BaseStream.Position += 0x4;
@@ -187,7 +122,7 @@ namespace SabTool.Data.Packs.Assets
                 // TODO: validate position
             }
 
-            for (var i = 0; i < unk4_count; ++i)
+            for (var i = 0; i < Mesh.NumUnk4; ++i)
             {
                 currentStart = reader.BaseStream.Position;
 
@@ -258,7 +193,7 @@ namespace SabTool.Data.Packs.Assets
                 }
             }
 
-            for (var i = 0; i < primitive_count; ++i)
+            for (var i = 0; i < Mesh.NumPrimitives; ++i)
             {
                 currentStart = reader.BaseStream.Position;
 
@@ -293,7 +228,7 @@ namespace SabTool.Data.Packs.Assets
                 }
             }
 
-            for (var i = 0; i < numSegments; ++i)
+            for (var i = 0; i < Mesh.NumSegments; ++i)
             {
                 currentStart = reader.BaseStream.Position;
 
@@ -319,6 +254,8 @@ namespace SabTool.Data.Packs.Assets
                 Console.WriteLine($"Under read of the whole file of the mesh asset! Pos: {reader.BaseStream.Position} | Expected: {reader.BaseStream.Length}");
                 return false;
             }
+
+            Console.WriteLine();
 
             return true;
         }

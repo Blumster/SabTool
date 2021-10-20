@@ -5,7 +5,7 @@ using System.IO;
 namespace SabTool.Data.Packs
 {
     using Assets;
-    using Data;
+    using Structures;
     using Utils.Extensions;
 
     public class StreamBlock
@@ -71,17 +71,11 @@ namespace SabTool.Data.Packs
                     switch (off)
                     {
                         case 0:
-                            Console.WriteLine("Mesh: {0}", string.IsNullOrWhiteSpace(entry.Crc.GetString()) ? $"0x{entry.Crc.Value:X8}.{extension}" : $"{entry.Crc.GetString()}");
-
-                            export = new MeshAsset();
-                            export.Read(new MemoryStream(entry.Payload, false));
-
-                            Console.WriteLine();
+                            export = new MeshAsset(entry.Crc);
                             break;
 
                         case 1:
-                            export = new TextureAsset();
-                            export.Read(new MemoryStream(entry.Payload, false));
+                            export = new TextureAsset(entry.Crc);
                             break;
 
                         case 2:
@@ -120,6 +114,7 @@ namespace SabTool.Data.Packs
 
                     if (export != null)
                     {
+                        export.Read(new MemoryStream(entry.Payload, false));
                         export.Export(outputPath);
                         continue;
                     }

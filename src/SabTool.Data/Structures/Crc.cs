@@ -1,4 +1,4 @@
-﻿namespace SabTool.Data
+﻿namespace SabTool.Data.Structures
 {
     using Utils;
 

@@ -6,8 +6,8 @@ using System.Linq;
 namespace SabTool.CLI.Commands.Pack
 {
     using Base;
-    using Data;
     using Data.Packs;
+    using Data.Structures;
     using Utils;
 
     public class PackDLCDynpackCategory : BaseCategory

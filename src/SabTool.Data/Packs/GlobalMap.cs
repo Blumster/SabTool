@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 namespace SabTool.Data.Packs
 {
+    using Structures;
     using Utils;
     using Utils.Extensions;
 

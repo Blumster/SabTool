@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace SabTool.Data
+namespace SabTool.Data.Structures
 {
     public class Vector3
     {
