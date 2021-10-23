@@ -6,7 +6,7 @@ namespace SabTool.Data.Graphics
     public class BaseMesh
     {
         public Skeleton Skeleton { get; set; }
-        public uint NumBones { get; set; }
+        public int NumBones { get; set; }
         public int NumUnk1 { get; set; }
         public int Field14 { get; set; }
         public short NumUnk4 { get; set; }
@@ -25,7 +25,7 @@ namespace SabTool.Data.Graphics
 
             reader.BaseStream.Position += 0xC;
 
-            NumBones = reader.ReadUInt32();
+            NumBones = reader.ReadInt32();
             NumUnk1 = reader.ReadInt32();
             Field14 = reader.ReadInt32();
             NumUnk4 = reader.ReadInt16();

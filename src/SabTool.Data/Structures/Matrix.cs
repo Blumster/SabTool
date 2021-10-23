@@ -18,5 +18,10 @@ namespace SabTool.Data.Structures
         }
 
         // TODO: maybe indexer operator?
+
+        public override string ToString()
+        {
+            return $"Matrix4x4({X}, {Y}, {Z}, {W})";
+        }
     }
 }

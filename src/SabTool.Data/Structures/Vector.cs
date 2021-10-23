@@ -20,6 +20,11 @@ namespace SabTool.Data.Structures
             Y = reader.ReadSingle();
             Z = reader.ReadSingle();
         }
+
+        public override string ToString()
+        {
+            return $"Vector3({X}, {Y}, {Z})";
+        }
     }
 
     public class Vector4
@@ -41,6 +46,11 @@ namespace SabTool.Data.Structures
             Y = reader.ReadSingle();
             Z = reader.ReadSingle();
             W = reader.ReadSingle();
+        }
+
+        public override string ToString()
+        {
+            return $"Vector4({X}, {Y}, {Z}, {W})";
         }
     }
 }

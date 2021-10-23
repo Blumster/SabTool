@@ -19,5 +19,10 @@ namespace SabTool.Data.Structures
 
             reader.BaseStream.Position += 4;
         }
+
+        public override string ToString()
+        {
+            return $"Transform({Translation}, {Rotation}, {Scale})";
+        }
     }
 }
