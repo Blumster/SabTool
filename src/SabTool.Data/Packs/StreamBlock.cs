@@ -6,7 +6,7 @@ using System.Numerics;
 namespace SabTool.Data.Packs
 {
     using Assets;
-    using Structures;
+    using Utils;
     using Utils.Extensions;
 
     public class StreamBlock

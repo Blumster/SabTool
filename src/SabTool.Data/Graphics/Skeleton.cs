@@ -4,7 +4,6 @@ using System.Numerics;
 
 namespace SabTool.Data.Graphics
 {
-    using Structures;
     using Utils.Extensions;
 
     public class Skeleton

@@ -4,7 +4,7 @@ using System.Linq;
 namespace SabTool.Data.Lua
 {
     using Blueprint;
-    using Structures;
+    using Utils;
 
     public class LuaParam
     {

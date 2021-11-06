@@ -4,7 +4,6 @@ using System.IO;
 namespace SabTool.Data.Packs.Assets
 {
     using Packs;
-    using Structures;
     using Utils;
     using Utils.Extensions;
 

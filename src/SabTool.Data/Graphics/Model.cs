@@ -4,7 +4,7 @@ using System.Numerics;
 
 namespace SabTool.Data.Graphics
 {
-    using Structures;
+    using Utils;
     using Utils.Extensions;
 
     public class Model

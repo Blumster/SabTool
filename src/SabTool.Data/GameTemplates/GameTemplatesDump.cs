@@ -7,7 +7,6 @@ namespace SabTool.Data.GameTemplates
 {
     using Blueprint;
     using Lua;
-    using Structures;
     using Utils;
 
     public class GameTemplatesDump : GameTemplatesBase

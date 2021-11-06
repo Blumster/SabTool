@@ -3,7 +3,7 @@ using System.IO;
 
 namespace SabTool.Data.Graphics
 {
-    using Structures;
+    using Utils;
 
     public class Bone
     {

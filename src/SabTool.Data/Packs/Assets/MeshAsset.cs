@@ -5,7 +5,6 @@ namespace SabTool.Data.Packs.Assets
 {
     using Graphics;
     using Packs;
-    using Structures;
     using Utils;
     using Utils.Extensions;
 
