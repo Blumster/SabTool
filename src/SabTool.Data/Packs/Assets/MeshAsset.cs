@@ -37,8 +37,6 @@ namespace SabTool.Data.Packs.Assets
             var name = reader.ReadStringFromCharArray(256);
 
             var headerData = reader.ReadDecompressedBytes(headerCompressedSize);
-            File.WriteAllBytes(Path.Combine(@"X:\Projects\The_Saboteur\testoutmesh", $"{name}.header"), headerData);
-
             using (var headerReader = new BinaryReader(new MemoryStream(headerData, false)))
             {
                 if (!ReadHeader(headerReader))
@@ -49,8 +47,6 @@ namespace SabTool.Data.Packs.Assets
             }
 
             var vertexData = reader.ReadDecompressedBytes(vertexCompressedSize);
-            File.WriteAllBytes(Path.Combine(@"X:\Projects\The_Saboteur\testoutmesh", $"{name}.vertex"), vertexData);
-
             using (var vertexReader = new BinaryReader(new MemoryStream(vertexData, false)))
             {
                 if (!ReadVertices(vertexReader))
