@@ -2,6 +2,8 @@
 using System.IO;
 using System.Numerics;
 
+using SharpGLTF.Transforms;
+
 namespace SabTool.Data.Graphics
 {
     using Utils.Extensions;
@@ -23,7 +25,7 @@ namespace SabTool.Data.Graphics
         public int NumBones { get; set; }
         public byte[] UnkData { get; set; }
         public Matrix4x4[] BasePoses { get; set; }
-        public Transform[] UnkBasePoses { get; set; }
+        public AffineTransform[] UnkBasePoses { get; set; }
         public short[] Indices { get; set; }
         public Bone[] Bones { get; set; }
 
@@ -61,9 +63,9 @@ namespace SabTool.Data.Graphics
                 Bones[i].Index = (short)i;
             }
 
-            UnkBasePoses = new Transform[NumBones];
+            UnkBasePoses = new AffineTransform[NumBones];
             for (var i = 0; i < NumBones; ++i)
-                UnkBasePoses[i] = new Transform(reader);
+                UnkBasePoses[i] = reader.ReadAffineTransform();
 
             Indices = new short[NumBones];
             for (var i = 0; i < NumBones; ++i)

@@ -4,6 +4,8 @@ using System.Text;
 
 using Ionic.Zlib;
 
+using SharpGLTF.Transforms;
+
 namespace SabTool.Utils.Extensions
 {
     public static class BinaryReaderExtensions
@@ -111,6 +113,25 @@ namespace SabTool.Utils.Extensions
         public static Vector4 ReadVector4(this BinaryReader reader)
         {
             return new Vector4(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
+        }
+
+        public static Quaternion ReadQuaternion(this BinaryReader reader)
+        {
+            return new Quaternion(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
+        }
+
+        public static AffineTransform ReadAffineTransform(this BinaryReader reader)
+        {
+            var translation = reader.ReadVector3();
+
+            reader.BaseStream.Position += 4;
+
+            var rotation = reader.ReadQuaternion();
+            var scale = reader.ReadVector3();
+
+            reader.BaseStream.Position += 4;
+
+            return new AffineTransform(scale, rotation, translation);
         }
     }
 }
