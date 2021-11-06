@@ -1,9 +1,11 @@
 ﻿using System;
 using System.IO;
+using System.Numerics;
 
 namespace SabTool.Data.Graphics
 {
     using Structures;
+    using Utils.Extensions;
 
     public class Model
     {
@@ -23,8 +25,8 @@ namespace SabTool.Data.Graphics
 
             reader.BaseStream.Position += 0x4C;
 
-            Field4C = new Vector3(reader);
-            BoxAndRadius = new Vector4(reader);
+            Field4C = reader.ReadVector3();
+            BoxAndRadius = reader.ReadVector4();
             Field68 = reader.ReadInt32();
 
             reader.BaseStream.Position += 0xC;

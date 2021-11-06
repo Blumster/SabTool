@@ -1,9 +1,11 @@
 ﻿using System;
 using System.IO;
+using System.Numerics;
 
 namespace SabTool.Data.Graphics
 {
     using Structures;
+    using Utils.Extensions;
 
     public class Skeleton
     {
@@ -21,7 +23,7 @@ namespace SabTool.Data.Graphics
 
         public int NumBones { get; set; }
         public byte[] UnkData { get; set; }
-        public Matrix[] BasePoses { get; set; }
+        public Matrix4x4[] BasePoses { get; set; }
         public Transform[] UnkBasePoses { get; set; }
         public short[] Indices { get; set; }
         public Bone[] Bones { get; set; }
@@ -46,10 +48,10 @@ namespace SabTool.Data.Graphics
 
             UnkData = reader.ReadBytes(NumBones);
 
-            BasePoses = new Matrix[NumBones];
+            BasePoses = new Matrix4x4[NumBones];
             for (var i = 0; i < NumBones; ++i)
             {
-                BasePoses[i] = new Matrix(reader);
+                BasePoses[i] = reader.ReadMatrix4x4();
             }
 
             Bones = new Bone[NumBones];

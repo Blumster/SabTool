@@ -1,7 +1,10 @@
 ﻿using System.IO;
+using System.Numerics;
 
 namespace SabTool.Data.Structures
 {
+    using Utils.Extensions;
+
     public class Transform
     {
         public Vector3 Translation { get; set; }
@@ -10,12 +13,12 @@ namespace SabTool.Data.Structures
 
         public Transform(BinaryReader reader)
         {
-            Translation = new Vector3(reader);
+            Translation = reader.ReadVector3();
 
             reader.BaseStream.Position += 4;
 
-            Rotation = new Vector4(reader);
-            Scale = new Vector3(reader);
+            Rotation = reader.ReadVector4();
+            Scale = reader.ReadVector3();
 
             reader.BaseStream.Position += 4;
         }

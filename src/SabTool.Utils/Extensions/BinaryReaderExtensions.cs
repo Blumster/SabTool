@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Numerics;
 using System.Text;
 
 using Ionic.Zlib;
@@ -90,6 +91,26 @@ namespace SabTool.Utils.Extensions
             unzip.CopyTo(outStream);
 
             return outStream.ToArray();
+        }
+
+        public static Matrix4x4 ReadMatrix4x4(this BinaryReader reader)
+        {
+            return new Matrix4x4(
+                reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(),
+                reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(),
+                reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(),
+                reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle()
+                );
+        }
+
+        public static Vector3 ReadVector3(this BinaryReader reader)
+        {
+            return new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
+        }
+
+        public static Vector4 ReadVector4(this BinaryReader reader)
+        {
+            return new Vector4(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
         }
     }
 }
