@@ -39,9 +39,17 @@ namespace SabTool.Data.Packs.Assets
             var headerData = reader.ReadDecompressedBytes(headerCompressedSize);
             using (var headerReader = new BinaryReader(new MemoryStream(headerData, false)))
             {
-                if (!ReadHeader(headerReader))
+                Model = new Model();
+                if (!Model.Read(headerReader))
+                    return false;
+
+                Mesh = new Mesh();
+                if (!Mesh.ReadHeader(headerReader))
+                    return false;
+
+                if (headerReader.BaseStream.Position != headerReader.BaseStream.Length)
                 {
-                    Console.WriteLine("Unable to read mesh header!");
+                    Console.WriteLine($"Under read of the header data of the mesh asset! Pos: {headerReader.BaseStream.Position} | Expected: {headerReader.BaseStream.Length}");
                     return false;
                 }
             }
@@ -49,39 +57,19 @@ namespace SabTool.Data.Packs.Assets
             var vertexData = reader.ReadDecompressedBytes(vertexCompressedSize);
             using (var vertexReader = new BinaryReader(new MemoryStream(vertexData, false)))
             {
-                if (!ReadVertices(vertexReader))
+                if (!Mesh.ReadVertices(vertexReader))
                 {
-                    Console.WriteLine("Unable to read mesh vertices!");
+                    Console.WriteLine("Unable to read Vertex data based on the Mesh header!");
+                    return false;
+                }
+
+                if (vertexReader.BaseStream.Position != vertexReader.BaseStream.Length)
+                {
+                    Console.WriteLine($"Under read of the vertex data of the mesh asset! Pos: {vertexReader.BaseStream.Position} | Expected: {vertexReader.BaseStream.Length}");
                     return false;
                 }
             }
 
-            return true;
-        }
-
-        private bool ReadHeader(BinaryReader reader)
-        {
-            Model = new Model();
-            if (!Model.Read(reader))
-                return false;
-
-            Mesh = new Mesh();
-            if (!Mesh.Read(reader))
-                return false;
-
-            if (reader.BaseStream.Position != reader.BaseStream.Length)
-            {
-                Console.WriteLine($"Under read of the whole file of the mesh asset! Pos: {reader.BaseStream.Position} | Expected: {reader.BaseStream.Length}");
-                return false;
-            }
-
-            Console.WriteLine();
-
-            return true;
-        }
-
-        private bool ReadVertices(BinaryReader reader)
-        {
             return true;
         }
 

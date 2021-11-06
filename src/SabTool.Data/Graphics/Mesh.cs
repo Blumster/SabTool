@@ -3,6 +3,8 @@ using System.IO;
 
 namespace SabTool.Data.Graphics
 {
+    using Utils.Extensions;
+
     public class Mesh
     {
         public Skeleton Skeleton { get; set; }
@@ -29,7 +31,7 @@ namespace SabTool.Data.Graphics
         public byte Field32 { get; set; }
         public byte Field33 { get; set; }
 
-        public bool Read(BinaryReader reader)
+        public bool ReadHeader(BinaryReader reader)
         {
             var currentStart = reader.BaseStream.Position;
 
@@ -92,7 +94,7 @@ namespace SabTool.Data.Graphics
             if (NumUnk1 > 0)
             {
                 // TODO
-                reader.BaseStream.Position += 0x8;
+                var vals = reader.ReadConstArray(2, reader.ReadInt32);
 
                 for (var i = 0; i < NumUnk1; ++i)
                 {
@@ -124,6 +126,12 @@ namespace SabTool.Data.Graphics
                 Segments[i] = new Segment(this);
                 Segments[i].Read(reader);
             }
+
+            return true;
+        }
+    
+        public bool ReadVertices(BinaryReader reader)
+        {
 
             return true;
         }
