@@ -2,6 +2,12 @@
 using System.IO;
 using System.Numerics;
 
+using SharpGLTF.Geometry;
+using SharpGLTF.Geometry.VertexTypes;
+using SharpGLTF.Materials;
+using SharpGLTF.Scenes;
+using SharpGLTF.Schema2;
+
 namespace SabTool.Data.Packs.Assets
 {
     using Graphics;
@@ -89,6 +95,45 @@ namespace SabTool.Data.Packs.Assets
         public void Export(string outputPath)
         {
             File.WriteAllText(Path.Combine(outputPath, $"{ModelName}-dump.txt"), Model.DumpString() + Mesh.DumpString());
+
+            var model = ModelRoot.CreateModel();
+            var scene = model.UseScene(ModelName);
+
+            var material = model.CreateMaterial("Default").WithDoubleSide(true);
+
+            var node = scene.CreateNode("Root");
+
+            for (var i = 0; i < Mesh.NumPrimitives; ++i)
+            {
+                var prim = Mesh.Primitives[i];
+
+                var primNode = node.CreateNode();
+                var mesh = primNode.Mesh = model.CreateMesh();
+
+                for (var j = 0; j < prim.VertexHolder.ArrayCount; ++j)
+                {
+                    var primitive = mesh.CreatePrimitive()
+                        .WithVertexAccessor("POSITION", prim.GetVertexVector3(j, VDUsage.Position));
+
+                    var normals = prim.GetVertexVector3(j, VDUsage.Normal);
+                    if (normals.Count > 0)
+                        primitive.WithVertexAccessor("NORMAL", normals);
+
+                    var tangents = prim.GetVertexVector4(j, VDUsage.Tangent);
+                    if (tangents.Count > 0)
+                        primitive.WithVertexAccessor("TANGENT", tangents);
+
+                    var texCoords = prim.GetVertexVector2(j, VDUsage.TexCoord);
+                    if (texCoords.Count > 0)
+                        primitive.WithVertexAccessor("TEXCOORD_0", texCoords);
+
+                    primitive.WithIndicesAccessor(PrimitiveType.TRIANGLES, prim.GetIndices(j))
+                        .WithMaterial(material);
+                }
+            }
+
+            model.SaveAsWavefront(Path.Combine(outputPath, $"{ModelName}.obj"));
+            //model.SaveGLTF(Path.Combine(outputPath, $"{ModelName}.gltf"));
         }
     }
 }
