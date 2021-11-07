@@ -4,10 +4,14 @@ using System.IO;
 
 namespace SabTool.Data.Graphics
 {
+    using Utils;
+
     public class VertexHolder
     {
         public List<VertexDeclaration> Decl1 { get; set; }
         public List<VertexDeclaration> Decl2 { get; set; }
+        public byte[][] Vertices { get; set; } = new byte[4][];
+        public byte[] Indices { get; set; }
 
         public int[] Counts { get; } = new int[4];
         public int[] Formats { get; } = new int[4];
@@ -68,6 +72,20 @@ namespace SabTool.Data.Graphics
             Decl2 = VertexDeclaration.Build(flagBytes, Formats, ArrayCount, 1);
 
             return true;
+        }
+
+        public void ReadVertices(BinaryReader reader)
+        {
+            for (var i = 0; i < ArrayCount; ++i)
+            {
+                reader.BaseStream.Position = ArrayOffsets[i];
+
+                Vertices[i] = reader.ReadBytes(ArraySizes[i]);
+            }
+
+            reader.BaseStream.Position = IndexArrayOffset;
+
+            Indices = reader.ReadBytes(IndexArraySize);
         }
     }
 }

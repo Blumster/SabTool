@@ -130,7 +130,7 @@ namespace SabTool.Data.Graphics
                 {
                     while (true)
                     {
-                        Debugger.Break();
+                        //Debugger.Break();
                         // TODO: unused?
                         break;
                     }

@@ -7,7 +7,7 @@ namespace SabTool.Data.Graphics
 
     public class Bone
     {
-        public int UnkNamePtr { get; set; }
+        public Crc UnkNamePtr { get; set; }
         public byte UnkByte { get; set; }
         public Crc Crc { get; set; }
         public short Flags { get; set; }
@@ -26,7 +26,7 @@ namespace SabTool.Data.Graphics
         {
             var currentStart = reader.BaseStream.Position;
 
-            UnkNamePtr = reader.ReadInt32();
+            UnkNamePtr = new Crc(reader.ReadUInt32());
             UnkByte = reader.ReadByte();
 
             reader.BaseStream.Position += 0xF;

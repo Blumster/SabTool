@@ -8,6 +8,7 @@ namespace SabTool.Data.Graphics
     public class Segment
     {
         public Mesh Mesh { get; }
+        public int PrimitiveIndex { get; set; }
         public Primitive Primitive { get; set; }
         public Crc MaterialCrc { get; set; }
         public short Flags { get; set; }
@@ -21,7 +22,9 @@ namespace SabTool.Data.Graphics
         {
             var currentStart = reader.BaseStream.Position;
 
-            Primitive = Mesh.Primitives[reader.ReadInt32()];
+            PrimitiveIndex = reader.ReadInt32();
+
+            Primitive = Mesh.Primitives[PrimitiveIndex];
             MaterialCrc = new Crc(reader.ReadUInt32());
 
             reader.BaseStream.Position += 0x6;

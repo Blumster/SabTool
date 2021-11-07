@@ -14,6 +14,7 @@ namespace SabTool.Data.Packs.Assets
         public Crc Name { get; }
         public Model Model { get; set; }
         public Mesh Mesh { get; set; }
+        public string ModelName { get; set; }
 
         public MeshAsset(Crc name)
         {
@@ -34,7 +35,9 @@ namespace SabTool.Data.Packs.Assets
             var vertexRealSize = reader.ReadInt32();
             var headerCompressedSize = reader.ReadInt32();
             var vertexCompressedSize = reader.ReadInt32();
-            var name = reader.ReadStringFromCharArray(256);
+            ModelName = reader.ReadStringFromCharArray(256);
+
+            Console.WriteLine($"Reading mesh {ModelName}...");
 
             var headerData = reader.ReadDecompressedBytes(headerCompressedSize);
             using (var headerReader = new BinaryReader(new MemoryStream(headerData, false)))
