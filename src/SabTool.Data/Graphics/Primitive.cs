@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 
 namespace SabTool.Data.Graphics
 {
@@ -66,6 +67,31 @@ namespace SabTool.Data.Graphics
             }
 
             return true;
+        }
+
+        public string DumpString(int indentCount = 0)
+        {
+            var sb = new StringBuilder();
+
+            sb.Append(' ', indentCount).AppendLine($"{nameof(Primitive)}()");
+            sb.Append(' ', indentCount).AppendLine("{");
+            sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Unk3Index)} = {Unk3Index}");
+            sb.Append(' ', indentCount + 2).AppendLine($"{nameof(VertexHolderIndex)} = {VertexHolderIndex}");
+            sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Float30)} = {Float30}");
+            sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Float34)} = {Float34}");
+            sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Float38)} = {Float38}");
+            sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Int3C)} = {Int3C}");
+            sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Float40)} = {Float40}");
+            sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Float44)} = {Float44}");
+            sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Float48)} = {Float48}");
+            sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Int4C)} = {Int4C}");
+            sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Int54)} = {Int54}");
+            sb.Append(' ', indentCount + 2).AppendLine($"{nameof(IndexStartOffset)} = {IndexStartOffset}");
+            sb.Append(' ', indentCount + 2).AppendLine($"{nameof(NumVertex)} = {NumVertex}");
+            sb.Append(' ', indentCount + 2).AppendLine($"{nameof(NumIndices)} = {NumIndices}");
+            sb.Append(' ', indentCount).AppendLine("}");
+
+            return sb.ToString();
         }
     }
 }

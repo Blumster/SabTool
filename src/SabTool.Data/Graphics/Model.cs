@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Numerics;
+using System.Text;
 
 namespace SabTool.Data.Graphics
 {
@@ -60,6 +61,31 @@ namespace SabTool.Data.Graphics
             }
 
             return true;
+        }
+
+        public string DumpString(int indentCount = 0)
+        {
+            var sb = new StringBuilder();
+
+            sb.Append(' ', indentCount).AppendLine($"{nameof(Model)}({Name})");
+            sb.Append(' ', indentCount).AppendLine("{");
+
+            indentCount += 2;
+
+            sb.Append(' ', indentCount).AppendLine($"{nameof(Field4C)} = {Field4C}");
+            sb.Append(' ', indentCount).AppendLine($"{nameof(BoxAndRadius)} = {BoxAndRadius}");
+            sb.Append(' ', indentCount).AppendLine($"{nameof(Field68)} = {Field68}");
+            sb.Append(' ', indentCount).AppendLine($"{nameof(Field78)} = {Field78}");
+            sb.Append(' ', indentCount).AppendLine($"{nameof(FieldB0)} = {FieldB0}");
+            sb.Append(' ', indentCount).AppendLine($"{nameof(FieldB9)} = {FieldB9}");
+            sb.Append(' ', indentCount).AppendLine($"{nameof(FieldBB)} = {FieldBB}");
+            sb.Append(' ', indentCount).AppendLine($"{nameof(FieldBF)} = {FieldBF}");
+
+            indentCount -= 2;
+
+            sb.Append(' ', indentCount).AppendLine("}");
+
+            return sb.ToString();
         }
     }
 }

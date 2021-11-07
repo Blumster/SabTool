@@ -88,6 +88,7 @@ namespace SabTool.Data.Packs.Assets
 
         public void Export(string outputPath)
         {
+            File.WriteAllText(Path.Combine(outputPath, $"{ModelName}-dump.txt"), Model.DumpString() + Mesh.DumpString());
         }
     }
 }
