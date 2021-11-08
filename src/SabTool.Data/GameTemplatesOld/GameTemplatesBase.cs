@@ -2,9 +2,8 @@
 using System.IO;
 using System.Text;
 
-namespace SabTool.Data.GameTemplates
+namespace SabTool.Data.GameTemplatesOld
 {
-    using Data.Blueprint;
     using Utils.Extensions;
 
     public abstract class GameTemplatesBase

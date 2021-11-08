@@ -7,7 +7,7 @@ namespace SabTool.CLI.Commands
 {
     using Base;
     using Data;
-    using Data.GameTemplates;
+    using Data.GameTemplatesOld;
 
     public class GameTemplatesCategory : BaseCategory
     {

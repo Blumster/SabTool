@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 
-namespace SabTool.Data.Blueprint
+namespace SabTool.Data.GameTemplatesOld
 {
     public class BluaReader
     {

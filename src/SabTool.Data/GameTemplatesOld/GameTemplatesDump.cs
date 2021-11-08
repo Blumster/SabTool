@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace SabTool.Data.GameTemplates
+namespace SabTool.Data.GameTemplatesOld
 {
-    using Blueprint;
     using Lua;
     using Utils;
 
@@ -110,9 +109,7 @@ namespace SabTool.Data.GameTemplates
 
             var name = Hash.HashToString(crc);
 
-            TypeEntry entry;
-
-            if (!PropertyTypes.TryGetValue(new(typeCrc, crc), out entry) && parents != null)
+            if (!PropertyTypes.TryGetValue(new(typeCrc, crc), out TypeEntry entry) && parents != null)
             {
                 foreach (var parent in parents)
                 {

@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace SabTool.Data.Lua
 {
-    using Blueprint;
+    using GameTemplatesOld;
     using Utils;
 
     public class LuaParam

@@ -1,4 +1,4 @@
-﻿namespace SabTool.Data.GameTemplates
+﻿namespace SabTool.Data.GameTemplatesOld
 {
     public enum BlueprintType : uint
     {
