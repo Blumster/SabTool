@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace SabTool.Data.Lua
 {
     using GameTemplatesOld;
     using Utils;
+    using Utils.Extensions;
 
     public class LuaParam
     {
@@ -63,6 +65,44 @@ namespace SabTool.Data.Lua
 
                 case LuaFloatCrc:
                     FloatVal = reader.ReadFloat();
+                    break;
+            }
+        }
+
+        public LuaParam(BinaryReader reader)
+        {
+            Name = reader.ReadStringWithMaxLength(128);
+            TypeCrc = reader.ReadUInt32();
+
+            switch (TypeCrc)
+            {
+                case LuaStringCrc:
+                    StringVal = reader.ReadStringWithMaxLength(128);
+                    break;
+
+                case LuaIntCrc:
+                    IntVal = reader.ReadInt32();
+                    break;
+
+                case LuaCrcListCrc:
+                    CrcCount = reader.ReadInt32();
+
+                    for (var i = 0; i < CrcCount; ++i)
+                    {
+                        CrcList.Add(reader.ReadStringWithMaxLength(128));
+                    }
+                    break;
+
+                case LuaCrcCrc:
+                    CrcVal = new(reader.ReadUInt32());
+                    break;
+
+                case LuaBoolCrc:
+                    BoolVal = reader.ReadBoolean();
+                    break;
+
+                case LuaFloatCrc:
+                    FloatVal = reader.ReadSingle();
                     break;
             }
         }
