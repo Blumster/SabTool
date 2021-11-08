@@ -27,9 +27,9 @@ namespace SabTool.Utils
                     continue;
                 }
 
-                if (!uint.TryParse(parts[0].Substring(2), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out uint hash))
+                if (!uint.TryParse(parts[0][2..], NumberStyles.HexNumber, CultureInfo.InvariantCulture, out uint hash))
                 {
-                    Console.WriteLine($"HASH: Unable to parse {parts[0]} as int!");
+                    Console.WriteLine($"HASH: Unable to parse {parts[0]} as uint!");
                     continue;
                 }
 
@@ -55,7 +55,7 @@ namespace SabTool.Utils
             var lines = new string[lookupTable.Count];
             var i = 0;
 
-            foreach (var pair in lookupTable)
+            foreach (var pair in lookupTable.OrderBy(p => p.Key))
             {
                 lines[i++] = $"0x{pair.Key:X8}:{pair.Value}";
             }
