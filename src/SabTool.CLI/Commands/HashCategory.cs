@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace SabTool.CLI.Commands
 {
@@ -33,6 +34,45 @@ namespace SabTool.CLI.Commands
 
                 Console.WriteLine("\"{0}\" => 0x{1:X8}", arguments.ElementAt(0), Hash.FNV32string(arguments.ElementAt(0)));
                 Console.WriteLine();
+                return true;
+            }
+        }
+
+        public class ReplaceCommand : BaseCommand
+        {
+            public override string Key { get; } = "replace";
+            public override string Shortcut { get; } = "re";
+            public override string Usage { get; } = "<file path>";
+
+            public override bool Execute(IEnumerable<string> arguments)
+            {
+                if (arguments.Count() < 1)
+                {
+                    Console.WriteLine("ERROR: Not enough arguments given!");
+                    return false;
+                }
+
+                var filePath = arguments.ElementAt(0);
+                if (!File.Exists(filePath))
+                {
+                    Console.WriteLine("ERROR: Invalid file path given!");
+                    return false;
+                }
+
+                var txt = File.ReadAllText(filePath);
+
+                var regex = new Regex("\"0x([0-9A-Z]{8})\"");
+
+                txt = regex.Replace(txt, m =>
+                {
+                    var num = uint.Parse(m.Groups[1].Value, NumberStyles.AllowHexSpecifier);
+                    var str = Hash.HashToString(num);
+
+                    return str != null ? $"\"{str}\"" : $"\"0x{num:X8}\"";
+                });
+
+                File.WriteAllText(filePath, txt);
+
                 return true;
             }
         }
