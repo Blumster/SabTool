@@ -8,6 +8,7 @@ namespace SabTool.CLI.Commands
     using Base;
     using Data;
     using Data.GameTemplatesOld;
+    using Serializers;
 
     public class GameTemplatesCategory : BaseCategory
     {
@@ -61,10 +62,13 @@ namespace SabTool.CLI.Commands
                     return false;
                 }
 
-                /*var gameTemplates = new GameTemplates();
+                using var ms = new MemoryStream(gameTemplatesEntry.Data);
 
-                using (var ms = new MemoryStream(gameTemplatesEntry.Data))
-                    gameTemplates.Read(ms);*/
+                var blueprints = BlueprintSerializer.DeserializeRaw(ms);
+
+                using var outFileStream = new FileStream(Path.Combine(outputDir, "blueprints.json"), FileMode.Create, FileAccess.Write, FileShare.None);
+
+                BlueprintSerializer.SerializeJSON(blueprints, outFileStream);
 
                 return true;
             }
@@ -137,10 +141,19 @@ namespace SabTool.CLI.Commands
                     writer = new StreamWriter(new FileStream(outputFilePath, FileMode.Create, FileAccess.Write, FileShare.None));
                 }
 
-                var gameTemplates = new GameTemplatesDump(writer);
+                using var ms = new MemoryStream(data);
+
+                var blueprints = BlueprintSerializer.DeserializeRaw(ms);
+
+                foreach (var blueprint in blueprints)
+                {
+                    writer.WriteLine(blueprint.ToString());
+                }
+
+                /*var gameTemplates = new GameTemplatesDump(writer);
 
                 using (var ms = new MemoryStream(data))
-                    gameTemplates.Read(ms);
+                    gameTemplates.Read(ms);*/
 
                 if (writer != null)
                 {
