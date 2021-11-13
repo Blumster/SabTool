@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Numerics;
 
 using SharpGLTF.Geometry;
@@ -103,6 +105,32 @@ namespace SabTool.Data.Packs.Assets
 
             var material = model.CreateMaterial("Default").WithDoubleSide(true);
 
+            var skin = model.CreateSkin("Skeleton");
+
+            var skeleton = skin.Skeleton = scene.CreateNode("Skeleton");
+            
+            var skeletonData = Mesh.Skeleton;
+
+            var skeletonNodes = new Dictionary<short, Node>()
+            {
+                { -1, skeleton }
+            };
+
+            for (short i = 0; i < skeletonData.NumBones; ++i)
+            {
+                var parentIndex = skeletonData.Indices[i];
+                var parent = skeletonNodes[parentIndex];
+
+                var boneData = skeletonData.Bones[i];
+                var boneName = boneData.Crc.GetString();
+
+                skeletonNodes[i] = parent.CreateNode(string.IsNullOrEmpty(boneName) ? $"0x{boneData.Crc.Value:X8}" : boneName).WithLocalTransform(skeletonData.UnkBasePoses[i]);
+            }
+
+            var joints = skeletonNodes.Where(p => p.Key != -1).Select(p => p.Value).ToArray();
+
+            skin.BindJoints(joints);
+
             var node = scene.CreateNode("Root");
 
             for (var i = 0; i < Mesh.NumPrimitives; ++i)
@@ -110,6 +138,7 @@ namespace SabTool.Data.Packs.Assets
                 var prim = Mesh.Primitives[i];
 
                 var primNode = node.CreateNode();
+                
                 var mesh = primNode.Mesh = model.CreateMesh();
 
                 for (var j = 0; j < prim.VertexHolder.ArrayCount; ++j)
@@ -134,8 +163,11 @@ namespace SabTool.Data.Packs.Assets
                 }
             }
 
-            model.SaveAsWavefront(Path.Combine(outputPath, $"{ModelName}.obj"));
-            //model.SaveGLTF(Path.Combine(outputPath, $"{ModelName}.gltf"));
+            //model.SaveAsWavefront(Path.Combine(outputPath, $"{ModelName}.obj"));
+            model.SaveGLTF(Path.Combine(outputPath, $"{ModelName}.gltf"), new WriteSettings
+            {
+                Validation = SharpGLTF.Validation.ValidationMode.TryFix
+            });
         }
     }
 }
