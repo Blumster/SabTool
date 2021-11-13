@@ -20,6 +20,13 @@ namespace SabTool.Utils
             return Hash.HashToString(Value);
         }
 
+        public string GetStringOrHexString()
+        {
+            var stringValue = GetString();
+
+            return string.IsNullOrEmpty(stringValue) ? $"0x{Value:X8}" : stringValue;
+        }
+
         public override string ToString()
         {
             return $"0x{Value:X8} ({Hash.HashToString(Value)})";
@@ -36,6 +43,11 @@ namespace SabTool.Utils
         public override int GetHashCode()
         {
             return (int)Value;
+        }
+
+        public static implicit operator Crc(uint val)
+        {
+            return new Crc(val);
         }
     }
 }

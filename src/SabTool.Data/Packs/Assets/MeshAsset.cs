@@ -43,6 +43,8 @@ namespace SabTool.Data.Packs.Assets
             var vertexCompressedSize = reader.ReadInt32();
             ModelName = reader.ReadStringFromCharArray(256);
 
+            var hash = Hash.StringToHash(ModelName);
+
             Console.WriteLine($"Reading mesh {ModelName}...");
 
             var headerData = reader.ReadDecompressedBytes(headerCompressedSize);

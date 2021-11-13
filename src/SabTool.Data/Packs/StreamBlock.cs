@@ -115,17 +115,20 @@ namespace SabTool.Data.Packs
 
                     if (export != null)
                     {
-                        export.Read(new MemoryStream(entry.Payload, false));
-                        export.Export(outputPath);
+                        try
+                        {
+                            export.Read(new MemoryStream(entry.Payload, false));
+                            export.Export(outputPath);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(ex.ToString());
+                        }
+
                         continue;
                     }
 
-                    var crcString = entry.Crc.GetString();
-
-                    var fileName = string.IsNullOrWhiteSpace(crcString) ? $"0x{entry.Crc.Value:X8}.{extension}" : $"{crcString}.{extension}";
-                    fileName = fileName.Replace("(", "").Replace(")", "");
-
-                    var outputFilePath = Path.Combine(outputPath, fileName);
+                    var outputFilePath = Path.Combine(outputPath, $"{entry.Crc.GetStringOrHexString()}.{extension}");
 
                     Directory.CreateDirectory(Path.GetDirectoryName(outputFilePath));
 

@@ -11,17 +11,10 @@ namespace SabTool.Data.Graphics
 
     public class Skeleton
     {
-        #region Static
-        public static Skeleton SingleBoneInstance { get; }
-
-        static Skeleton()
+        public static Skeleton SingleBoneInstance { get; } = new Skeleton
         {
-            SingleBoneInstance = new Skeleton
-            {
-                NumBones = 1
-            };
-        }
-        #endregion
+            NumBones = 1
+        };
 
         public int NumBones { get; set; }
         public int SomeSize { get; set; }
@@ -34,7 +27,6 @@ namespace SabTool.Data.Graphics
         public int Int1C { get; set; }
         public int Int20 { get; set; }
         public int Int24 { get; set; }
-        public byte[] UnkData { get; set; }
         public Matrix4x4[] BasePoses { get; set; }
         public AffineTransform[] UnkBasePoses { get; set; }
         public short[] Indices { get; set; }
@@ -55,10 +47,11 @@ namespace SabTool.Data.Graphics
 
             reader.BaseStream.Position += 0x4;
 
-            // Should this be above or under the unk bytes?
-            reader.BaseStream.Position += SomeSize;
+            // Unused/unknown bone indexes, overwritten almost instantly after loading
+            reader.BaseStream.Position += NumBones;
 
-            UnkData = reader.ReadBytes(NumBones);
+            // Unused/unknown data, found to be zeros all the time
+            reader.BaseStream.Position += SomeSize;
 
             BasePoses = new Matrix4x4[NumBones];
             for (var i = 0; i < NumBones; ++i)
@@ -109,7 +102,6 @@ namespace SabTool.Data.Graphics
             sb.Append(' ', indentCount).AppendLine($"{nameof(Int1C)} = {Int1C}");
             sb.Append(' ', indentCount).AppendLine($"{nameof(Int20)} = {Int20}");
             sb.Append(' ', indentCount).AppendLine($"{nameof(Int24)} = {Int24}");
-            sb.Append(' ', indentCount).AppendLine($"{nameof(UnkData)} = {BitConverter.ToString(UnkData)}");
             sb.Append(' ', indentCount).AppendLine($"{nameof(BasePoses)} =");
             sb.Append(' ', indentCount).AppendLine("[");
 

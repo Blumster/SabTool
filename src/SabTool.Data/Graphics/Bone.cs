@@ -14,14 +14,14 @@ namespace SabTool.Data.Graphics
         public short Flags { get; set; }
         public short Index { get; set; }
         public byte UnkFlags { get; set; }
-        public int Field20 { get; set; }
-        public int Field24 { get; set; }
-        public int Field28 { get; set; }
+        public float Field20 { get; set; }
+        public float Field24 { get; set; }
+        public float Field28 { get; set; }
         public int Field2C { get; set; }
-        public int Field30 { get; set; }
-        public int Field34 { get; set; }
-        public int Field38 { get; set; }
-        public int Field3C { get; set; }
+        public float Field30 { get; set; }
+        public float Field34 { get; set; }
+        public float Field38 { get; set; }
+        public float Field3C { get; set; }
 
         public bool Read(BinaryReader reader)
         {
@@ -39,14 +39,14 @@ namespace SabTool.Data.Graphics
 
             reader.BaseStream.Position += 0x3;
 
-            Field20 = reader.ReadInt32();
-            Field24 = reader.ReadInt32();
-            Field28 = reader.ReadInt32();
+            Field20 = reader.ReadSingle();
+            Field24 = reader.ReadSingle();
+            Field28 = reader.ReadSingle();
             Field2C = reader.ReadInt32();
-            Field30 = reader.ReadInt32();
-            Field34 = reader.ReadInt32();
-            Field38 = reader.ReadInt32();
-            Field3C = reader.ReadInt32();
+            Field30 = reader.ReadSingle();
+            Field34 = reader.ReadSingle();
+            Field38 = reader.ReadSingle();
+            Field3C = reader.ReadSingle();
 
             if (currentStart + 0x40 != reader.BaseStream.Position)
             {

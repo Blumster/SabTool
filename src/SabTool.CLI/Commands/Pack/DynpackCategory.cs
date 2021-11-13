@@ -108,6 +108,7 @@ namespace SabTool.CLI.Commands.Pack
 
             private static bool Process(string filePath, string outputDir, GlobalMap globalMap)
             {
+                Console.WriteLine($"Processing {filePath}...");
                 var crc = new Crc(Hash.StringToHash(Path.GetFileNameWithoutExtension(filePath)));
 
                 var streamBlock = globalMap.GetDynamicBlock(crc);
@@ -129,6 +130,8 @@ namespace SabTool.CLI.Commands.Pack
                     streamBlock.Read(reader);
                     streamBlock.Export(outputDir);
                 }
+
+                Console.WriteLine();
 
                 return true;
             }

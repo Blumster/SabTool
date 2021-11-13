@@ -12,6 +12,7 @@ namespace SabTool.Data.Graphics
         public int PrimitiveIndex { get; set; }
         public Primitive Primitive { get; set; }
         public Crc MaterialCrc { get; set; }
+        public short BoneIndex { get; set; }
         public short Flags { get; set; }
 
         public Segment(Mesh mesh)
@@ -28,8 +29,9 @@ namespace SabTool.Data.Graphics
             Primitive = Mesh.Primitives[PrimitiveIndex];
             MaterialCrc = new Crc(reader.ReadUInt32());
 
-            reader.BaseStream.Position += 0x6;
+            reader.BaseStream.Position += 0x4;
 
+            BoneIndex = reader.ReadInt16();
             Flags = reader.ReadInt16();
 
             if (currentStart + 0x10 != reader.BaseStream.Position)
@@ -49,6 +51,7 @@ namespace SabTool.Data.Graphics
             sb.Append(' ', indentCount).AppendLine("{");
             sb.Append(' ', indentCount + 2).AppendLine($"{nameof(PrimitiveIndex)} = {PrimitiveIndex}");
             sb.Append(' ', indentCount + 2).AppendLine($"{nameof(MaterialCrc)} = {MaterialCrc}");
+            sb.Append(' ', indentCount + 2).AppendLine($"{nameof(BoneIndex)} = {BoneIndex}");
             sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Flags)} = 0x{Flags:X4}");
             sb.Append(' ', indentCount).AppendLine("}");
 
