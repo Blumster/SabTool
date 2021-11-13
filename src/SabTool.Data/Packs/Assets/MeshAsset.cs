@@ -166,7 +166,8 @@ namespace SabTool.Data.Packs.Assets
             //model.SaveAsWavefront(Path.Combine(outputPath, $"{ModelName}.obj"));
             model.SaveGLTF(Path.Combine(outputPath, $"{ModelName}.gltf"), new WriteSettings
             {
-                Validation = SharpGLTF.Validation.ValidationMode.TryFix
+                Validation = SharpGLTF.Validation.ValidationMode.TryFix,
+                JsonIndented = true
             });
         }
     }
