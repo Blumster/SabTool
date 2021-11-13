@@ -1,21 +1,182 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Numerics;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace SabTool.Data
+using Newtonsoft.Json;
+
+namespace SabTool.Serializers
 {
-    using Lua;
+    using Data;
+    using Data.Lua;
+    using System.Diagnostics.CodeAnalysis;
     using Utils;
     using Utils.Extensions;
 
-    public partial class Blueprint
+    public static class BlueprintSerializer
     {
-        private static Dictionary<(string Group, string Name), Type> PropertyEntries { get; } = new();
-        private static Dictionary<string, HashSet<string>> HierarchyEntries { get; } = new()
+        public static List<Blueprint> DeserializeRaw(Stream stream)
+        {
+            using var reader = new BinaryReader(stream);
+
+            if (!reader.CheckHeaderString("BLUA", reversed: true))
+                throw new Exception("Invalid Blueprint header found!");
+
+            var blueprintCount = reader.ReadInt32();
+
+            var blueprints = new List<Blueprint>(blueprintCount);
+
+            for (var i = 0; i < blueprintCount; ++i)
+            {
+                var bpSize = reader.ReadInt32();
+
+                var bpStartPosition = reader.BaseStream.Position;
+
+                var unknown = reader.ReadInt32();
+                var innerCount = reader.ReadInt32();
+
+                for (var j = 0; j < innerCount; ++j)
+                {
+                    var name = reader.ReadStringWithMaxLength(reader.ReadInt32());
+                    var type = reader.ReadStringWithMaxLength(reader.ReadInt32());
+                    var unkval = reader.ReadInt32();
+
+                    var blueprint = new Blueprint(type, name);
+
+                    ReadProperties(blueprint, reader, unkval);
+
+                    //if (unkval != blueprint.GetPropertyCount())
+                    //Debugger.Break();
+
+                    blueprints.Add(blueprint);
+                }
+
+                if (bpStartPosition + bpSize != reader.BaseStream.Position)
+                    Debugger.Break();
+            }
+            var msgs = asd.ToList();
+            msgs.Sort();
+            foreach (var a in msgs)
+                Console.WriteLine(a);
+
+            return blueprints;
+        }
+
+        private static void ReadProperties(Blueprint blueprint, BinaryReader reader, int propertyCount)
+        {
+            for (var i = 0; i < propertyCount; ++i)
+            {
+                var nameCrc = new Crc(reader.ReadUInt32());
+
+                var propertyName = nameCrc.GetStringOrHexString();
+                var propertySize = reader.ReadInt32();
+
+                var propertyStartPosition = reader.BaseStream.Position;
+
+                var found = false;
+
+                if (!PropertyEntries.TryGetValue((blueprint.Type, propertyName), out Type propertyType))
+                {
+                    var parents = HierarchyEntries[blueprint.Type];
+
+                    foreach (var parentType in parents)
+                    {
+                        if (PropertyEntries.TryGetValue((parentType, propertyName), out propertyType))
+                        {
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    found = true;
+                }
+
+                if (propertyType != null)
+                {
+                    blueprint.AddProperty(propertyName, ReadPropertyValue(reader, propertyType, propertySize));
+                }
+                else
+                {
+                    if (found)
+                    {
+                        asd.Add($"Unset type for:  {blueprint.Type}::{blueprint.Name}.{propertyName}! Data: {ReadPropertyValue(reader, null, propertySize)}");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Missing type for: {blueprint.Type}::{blueprint.Name}.{propertyName}");
+                        Debugger.Break();
+                    }
+                }
+
+                if (propertyStartPosition + propertySize != reader.BaseStream.Position)
+                {
+                    if (propertyStartPosition + propertySize > reader.BaseStream.Position)
+                        Console.WriteLine($"Underreading property: {blueprint.Type}::{blueprint.Name}.{nameCrc.GetStringOrHexString()} with {propertyStartPosition + propertySize - reader.BaseStream.Position} bytes!");
+                    else
+                        Console.WriteLine($"Overreading property: {blueprint.Type}::{blueprint.Name}.{nameCrc.GetStringOrHexString()} with {reader.BaseStream.Position - (propertyStartPosition + propertySize)} bytes!");
+
+                    reader.BaseStream.Position = propertyStartPosition + propertySize;
+                }
+            }
+        }
+
+        private static HashSet<string> asd = new();
+
+        public static void SerializeRaw(List<Blueprint> blueprints, Stream stream)
+        {
+            using var writer = new BinaryWriter(stream);
+            writer.WriteHeaderString("BLUA", reversed: true);
+
+            writer.Write(blueprints.Count);
+
+            foreach (var blueprint in blueprints)
+            {
+                var templateSize = 0; // TODO
+
+                writer.Write(templateSize);
+            }
+        }
+
+        public static List<Blueprint> DeserialzieJSON(Stream stream)
+        {
+            var blueprints = new List<Blueprint>();
+
+            return blueprints;
+        }
+
+        public static void SerializeJSON(List<Blueprint> blueprints, Stream stream)
+        {
+            using var writer = new StreamWriter(stream, Encoding.UTF8, leaveOpen: true);
+
+            writer.Write(JsonConvert.SerializeObject(blueprints));
+        }
+
+        private static void WriteProperties(Blueprint blueprint, BinaryWriter writer)
+        {
+            // TODO
+        }
+
+        private class GroupNameComparer : IEqualityComparer<(string, string)>
+        {
+            public bool Equals((string, string) x, (string, string) y)
+            {
+                return string.Compare(x.Item1, y.Item1, true) == 0 && string.Compare(x.Item2, y.Item2, true) == 0;
+            }
+
+            public int GetHashCode([DisallowNull] (string, string) obj)
+            {
+                return (obj.Item1.ToLowerInvariant(), obj.Item2.ToLowerInvariant()).GetHashCode();
+            }
+        }
+
+        private static Dictionary<(string Group, string Name), Type> PropertyEntries { get; } = new(new GroupNameComparer());
+        private static Dictionary<string, HashSet<string>> HierarchyEntries { get; } = new(StringComparer.InvariantCultureIgnoreCase)
         {
             { "Weapon", new() { "Item", "Damageable", "Audible" } },
             { "Searcher", new() { "Item", "Damageable", "Audible" } },
@@ -67,7 +228,7 @@ namespace SabTool.Data
             { "GroupCameraSettings", new() { "CameraSettings" } },
             { "CameraSettingsMisc", new() { } },
             { "ToneMapping", new() { } },
-            { "LightSettings", new() { "LightAttachement", "LightHaloAttachment", "sub_7FB4D0" } },
+            { "LightSettings", new() { "LightAttachement", "LightHaloAttachment", "0xD0C6D015" } },
             { "LightHalo", new() { } },
             { "LightVolume", new() { } },
             { "ClothObject", new() { "ModelRenderable" } },
@@ -142,10 +303,52 @@ namespace SabTool.Data
             { "SearcherSeat", new() { "SeatWithMount" } },
             { "SeatWithMount", new() { "Seat", "Aimer" } },
             { "Seat", new() { "Controllable" } },
+
+            { "CommonUI_Persistent", new() },
         };
 
-        public static void Setup()
+        static BlueprintSerializer()
         {
+            // Expand parent types based on the hierarchies
+            var toAdd = new HashSet<string>();
+
+            while (true)
+            {
+                var didAnything = false;
+
+                foreach (var entry in HierarchyEntries)
+                {
+                    entry.Value.Add("Common");
+                    entry.Value.Add("Unknown");
+
+                    foreach (var parent in entry.Value)
+                    {
+                        if (!HierarchyEntries.ContainsKey(parent))
+                            continue;
+
+                        foreach (var parentVal in HierarchyEntries[parent])
+                        {
+                            toAdd.Add(parentVal);
+                        }
+                    }
+
+                    var startCount = entry.Value.Count;
+
+                    foreach (var newEntry in toAdd)
+                    {
+                        entry.Value.Add(newEntry);
+                    }
+
+                    toAdd.Clear();
+
+                    didAnything = didAnything || startCount != entry.Value.Count;
+                }
+
+                if (!didAnything)
+                    break;
+            }
+
+            // Set up fields
             PropertyEntries.Add(("AIAttractionPt", "UseInLowWTF"), typeof(bool));
             PropertyEntries.Add(("AIAttractionPt", "Labels"), typeof(Crc));
             PropertyEntries.Add(("AIAttractionPt", "UseRadiusMax"), typeof(float));
@@ -265,8 +468,22 @@ namespace SabTool.Data
             PropertyEntries.Add(("AIAttractionPt", "0x2523B4EE"), typeof(bool));
             PropertyEntries.Add(("AIAttractionPt", "0x29EC9F57"), typeof(bool));
             PropertyEntries.Add(("AIAttractionPt", "SabotagePt"), typeof(bool));
+            PropertyEntries.Add(("AIAttractionPt", "FED_Color"), null);
+            PropertyEntries.Add(("AIAttractionPt", "ConvListOnAllPlanted"), null);
+            PropertyEntries.Add(("AIAttractionPt", "ConvListOnNotEnough"), null);
+            PropertyEntries.Add(("AIAttractionPt", "VisibilityRange"), null);
+            PropertyEntries.Add(("AIAttractionPt", "visible attached item"), null);
+            PropertyEntries.Add(("AIAttractionPt", "EffectRadius"), null);
+            PropertyEntries.Add(("AIAttractionPt", "CombatEnabled"), null);
+            PropertyEntries.Add(("AIAttractionPt", "ScriptName"), null);
+            PropertyEntries.Add(("AIAttractionPt", "TargetObject"), null);
+            PropertyEntries.Add(("AIAttractionPt", "KeyNeeded"), null);
+            PropertyEntries.Add(("AIAttractionPt", "0x84046B05"), null);
+            PropertyEntries.Add(("AIAttractionPt", "MiniGameType"), null);
+            PropertyEntries.Add(("AIAttractionPt", "PriorityClass"), null);
+            PropertyEntries.Add(("AIAttractionPt", "IdleDurationMin"), null);
 
-            PropertyEntries.Add(("AIChatter", "DISTANCE"), typeof(float));
+            PropertyEntries.Add(("AIChatter", "Distance"), typeof(float));
             PropertyEntries.Add(("AIChatter", "0xBDB6564E"), typeof(float));
             PropertyEntries.Add(("AIChatter", "0xC187EFD3"), typeof(bool));
             PropertyEntries.Add(("AIChatter", "0xDC83F68F"), typeof(Vector2));
@@ -303,6 +520,7 @@ namespace SabTool.Data
             PropertyEntries.Add(("AICombatParams", "WeaponBashWhenClose"), typeof(float));
             PropertyEntries.Add(("AICombatParams", "StandTime"), typeof(float));
             PropertyEntries.Add(("AICombatParams", "0xFA03EB28"), typeof(float));
+            PropertyEntries.Add(("AICombatParams", "0xBAE22F2E"), null);
 
             PropertyEntries.Add(("AIController", "AlarmDecay"), typeof(float));
             PropertyEntries.Add(("AIController", "InitialModule"), typeof(char[]));
@@ -362,6 +580,15 @@ namespace SabTool.Data
             PropertyEntries.Add(("Ammo", "0xC84E7BEF"), typeof(int));
             PropertyEntries.Add(("Ammo", "0xDE11CA90"), typeof(int));
             PropertyEntries.Add(("Ammo", "Item"), typeof(Crc));
+            PropertyEntries.Add(("Ammo", "NoWillToFight"), null);
+            PropertyEntries.Add(("Ammo", "SubItem 1"), null);
+            PropertyEntries.Add(("Ammo", "SubItem 1 Amount"), null);
+            PropertyEntries.Add(("Ammo", "SubItem 2"), null);
+            PropertyEntries.Add(("Ammo", "SubItem 2 Amount"), null);
+            PropertyEntries.Add(("Ammo", "SubItem 3"), null);
+            PropertyEntries.Add(("Ammo", "SubItem 3 Amount"), null);
+            PropertyEntries.Add(("Ammo", "SubItem 4"), null);
+            PropertyEntries.Add(("Ammo", "SubItem 4 Amount"), null);
 
             PropertyEntries.Add(("AnimatedObject", "0x6BEC5CB4"), typeof(Crc));
             PropertyEntries.Add(("AnimatedObject", "EaseIn3"), typeof(float));
@@ -414,10 +641,14 @@ namespace SabTool.Data
             PropertyEntries.Add(("AnimatedObject", "0x2D07DA6F"), typeof(Crc));
             PropertyEntries.Add(("AnimatedObject", "0xE6023240"), typeof(Crc));
             PropertyEntries.Add(("AnimatedObject", "0x6ADE730A"), typeof(Crc));
+            PropertyEntries.Add(("AnimatedObject", "StopAtOriginalPos"), null);
+            PropertyEntries.Add(("AnimatedObject", "AnimSpeed"), null);
 
             PropertyEntries.Add(("AnimatedTransition", "0x1EDFEE31"), typeof(Vector3));
             PropertyEntries.Add(("AnimatedTransition", "0x5570EF5A"), typeof(float));
             PropertyEntries.Add(("AnimatedTransition", "0xEB4DFB24"), typeof(Crc));
+
+            PropertyEntries.Add(("APC", "Labels"), null);
 
             PropertyEntries.Add(("AttrPtAttachable", "AIAttractionPt"), typeof(int));
             PropertyEntries.Add(("AttrPtAttachable", "AttrPtRotation"), typeof(float));
@@ -455,6 +686,7 @@ namespace SabTool.Data
             PropertyEntries.Add(("Bird", "FX"), typeof(Crc));
             PropertyEntries.Add(("Bird", "0x7D09FBF0"), typeof(float));
             PropertyEntries.Add(("Bird", "0x8415C708"), typeof(Vector2));
+            PropertyEntries.Add(("Bird", "0x0F6BBC58"), null);
 
             PropertyEntries.Add(("BirdSpawner", "0x3CDEDBED"), typeof(bool));
             PropertyEntries.Add(("BirdSpawner", "ClassName"), typeof(string));
@@ -495,7 +727,7 @@ namespace SabTool.Data
             PropertyEntries.Add(("Bullet", "0x232BC103"), typeof(float));
             PropertyEntries.Add(("Bullet", "AI DmgFallOff Range"), typeof(Vector2));
             PropertyEntries.Add(("Bullet", "0x08775F0D"), typeof(float));
-            PropertyEntries.Add(("Bullet", "SPEED"), typeof(float));
+            PropertyEntries.Add(("Bullet", "Speed"), typeof(float));
             PropertyEntries.Add(("Bullet", "MaxDistance"), typeof(float));
             PropertyEntries.Add(("Bullet", "0xBA52C3D5"), typeof(float));
             PropertyEntries.Add(("Bullet", "DmgFallOff Range"), typeof(Vector2));
@@ -606,6 +838,14 @@ namespace SabTool.Data
             PropertyEntries.Add(("CameraSettingsMisc", "Empty"), typeof(Crc)); // unused
 
             PropertyEntries.Add(("Car", "RaceCar"), typeof(bool));
+            PropertyEntries.Add(("Car", "0x099A56FA"), null);
+            PropertyEntries.Add(("Car", "0x62F3FCEB"), null);
+            PropertyEntries.Add(("Car", "0xF055E2F1"), null);
+            PropertyEntries.Add(("Car", "0x6E4E5A86"), null);
+            PropertyEntries.Add(("Car", "SteerFwdsAnimation"), null);
+            PropertyEntries.Add(("Car", "SteerRvrsAnimation"), null);
+            PropertyEntries.Add(("Car", "SoundBanks"), null);
+            PropertyEntries.Add(("Car", "Labels"), null);
 
             PropertyEntries.Add(("Cinematics", "Actor"), typeof(Crc));
             PropertyEntries.Add(("Cinematics", "0x6018F238"), typeof(byte));
@@ -653,16 +893,36 @@ namespace SabTool.Data
             PropertyEntries.Add(("ClothObject", "0x69A86828"), typeof(int));
             PropertyEntries.Add(("ClothObject", "0x5AC2612B"), typeof(Vector3));
             PropertyEntries.Add(("ClothObject", "0xA0D456CB"), typeof(int));
-            PropertyEntries.Add(("ClothObject", "MASS"), typeof(float));
-            PropertyEntries.Add(("ClothObject", "DISTANCE"), typeof(float));
+            PropertyEntries.Add(("ClothObject", "Mass"), typeof(float));
+            PropertyEntries.Add(("ClothObject", "Distance"), typeof(float));
             PropertyEntries.Add(("ClothObject", "Offset"), typeof(float));
             PropertyEntries.Add(("ClothObject", "0xB9C2B47A"), typeof(Crc));
+            PropertyEntries.Add(("ClothObject", "0x0B3DC01D"), null);
+            PropertyEntries.Add(("ClothObject", "Flammable"), null);
+            PropertyEntries.Add(("ClothObject", "0x688E2FBA"), null);
+            PropertyEntries.Add(("ClothObject", "0x36F1C579"), null);
+            PropertyEntries.Add(("ClothObject", "0x00A03A33"), null);
+            PropertyEntries.Add(("ClothObject", "0x9C924267"), null);
+            PropertyEntries.Add(("ClothObject", "0xCE4A2343"), null);
+            PropertyEntries.Add(("ClothObject", "0xC1DDD580"), null);
+            PropertyEntries.Add(("ClothObject", "0x5AF20FDA"), null);
 
             PropertyEntries.Add(("Common", "dynamic"), typeof(bool));
             PropertyEntries.Add(("Common", "UseDynamicPool"), typeof(bool));
             PropertyEntries.Add(("Common", "priority"), typeof(int));
             PropertyEntries.Add(("Common", "backup"), typeof(Crc));
             PropertyEntries.Add(("Common", "managed"), typeof(bool));
+
+            PropertyEntries.Add(("CommonUI_Persistent", "Version"), null);
+            PropertyEntries.Add(("CommonUI_Persistent", "0x4430D1D2"), null);
+            PropertyEntries.Add(("CommonUI_Persistent", "0x5AFE85FA"), null);
+            PropertyEntries.Add(("CommonUI_Persistent", "0xD77F10AF"), null);
+            PropertyEntries.Add(("CommonUI_Persistent", "0x8157CC9C"), null);
+            PropertyEntries.Add(("CommonUI_Persistent", "0xDEB5154B"), null);
+            PropertyEntries.Add(("CommonUI_Persistent", "0x1F6FE269"), null);
+            PropertyEntries.Add(("CommonUI_Persistent", "0xFD68F11E"), null);
+            PropertyEntries.Add(("CommonUI_Persistent", "0x1F6B653B"), null);
+            PropertyEntries.Add(("CommonUI_Persistent", "0x9D776488"), null);
 
             PropertyEntries.Add(("Controllable", "AI"), typeof(Crc));
             PropertyEntries.Add(("Controllable", "LuaTable"), typeof(Crc));
@@ -760,6 +1020,7 @@ namespace SabTool.Data
             PropertyEntries.Add(("DetailObject", "0xF0FA376C"), typeof(float));
             PropertyEntries.Add(("DetailObject", "0x87DD9796"), typeof(bool)); // unused?
             PropertyEntries.Add(("DetailObject", "0x8A09514E"), typeof(bool)); // unused?
+            PropertyEntries.Add(("DetailObject", "0x34AFD6B6"), null);
 
             PropertyEntries.Add(("Difficulty", "0x7F1A3641"), typeof(float));
             PropertyEntries.Add(("Difficulty", "0x3208D523"), typeof(float));
@@ -777,6 +1038,7 @@ namespace SabTool.Data
             PropertyEntries.Add(("Difficulty", "0xCC919414"), typeof(float));
             PropertyEntries.Add(("Difficulty", "0xD7C38E8D"), typeof(float));
             PropertyEntries.Add(("Difficulty", "DifficultyLevel"), typeof(int));
+            PropertyEntries.Add(("Difficulty", "Name"), null);
 
             PropertyEntries.Add(("ElasticTransition", "ElasticTransition"), typeof(Crc));
             PropertyEntries.Add(("ElasticTransition", "0x6F6C645F"), typeof(Vector3));
@@ -845,6 +1107,7 @@ namespace SabTool.Data
             PropertyEntries.Add(("Explosion", "Debris"), typeof(int));
             PropertyEntries.Add(("Explosion", "0x0FCE73F0"), typeof(float));
             PropertyEntries.Add(("Explosion", "ExplosionDamage"), typeof(float));
+            PropertyEntries.Add(("Explosion", "ExplosionRadius"), null);
 
             PropertyEntries.Add(("FaceExpression", "Duration"), typeof(float));
             PropertyEntries.Add(("FaceExpression", "0xC023ACD3"), typeof(Crc));
@@ -929,6 +1192,9 @@ namespace SabTool.Data
             PropertyEntries.Add(("Foliage", "NumTilesInRow"), typeof(int)); // unused?
             PropertyEntries.Add(("Foliage", "Layout"), typeof(int)); // unused?
             PropertyEntries.Add(("Foliage", "Clusters"), typeof(int)); // unused?
+            PropertyEntries.Add(("Foliage", "Layers"), null);
+            PropertyEntries.Add(("Foliage", "AmbientPower"), null);
+            PropertyEntries.Add(("Foliage", "SpawnModel"), null);
 
             PropertyEntries.Add(("FoliageFx", "0x664DE09A"), typeof(int));
             PropertyEntries.Add(("FoliageFx", "0x0C8091C3"), typeof(int));
@@ -1187,6 +1453,11 @@ namespace SabTool.Data
             PropertyEntries.Add(("Highlight", "0xDDB15F1B"), typeof(Color));
             PropertyEntries.Add(("Highlight", "0xE823F441"), typeof(float));
             PropertyEntries.Add(("Highlight", "0x661C6BD6"), typeof(float));
+            PropertyEntries.Add(("Highlight", "0xCD2C4D82"), null);
+            PropertyEntries.Add(("Highlight", "0x4F33D5ED"), null);
+            PropertyEntries.Add(("Highlight", "0x84173143"), null);
+            PropertyEntries.Add(("Highlight", "0xEA1A106C"), null);
+            PropertyEntries.Add(("Highlight", "0x062F0D37"), null);
 
             PropertyEntries.Add(("Human", "Labels"), typeof(Crc));
             PropertyEntries.Add(("Human", "HUDName"), typeof(Crc));
@@ -1268,6 +1539,26 @@ namespace SabTool.Data
             PropertyEntries.Add(("Human", "RifleSlot"), typeof(Crc));
             PropertyEntries.Add(("Human", "RandomItem"), typeof(Crc));
             PropertyEntries.Add(("Human", "Pistol Bone"), typeof(Crc));
+            PropertyEntries.Add(("Human", "Light Damage Sound"), null);
+            PropertyEntries.Add(("Human", "Heavy Damage Sound"), null);
+            PropertyEntries.Add(("Human", "Death Sound"), null);
+            PropertyEntries.Add(("Human", "Shot Damage Sound"), null);
+            PropertyEntries.Add(("Human", "Persistent"), null);
+            PropertyEntries.Add(("Human", "Empty"), null);
+            PropertyEntries.Add(("Human", "InitialModule"), null);
+            PropertyEntries.Add(("Human", "Inventory"), null);
+            PropertyEntries.Add(("Human", "AmmoInventory"), null);
+            PropertyEntries.Add(("Human", "0x95EB0E6C"), null);
+            PropertyEntries.Add(("Human", "0x0A6D03E3"), null);
+            PropertyEntries.Add(("Human", "0x6E7F38FA"), null);
+            PropertyEntries.Add(("Human", "0x4D633BD7"), null);
+            PropertyEntries.Add(("Human", "0x8C381938"), null);
+            PropertyEntries.Add(("Human", "0xD26E7FE5"), null);
+            PropertyEntries.Add(("Human", "Hat Particle"), null);
+            PropertyEntries.Add(("Human", "DamagedByCharacters"), null);
+            PropertyEntries.Add(("Human", "SoundBanks"), null);
+            PropertyEntries.Add(("Human", "InventorySlot"), null);
+            PropertyEntries.Add(("Human", "GiveGrenade"), null);
 
             PropertyEntries.Add(("HumanBodyPart", "Model"), typeof(Crc));
             PropertyEntries.Add(("HumanBodyPart", "LodModel"), typeof(Crc));
@@ -1300,6 +1591,11 @@ namespace SabTool.Data
             PropertyEntries.Add(("HumanSkeletonScale", "BoneScale"), typeof(float));
             PropertyEntries.Add(("HumanSkeletonScale", "Model"), typeof(Crc));
             PropertyEntries.Add(("HumanSkeletonScale", "Bone scales"), typeof(int));
+            PropertyEntries.Add(("HumanSkeletonScale", "BoneName"), null);
+            PropertyEntries.Add(("HumanSkeletonScale", "Bone Scale"), null);
+
+            PropertyEntries.Add(("ImageFolder", "Version"), null);
+            PropertyEntries.Add(("ImageFolder", "0xD6ACEA7C"), null);
 
             PropertyEntries.Add(("Item", "0x953C60F5"), typeof(float));
             PropertyEntries.Add(("Item", "SabotageExplosion"), typeof(int));
@@ -1318,6 +1614,16 @@ namespace SabTool.Data
             PropertyEntries.Add(("Item", "Pickup Low Anim"), typeof(Crc));
             PropertyEntries.Add(("Item", "Label"), typeof(Crc));
             PropertyEntries.Add(("Item", "PickupHighlight"), typeof(Crc));
+            PropertyEntries.Add(("Item", "NoWillToFight"), null);
+            PropertyEntries.Add(("Item", "SubItem 1"), null);
+            PropertyEntries.Add(("Item", "SubItem 1 Amount"), null);
+            PropertyEntries.Add(("Item", "SubItem 2"), null);
+            PropertyEntries.Add(("Item", "SubItem 2 Amount"), null);
+            PropertyEntries.Add(("Item", "SubItem 3"), null);
+            PropertyEntries.Add(("Item", "SubItem 3 Amount"), null);
+            PropertyEntries.Add(("Item", "SubItem 4"), null);
+            PropertyEntries.Add(("Item", "SubItem 4 Amount"), null);
+            PropertyEntries.Add(("Item", "0x7EDFDECA"), null);
 
             PropertyEntries.Add(("ItemCache", "Display Name"), typeof(Crc));
             PropertyEntries.Add(("ItemCache", "0x97EE12C6"), typeof(bool));
@@ -1440,6 +1746,13 @@ namespace SabTool.Data
             PropertyEntries.Add(("LightSettings", "0xD1488AB4"), typeof(int));
             PropertyEntries.Add(("LightSettings", "ConeColor"), typeof(Color));
             PropertyEntries.Add(("LightSettings", "Anim Speed"), typeof(float));
+            PropertyEntries.Add(("LightSettings", "AlwaysOn"), typeof(bool));
+            PropertyEntries.Add(("LightSettings", "LWTFColor"), null);
+            PropertyEntries.Add(("LightSettings", "LWTFIntensity"), null);
+            PropertyEntries.Add(("LightSettings", "LWTFSpecular Color"), null);
+            PropertyEntries.Add(("LightSettings", "LWTFSpecular Intensity"), null);
+            PropertyEntries.Add(("LightSettings", "StartTime"), null);
+            PropertyEntries.Add(("LightSettings", "EndTime"), null);
 
             PropertyEntries.Add(("LightVolume", "0x7D90365D"), typeof(float));
             PropertyEntries.Add(("LightVolume", "0x782741C7"), typeof(float));
@@ -1494,6 +1807,10 @@ namespace SabTool.Data
             PropertyEntries.Add(("Melee", "BlockArc"), typeof(float));
             PropertyEntries.Add(("Melee", "BlockTargetDistanceMult"), typeof(float));
             PropertyEntries.Add(("Melee", "AttackTargetWidthMult"), typeof(float));
+            PropertyEntries.Add(("Melee", "TimeBetweenGrabs"), null);
+            PropertyEntries.Add(("Melee", "CoverRadius"), null);
+            PropertyEntries.Add(("Melee", "MaxRangedOffset"), null);
+            PropertyEntries.Add(("Melee", "MaxAimAdjustTime"), null);
 
             PropertyEntries.Add(("MeleeWeapon", "hits to break"), typeof(int));
             PropertyEntries.Add(("MeleeWeapon", "two handed"), typeof(bool));
@@ -1538,6 +1855,8 @@ namespace SabTool.Data
             PropertyEntries.Add(("MiniGame", "0xEE032533"), typeof(bool));
             PropertyEntries.Add(("MiniGame", "0xEF03C774"), typeof(Crc));
             PropertyEntries.Add(("MiniGame", "LockOnComplete"), typeof(bool));
+            PropertyEntries.Add(("MiniGame", "RandomDirection"), typeof(bool));
+            PropertyEntries.Add(("MiniGame", "Timed"), null);
 
             PropertyEntries.Add(("ModelRenderable", "Model"), typeof(Crc));
             PropertyEntries.Add(("ModelRenderable", "NoWillToFight"), typeof(bool));
@@ -1565,6 +1884,8 @@ namespace SabTool.Data
             PropertyEntries.Add(("ParticleEffect", "Emitters"), typeof(int));
             PropertyEntries.Add(("ParticleEffect", "SET"), typeof(int));
             PropertyEntries.Add(("ParticleEffect", "0x37077436"), typeof(Crc));
+            PropertyEntries.Add(("ParticleEffect", "0xE94F943C"), null);
+            PropertyEntries.Add(("ParticleEffect", "PhysicsParticleSetRef"), null);
 
             PropertyEntries.Add(("ParticleEffectSpawner", "Damage Region"), typeof(Crc));
             PropertyEntries.Add(("ParticleEffectSpawner", "ParticleEffect"), typeof(Crc));
@@ -1653,7 +1974,7 @@ namespace SabTool.Data
             PropertyEntries.Add(("PhysicalOrdnance", "Weight"), typeof(float));
             PropertyEntries.Add(("PhysicalOrdnance", "Display Name"), typeof(Crc));
             PropertyEntries.Add(("PhysicalOrdnance", "DamageRegion"), typeof(Crc));
-            PropertyEntries.Add(("PhysicalOrdnance", "DISTANCE"), typeof(float));
+            PropertyEntries.Add(("PhysicalOrdnance", "Distance"), typeof(float));
             PropertyEntries.Add(("PhysicalOrdnance", "0xE52E6A81"), typeof(float));
             PropertyEntries.Add(("PhysicalOrdnance", "Friction"), typeof(float));
             PropertyEntries.Add(("PhysicalOrdnance", "Lifespan"), typeof(float));
@@ -1675,8 +1996,9 @@ namespace SabTool.Data
             PropertyEntries.Add(("PhysicsParticle", "Restitution"), typeof(float));
             PropertyEntries.Add(("PhysicsParticle", "Collision Effect"), typeof(Crc));
             PropertyEntries.Add(("PhysicsParticle", "0x3904F4E4"), typeof(int));
-            PropertyEntries.Add(("PhysicsParticle", "MASS"), typeof(float));
+            PropertyEntries.Add(("PhysicsParticle", "Mass"), typeof(float));
             PropertyEntries.Add(("PhysicsParticle", "AttachParticleFX"), typeof(int));
+            PropertyEntries.Add(("PhysicsParticle", "PhysicsParticleAttachment"), null);
 
             PropertyEntries.Add(("PhysicsParticleSet", "Life Span"), typeof(Vector2));
             PropertyEntries.Add(("PhysicsParticleSet", "Randomize Number"), typeof(float));
@@ -1757,6 +2079,19 @@ namespace SabTool.Data
             PropertyEntries.Add(("Player", "CameraSets"), typeof(int));
             PropertyEntries.Add(("Player", "DyingSlowdownDamageTimer"), typeof(float));
             PropertyEntries.Add(("Player", "DyingSlowdownHealth"), typeof(float));
+            PropertyEntries.Add(("Player", "Model"), null);
+            PropertyEntries.Add(("Player", "Hat Particle"), null);
+            PropertyEntries.Add(("Player", "NoWillToFight"), null);
+            PropertyEntries.Add(("Player", "AimerSettings"), null);
+            PropertyEntries.Add(("Player", "rotation accel time"), null);
+            PropertyEntries.Add(("Player", "enemy crosshair color"), null);
+            PropertyEntries.Add(("Player", "enemy crosshair alpha"), null);
+            PropertyEntries.Add(("Player", "neutral crosshair color"), null);
+            PropertyEntries.Add(("Player", "neutral crosshair alpha"), null);
+            PropertyEntries.Add(("Player", "Light Damage Sound"), null);
+            PropertyEntries.Add(("Player", "Heavy Damage Sound"), null);
+            PropertyEntries.Add(("Player", "Death Sound"), null);
+            PropertyEntries.Add(("Player", "Shot Damage Sound"), null);
 
             PropertyEntries.Add(("PlayerCollision", "0xC0C16868"), typeof(float));
             PropertyEntries.Add(("PlayerCollision", "0x28BBFBF2"), typeof(float));
@@ -1830,6 +2165,108 @@ namespace SabTool.Data
             PropertyEntries.Add(("Prop", "AnimatedPropPushData"), typeof(Crc));
             PropertyEntries.Add(("Prop", "APSound"), typeof(Crc));
             PropertyEntries.Add(("Prop", "InitialEffect"), typeof(bool));
+            PropertyEntries.Add(("Prop", "0xDDC0AC2F"), null);
+            PropertyEntries.Add(("Prop", "Cloth Attachments"), null);
+            PropertyEntries.Add(("Prop", "0xE813FE45"), null);
+            PropertyEntries.Add(("Prop", "DamagableParentName"), null);
+            PropertyEntries.Add(("Prop", "Index1Variations"), null);
+            PropertyEntries.Add(("Prop", "Index2Variations"), null);
+            PropertyEntries.Add(("Prop", "Index3Variations"), null);
+            PropertyEntries.Add(("Prop", "0xF71C8E51"), null);
+            PropertyEntries.Add(("Prop", "0x6FAE76BF"), null);
+            PropertyEntries.Add(("Prop", "0xE4D97E65"), null);
+            PropertyEntries.Add(("Prop", "ClothObject"), null);
+            PropertyEntries.Add(("Prop", "0xBFF29F69"), null);
+            PropertyEntries.Add(("Prop", "0xF440D4E6"), null);
+            PropertyEntries.Add(("Prop", "0x8F00FD1D"), null);
+            PropertyEntries.Add(("Prop", "DamagedByFire"), null);
+            PropertyEntries.Add(("Prop", "0x7D096810"), null);
+            PropertyEntries.Add(("Prop", "DamagedByBullets"), null);
+            PropertyEntries.Add(("Prop", "DamagedByCollisions"), null);
+            PropertyEntries.Add(("Prop", "DamagedByCharacters"), null);
+            PropertyEntries.Add(("Prop", "DamagedByExplosions"), null);
+            PropertyEntries.Add(("Prop", "LuaTable"), null);
+            PropertyEntries.Add(("Prop", "LuaParam"), null);
+            PropertyEntries.Add(("Prop", "DeathSound"), null);
+            PropertyEntries.Add(("Prop", "ColorVariation"), null);
+            PropertyEntries.Add(("Prop", "Color"), null);
+            PropertyEntries.Add(("Prop", "ColorRandWeight"), null);
+            PropertyEntries.Add(("Prop", "0x0A9F90DA"), null);
+            PropertyEntries.Add(("Prop", "LightVolume"), null);
+            PropertyEntries.Add(("Prop", "0x8D7E074D"), null);
+            PropertyEntries.Add(("Prop", "0xD8E0895A"), null);
+            PropertyEntries.Add(("Prop", "0x36B39561"), null);
+            PropertyEntries.Add(("Prop", "Name"), null);
+            PropertyEntries.Add(("Prop", "Display Name"), null);
+            PropertyEntries.Add(("Prop", "AnimationInto"), null);
+            PropertyEntries.Add(("Prop", "AnimationIdle"), null);
+            PropertyEntries.Add(("Prop", "AnimationOutOf"), null);
+            PropertyEntries.Add(("Prop", "IdleDuration"), null);
+            PropertyEntries.Add(("Prop", "AnimationIdleAlt"), null);
+            PropertyEntries.Add(("Prop", "IdleAltDuration"), null);
+            PropertyEntries.Add(("Prop", "YRot"), null);
+            PropertyEntries.Add(("Prop", "Offset"), null);
+            PropertyEntries.Add(("Prop", "Labels"), null);
+            PropertyEntries.Add(("Prop", "ParentObject"), null);
+            PropertyEntries.Add(("Prop", "0xE66CED59"), null);
+            PropertyEntries.Add(("Prop", "StartDisabled"), null);
+            PropertyEntries.Add(("Prop", "UseInHighWTF"), null);
+            PropertyEntries.Add(("Prop", "UseInLowWTF"), null);
+            PropertyEntries.Add(("Prop", "0x2ED2EC21"), null);
+            PropertyEntries.Add(("Prop", "0x29EC9F57"), null);
+            PropertyEntries.Add(("Prop", "0x2523B4EE"), null);
+            PropertyEntries.Add(("Prop", "0xDE634E2F"), null);
+            PropertyEntries.Add(("Prop", "DoNotRayCast"), null);
+            PropertyEntries.Add(("Prop", "EmptyIdle"), null);
+            PropertyEntries.Add(("Prop", "EnableAlts"), null);
+            PropertyEntries.Add(("Prop", "RunHere"), null);
+            PropertyEntries.Add(("Prop", "0xAEEA42F8"), null);
+            PropertyEntries.Add(("Prop", "0x4D44EFE0"), null);
+            PropertyEntries.Add(("Prop", "0x8C8D6435"), null);
+            PropertyEntries.Add(("Prop", "FoodRate"), null);
+            PropertyEntries.Add(("Prop", "FunRate"), null);
+            PropertyEntries.Add(("Prop", "SocialRate"), null);
+            PropertyEntries.Add(("Prop", "SexRate"), null);
+            PropertyEntries.Add(("Prop", "SafetyRate"), null);
+            PropertyEntries.Add(("Prop", "AlarmRate"), null);
+            PropertyEntries.Add(("Prop", "HuntRate"), null);
+            PropertyEntries.Add(("Prop", "AI"), null);
+            PropertyEntries.Add(("Prop", "0x0F12604C"), null);
+            PropertyEntries.Add(("Prop", "0x4070B35E"), null);
+            PropertyEntries.Add(("Prop", "Usable"), null);
+            PropertyEntries.Add(("Prop", "StartUseDisabled"), null);
+            PropertyEntries.Add(("Prop", "NumUseStates"), null);
+            PropertyEntries.Add(("Prop", "UseRadiusMax"), null);
+            PropertyEntries.Add(("Prop", "UseAngleMax"), null);
+            PropertyEntries.Add(("Prop", "UseHeightMax"), null);
+            PropertyEntries.Add(("Prop", "PreferredDistance"), null);
+            PropertyEntries.Add(("Prop", "IsDoorTrigger"), null);
+            PropertyEntries.Add(("Prop", "0x460E7F77"), null);
+            PropertyEntries.Add(("Prop", "0x365FB660"), null);
+            PropertyEntries.Add(("Prop", "0x55D89223"), null);
+            PropertyEntries.Add(("Prop", "FED_Color"), null);
+            PropertyEntries.Add(("Prop", "0x1DE59C2F"), null);
+            PropertyEntries.Add(("Prop", "0x658D48E2"), null);
+            PropertyEntries.Add(("Prop", "0xA8DB360C"), null);
+            PropertyEntries.Add(("Prop", "0x84D70C5E"), null);
+            PropertyEntries.Add(("Prop", "0x8DB13A88"), null);
+            PropertyEntries.Add(("Prop", "DLCMiniGame"), null);
+            PropertyEntries.Add(("Prop", "0x054A8FB1"), null);
+            PropertyEntries.Add(("Prop", "PriorityClass"), null);
+            PropertyEntries.Add(("Prop", "SoundBanks"), null);
+            PropertyEntries.Add(("Prop", "ForceAsGameObject"), null);
+
+            PropertyEntries.Add(("RadialBlur", "0xD3AE67AF"), null);
+            PropertyEntries.Add(("RadialBlur", "0x6BE4BDFB"), null);
+            PropertyEntries.Add(("RadialBlur", "0x1A00CFD7"), null);
+            PropertyEntries.Add(("RadialBlur", "0xFA34BA6E"), null);
+            PropertyEntries.Add(("RadialBlur", "0x49448C98"), null);
+            PropertyEntries.Add(("RadialBlur", "Radius"), null);
+            PropertyEntries.Add(("RadialBlur", "0x15667836"), null);
+            PropertyEntries.Add(("RadialBlur", "0xAFA72B2E"), null);
+            PropertyEntries.Add(("RadialBlur", "0x65E6CC07"), null);
+            PropertyEntries.Add(("RadialBlur", "0x22D6955B"), null);
+            PropertyEntries.Add(("RadialBlur", "0xDCBC9254"), null);
 
             PropertyEntries.Add(("RandomObj", "BlueprintList"), typeof(int));
             PropertyEntries.Add(("RandomObj", "LabelFilter"), typeof(char[]));
@@ -1839,6 +2276,74 @@ namespace SabTool.Data
             PropertyEntries.Add(("RandomObj", "Amount"), typeof(int));
             PropertyEntries.Add(("RandomObj", "BlueprintName"), typeof(Crc));
             PropertyEntries.Add(("RandomObj", "0x84F14707"), typeof(Crc));
+
+            PropertyEntries.Add(("Ricochet", "Empty"), null);
+            PropertyEntries.Add(("Ricochet", "Randomize Number0"), null);
+            PropertyEntries.Add(("Ricochet", "Length"), null);
+            PropertyEntries.Add(("Ricochet", "Spread"), null);
+            PropertyEntries.Add(("Ricochet", "Splats per hit"), null);
+            PropertyEntries.Add(("Ricochet", "Cut Off Distance"), null);
+            PropertyEntries.Add(("Ricochet", "Physics Cut Off Distance"), null);
+            PropertyEntries.Add(("Ricochet", "Decals Cut Off Distance"), null);
+            PropertyEntries.Add(("Ricochet", "Close Effect1"), null);
+            PropertyEntries.Add(("Ricochet", "Distant Effect1"), null);
+            PropertyEntries.Add(("Ricochet", "Physics Effect1"), null);
+            PropertyEntries.Add(("Ricochet", "Decal1"), null);
+            PropertyEntries.Add(("Ricochet", "Randomize Number1"), null);
+            PropertyEntries.Add(("Ricochet", "Close Effect2"), null);
+            PropertyEntries.Add(("Ricochet", "Distant Effect2"), null);
+            PropertyEntries.Add(("Ricochet", "Physics Effect2"), null);
+            PropertyEntries.Add(("Ricochet", "Decal2"), null);
+            PropertyEntries.Add(("Ricochet", "Randomize Number2"), null);
+            PropertyEntries.Add(("Ricochet", "Close Effect3"), null);
+            PropertyEntries.Add(("Ricochet", "Distant Effect3"), null);
+            PropertyEntries.Add(("Ricochet", "Physics Effect3"), null);
+            PropertyEntries.Add(("Ricochet", "Decal3"), null);
+            PropertyEntries.Add(("Ricochet", "Randomize Number3"), null);
+            PropertyEntries.Add(("Ricochet", "Close Effect4"), null);
+            PropertyEntries.Add(("Ricochet", "Distant Effect4"), null);
+            PropertyEntries.Add(("Ricochet", "Physics Effect4"), null);
+            PropertyEntries.Add(("Ricochet", "Decal4"), null);
+            PropertyEntries.Add(("Ricochet", "Randomize Number4"), null);
+            PropertyEntries.Add(("Ricochet", "Close Physics Effect1"), null);
+            PropertyEntries.Add(("Ricochet", "Close Physics Effect2"), null);
+            PropertyEntries.Add(("Ricochet", "Close Physics Effect3"), null);
+            PropertyEntries.Add(("Ricochet", "Close Physics Effect4"), null);
+
+            PropertyEntries.Add(("Rocket", "Model"), null);
+            PropertyEntries.Add(("Rocket", "Human Collision Test"), null);
+            PropertyEntries.Add(("Rocket", "Lifespan"), null);
+            PropertyEntries.Add(("Rocket", "Explosion"), null);
+            PropertyEntries.Add(("Rocket", "0xE656AB64"), null);
+            PropertyEntries.Add(("Rocket", "Trail Effect"), null);
+            PropertyEntries.Add(("Rocket", "0xC30F0D56"), null);
+            PropertyEntries.Add(("Rocket", "StartSpeed"), null);
+            PropertyEntries.Add(("Rocket", "MaxSpeed"), null);
+            PropertyEntries.Add(("Rocket", "Acceleration"), null);
+            PropertyEntries.Add(("Rocket", "TwirlSpeed"), null);
+            PropertyEntries.Add(("Rocket", "TwirlStrength"), null);
+            PropertyEntries.Add(("Rocket", "SpinAxis"), null);
+            PropertyEntries.Add(("Rocket", "SpinSpeed"), null);
+            PropertyEntries.Add(("Rocket", "Artillery"), null);
+
+            PropertyEntries.Add(("Rumble", "0xF0E6BA5F"), null);
+            PropertyEntries.Add(("Rumble", "0x6E4A81D9"), null);
+            PropertyEntries.Add(("Rumble", "Duration"), null);
+            PropertyEntries.Add(("Rumble", "0x6794F1E4"), null);
+            PropertyEntries.Add(("Rumble", "0x81975969"), null);
+            PropertyEntries.Add(("Rumble", "0x5F90681E"), null);
+
+            PropertyEntries.Add(("SabotageTarget", "Bomb"), null);
+            PropertyEntries.Add(("SabotageTarget", "Trap"), null);
+            PropertyEntries.Add(("SabotageTarget", "Burn"), null);
+            PropertyEntries.Add(("SabotageTarget", "Deactivate"), null);
+            PropertyEntries.Add(("SabotageTarget", "Image"), null);
+
+            PropertyEntries.Add(("ScopeTransition", "0xE529CC72"), null);
+            PropertyEntries.Add(("ScopeTransition", "0x04B4F442"), null);
+            PropertyEntries.Add(("ScopeTransition", "0xA132C615"), null);
+            PropertyEntries.Add(("ScopeTransition", "0x5D069A80"), null);
+            PropertyEntries.Add(("ScopeTransition", "0xB2E2ADA5"), null);
 
             PropertyEntries.Add(("ScriptController", "InitialModule"), typeof(char[]));
             PropertyEntries.Add(("ScriptController", "0xCA6B9057"), typeof(int));
@@ -1879,6 +2384,20 @@ namespace SabTool.Data
             PropertyEntries.Add(("ScriptController", "0x07B13063"), typeof(int));
             PropertyEntries.Add(("ScriptController", "0x165C1FD7"), typeof(int));
 
+            PropertyEntries.Add(("Searcher", "NoWillToFight"), null);
+            PropertyEntries.Add(("Searcher", "0x560A68C4"), null);
+            PropertyEntries.Add(("Searcher", "0x3BF1CDB6"), null);
+            PropertyEntries.Add(("Searcher", "0xB838A7E9"), null);
+            PropertyEntries.Add(("Searcher", "0xCE4384BF"), null);
+            PropertyEntries.Add(("Searcher", "SubItem 1"), null);
+            PropertyEntries.Add(("Searcher", "SubItem 1 Amount"), null);
+            PropertyEntries.Add(("Searcher", "SubItem 2"), null);
+            PropertyEntries.Add(("Searcher", "SubItem 2 Amount"), null);
+            PropertyEntries.Add(("Searcher", "SubItem 3"), null);
+            PropertyEntries.Add(("Searcher", "SubItem 3 Amount"), null);
+            PropertyEntries.Add(("Searcher", "SubItem 4"), null);
+            PropertyEntries.Add(("Searcher", "SubItem 4 Amount"), null);
+
             PropertyEntries.Add(("SearcherSeat", "0x585F7DB9"), typeof(float));
             PropertyEntries.Add(("SearcherSeat", "0x27B2EBEE"), typeof(bool));
             PropertyEntries.Add(("SearcherSeat", "0x341FFD9C"), typeof(float));
@@ -1901,6 +2420,26 @@ namespace SabTool.Data
             PropertyEntries.Add(("SearcherSeat", "PathReference"), typeof(Crc));
             PropertyEntries.Add(("SearcherSeat", "PathMovementType"), typeof(Crc));
             PropertyEntries.Add(("SearcherSeat", "PathName"), typeof(Crc));
+
+            PropertyEntries.Add(("SearchTurret", "Display Name"), null);
+            PropertyEntries.Add(("SearchTurret", "SmokeHealthThreshold"), null);
+            PropertyEntries.Add(("SearchTurret", "FireHealthThreshold"), null);
+            PropertyEntries.Add(("SearchTurret", "DeathCountdownMin"), null);
+            PropertyEntries.Add(("SearchTurret", "DeathCountdownMax"), null);
+            PropertyEntries.Add(("SearchTurret", "0x7514BE0C"), null);
+            PropertyEntries.Add(("SearchTurret", "0xC40E776E"), null);
+            PropertyEntries.Add(("SearchTurret", "0x7A13EB63"), null);
+            PropertyEntries.Add(("SearchTurret", "0xD48F11EE"), null);
+            PropertyEntries.Add(("SearchTurret", "0x8BC7C405"), null);
+            PropertyEntries.Add(("SearchTurret", "0x5D9068A3"), null);
+            PropertyEntries.Add(("SearchTurret", "0x389D5EAE"), null);
+            PropertyEntries.Add(("SearchTurret", "0x29AB6EDC"), null);
+            PropertyEntries.Add(("SearchTurret", "0xA7DCD5CC"), null);
+            PropertyEntries.Add(("SearchTurret", "SearcherSeatSpec"), null);
+            PropertyEntries.Add(("SearchTurret", "DamagableParentName"), null);
+            PropertyEntries.Add(("SearchTurret", "ParentalAttachmentSettings"), null);
+            PropertyEntries.Add(("SearchTurret", "ParentalAttachmentName"), null);
+            PropertyEntries.Add(("SearchTurret", "ParentalAttachmentBone"), null);
 
             PropertyEntries.Add(("Seat", "0x6C9E76F1"), typeof(Crc));
             PropertyEntries.Add(("Seat", "0x3BF1CDB6"), typeof(Crc));
@@ -1953,7 +2492,291 @@ namespace SabTool.Data
             PropertyEntries.Add(("Seat", "SearcherSettings"), typeof(Crc));
             PropertyEntries.Add(("Seat", "CommonSeatSettings"), typeof(Crc));
 
+            PropertyEntries.Add(("SeatAnimations", "0xFF504486"), null);
+            PropertyEntries.Add(("SeatAnimations", "0x88104F6E"), null);
+            PropertyEntries.Add(("SeatAnimations", "0xFCDA2B6B"), null);
+            PropertyEntries.Add(("SeatAnimations", "0xBF914715"), null);
+            PropertyEntries.Add(("SeatAnimations", "0xF53D04B8"), null);
+            PropertyEntries.Add(("SeatAnimations", "0x07984E6D"), null);
+            PropertyEntries.Add(("SeatAnimations", "0xDC22D0EF"), null);
+            PropertyEntries.Add(("SeatAnimations", "0x1998F454"), null);
+            PropertyEntries.Add(("SeatAnimations", "0x291A1F46"), null);
+            PropertyEntries.Add(("SeatAnimations", "0x53860BE6"), null);
+            PropertyEntries.Add(("SeatAnimations", "0xC08ADFAE"), null);
+            PropertyEntries.Add(("SeatAnimations", "0xABB82A18"), null);
+            PropertyEntries.Add(("SeatAnimations", "0x0CFCFECE"), null);
+            PropertyEntries.Add(("SeatAnimations", "0x6B1A32ED"), null);
+            PropertyEntries.Add(("SeatAnimations", "0xA959E429"), null);
+            PropertyEntries.Add(("SeatAnimations", "0x3228788A"), null);
+            PropertyEntries.Add(("SeatAnimations", "0x4688A096"), null);
+            PropertyEntries.Add(("SeatAnimations", "0x21222C25"), null);
+            PropertyEntries.Add(("SeatAnimations", "0xAFA1AF91"), null);
+            PropertyEntries.Add(("SeatAnimations", "0x507DF055"), null);
+            PropertyEntries.Add(("SeatAnimations", "0xEC0E252F"), null);
+            PropertyEntries.Add(("SeatAnimations", "0x65F9A245"), null);
+            PropertyEntries.Add(("SeatAnimations", "0xE28C3040"), null);
+            PropertyEntries.Add(("SeatAnimations", "0x65C9516F"), null);
+            PropertyEntries.Add(("SeatAnimations", "0xAF378531"), null);
+            PropertyEntries.Add(("SeatAnimations", "0x2F735F57"), null);
+            PropertyEntries.Add(("SeatAnimations", "0x25B0D1FC"), null);
+            PropertyEntries.Add(("SeatAnimations", "0xAE473955"), null);
+            PropertyEntries.Add(("SeatAnimations", "0xB604EFE4"), null);
+            PropertyEntries.Add(("SeatAnimations", "0x9F64B646"), null);
+            PropertyEntries.Add(("SeatAnimations", "0xD01DCDA0"), null);
+            PropertyEntries.Add(("SeatAnimations", "0x5CD55DD3"), null);
+            PropertyEntries.Add(("SeatAnimations", "0x2381A9F4"), null);
+            PropertyEntries.Add(("SeatAnimations", "0x7BF6762F"), null);
+            PropertyEntries.Add(("SeatAnimations", "0xC35B803E"), null);
+            PropertyEntries.Add(("SeatAnimations", "0xB901BBA4"), null);
+            PropertyEntries.Add(("SeatAnimations", "0x8DC8B133"), null);
+            PropertyEntries.Add(("SeatAnimations", "0x569A924A"), null);
+            PropertyEntries.Add(("SeatAnimations", "0x0732D70F"), null);
+            PropertyEntries.Add(("SeatAnimations", "0x8E849CDA"), null);
+            PropertyEntries.Add(("SeatAnimations", "0xEAFB1359"), null);
+            PropertyEntries.Add(("SeatAnimations", "0x9FE58EF0"), null);
+            PropertyEntries.Add(("SeatAnimations", "0xA851FAEF"), null);
+            PropertyEntries.Add(("SeatAnimations", "0xA5B6FEBB"), null);
+            PropertyEntries.Add(("SeatAnimations", "0x2F028A30"), null);
+            PropertyEntries.Add(("SeatAnimations", "0xF89DFE1C"), null);
+            PropertyEntries.Add(("SeatAnimations", "0xB8B17403"), null);
+            PropertyEntries.Add(("SeatAnimations", "0x08A59E33"), null);
+            PropertyEntries.Add(("SeatAnimations", "0x1CCE9F3D"), null);
+            PropertyEntries.Add(("SeatAnimations", "0x2F054D27"), null);
+            PropertyEntries.Add(("SeatAnimations", "0x807FEC71"), null);
+            PropertyEntries.Add(("SeatAnimations", "0x651AEAFA"), null);
+            PropertyEntries.Add(("SeatAnimations", "0x5A77102E"), null);
+            PropertyEntries.Add(("SeatAnimations", "0x20C1C4F3"), null);
+            PropertyEntries.Add(("SeatAnimations", "0x3CA594B0"), null);
+            PropertyEntries.Add(("SeatAnimations", "0x6AA1A5AE"), null);
+            PropertyEntries.Add(("SeatAnimations", "0x8148286D"), null);
+            PropertyEntries.Add(("SeatAnimations", "0xC21FF421"), null);
+            PropertyEntries.Add(("SeatAnimations", "0xC5E0A718"), null);
+            PropertyEntries.Add(("SeatAnimations", "0x61C65669"), null);
+            PropertyEntries.Add(("SeatAnimations", "0x36471D15"), null);
+            PropertyEntries.Add(("SeatAnimations", "0x26D1EEF3"), null);
+            PropertyEntries.Add(("SeatAnimations", "0xB0E7E218"), null);
+            PropertyEntries.Add(("SeatAnimations", "0x9E6E5BE9"), null);
+            PropertyEntries.Add(("SeatAnimations", "0xDE5DE80A"), null);
+            PropertyEntries.Add(("SeatAnimations", "0xF6CC7B9A"), null);
+            PropertyEntries.Add(("SeatAnimations", "0xBBCDFCDB"), null);
+            PropertyEntries.Add(("SeatAnimations", "0x25F1F7D0"), null);
+            PropertyEntries.Add(("SeatAnimations", "0x87C95CD3"), null);
+            PropertyEntries.Add(("SeatAnimations", "0x32E4B778"), null);
+            PropertyEntries.Add(("SeatAnimations", "0x36484015"), null);
+            PropertyEntries.Add(("SeatAnimations", "0x98148916"), null);
+            PropertyEntries.Add(("SeatAnimations", "0xE8F80346"), null);
+            PropertyEntries.Add(("SeatAnimations", "0x8B0FF68D"), null);
+            PropertyEntries.Add(("SeatAnimations", "0xDCA8A50E"), null);
+            PropertyEntries.Add(("SeatAnimations", "0x0A192B5E"), null);
+            PropertyEntries.Add(("SeatAnimations", "0xF585234E"), null);
+
+            PropertyEntries.Add(("SeatAnimationsDriver", "0x0D6A9A3C"), null);
+            PropertyEntries.Add(("SeatAnimationsDriver", "0xCF679010"), null);
+            PropertyEntries.Add(("SeatAnimationsDriver", "0x90AC6CAB"), null);
+            PropertyEntries.Add(("SeatAnimationsDriver", "0x253C24A4"), null);
+            PropertyEntries.Add(("SeatAnimationsDriver", "0x819045C6"), null);
+            PropertyEntries.Add(("SeatAnimationsDriver", "0x00EF2C26"), null);
+            PropertyEntries.Add(("SeatAnimationsDriver", "0xA09F5951"), null);
+            PropertyEntries.Add(("SeatAnimationsDriver", "0x1D9CED08"), null);
+            PropertyEntries.Add(("SeatAnimationsDriver", "0x7AE6CAB3"), null);
+            PropertyEntries.Add(("SeatAnimationsDriver", "0xB9E614A4"), null);
+            PropertyEntries.Add(("SeatAnimationsDriver", "0x11ABEA46"), null);
+            PropertyEntries.Add(("SeatAnimationsDriver", "0x7B61EA98"), null);
+            PropertyEntries.Add(("SeatAnimationsDriver", "0x1CDB86C3"), null);
+
+            PropertyEntries.Add(("SeatAnimationsGunner", "0x5EE42CCD"), null);
+            PropertyEntries.Add(("SeatAnimationsGunner", "0x6C885B34"), null);
+            PropertyEntries.Add(("SeatAnimationsGunner", "0xCFC8F59F"), null);
+
+            PropertyEntries.Add(("SeatAnimationsPassenger", "0xBD8CB6C2"), null);
+            PropertyEntries.Add(("SeatAnimationsPassenger", "0x49AACC9F"), null);
+            PropertyEntries.Add(("SeatAnimationsPassenger", "0xB262A814"), null);
+            PropertyEntries.Add(("SeatAnimationsPassenger", "0xCEA29F62"), null);
+            PropertyEntries.Add(("SeatAnimationsPassenger", "0x8CD42963"), null);
+            PropertyEntries.Add(("SeatAnimationsPassenger", "0x8F422E48"), null);
+            PropertyEntries.Add(("SeatAnimationsPassenger", "0xAFD82B61"), null);
+            PropertyEntries.Add(("SeatAnimationsPassenger", "0x5F897978"), null);
+            PropertyEntries.Add(("SeatAnimationsPassenger", "0x3B546A89"), null);
+            PropertyEntries.Add(("SeatAnimationsPassenger", "0x11BF92AA"), null);
+            PropertyEntries.Add(("SeatAnimationsPassenger", "0xEC8A92BF"), null);
+            PropertyEntries.Add(("SeatAnimationsPassenger", "0x62484192"), null);
+            PropertyEntries.Add(("SeatAnimationsPassenger", "0xFBEE681E"), null);
+            PropertyEntries.Add(("SeatAnimationsPassenger", "0xE6125EA7"), null);
+            PropertyEntries.Add(("SeatAnimationsPassenger", "0x26EBECFC"), null);
+            PropertyEntries.Add(("SeatAnimationsPassenger", "0x04479A17"), null);
+            PropertyEntries.Add(("SeatAnimationsPassenger", "0x0439C312"), null);
+            PropertyEntries.Add(("SeatAnimationsPassenger", "0xCC3C6108"), null);
+            PropertyEntries.Add(("SeatAnimationsPassenger", "0x41097EB3"), null);
+            PropertyEntries.Add(("SeatAnimationsPassenger", "0x7E17BFD9"), null);
+            PropertyEntries.Add(("SeatAnimationsPassenger", "0x4644453B"), null);
+            PropertyEntries.Add(("SeatAnimationsPassenger", "0xBABDB8B0"), null);
+
             PropertyEntries.Add(("SeatWithMount", "AimerSettings"), typeof(Crc));
+
+            PropertyEntries.Add(("Shop", "0xA2282DC8"), null);
+            PropertyEntries.Add(("Shop", "0x6220E0AA"), null);
+            PropertyEntries.Add(("Shop", "0x5AD12D52"), null);
+            PropertyEntries.Add(("Shop", "0xD4889548"), null);
+            PropertyEntries.Add(("Shop", "Item"), null);
+            PropertyEntries.Add(("Shop", "0x93C591D1"), null);
+            PropertyEntries.Add(("Shop", "0x7AD0F630"), null);
+            PropertyEntries.Add(("Shop", "0x0FE5789B"), null);
+            PropertyEntries.Add(("Shop", "0xF54D4FBE"), null);
+            PropertyEntries.Add(("Shop", "0x1048F758"), null);
+            PropertyEntries.Add(("Shop", "0x73A9B1A7"), null);
+            PropertyEntries.Add(("Shop", "0xE614EBDC"), null);
+            PropertyEntries.Add(("Shop", "0x12EE91F9"), null);
+            PropertyEntries.Add(("Shop", "0x5239A672"), null);
+            PropertyEntries.Add(("Shop", "0x233C45AF"), null);
+            PropertyEntries.Add(("Shop", "0x0DE083A1"), null);
+            PropertyEntries.Add(("Shop", "0x5FE81A40"), null);
+            PropertyEntries.Add(("Shop", "0xB559A015"), null);
+            PropertyEntries.Add(("Shop", "0x46C99E0D"), null);
+            PropertyEntries.Add(("Shop", "0xC0535C22"), null);
+            PropertyEntries.Add(("Shop", "Car"), null);
+            PropertyEntries.Add(("Shop", "0x47F0E728"), null);
+            PropertyEntries.Add(("Shop", "0xAACDEA48"), null);
+            PropertyEntries.Add(("Shop", "0x21092B57"), null);
+            PropertyEntries.Add(("Shop", "0xA46B0807"), null);
+            PropertyEntries.Add(("Shop", "0xB3F09C37"), null);
+            PropertyEntries.Add(("Shop", "0x1E0E24F7"), null);
+            PropertyEntries.Add(("Shop", "0x51BE0846"), null);
+            PropertyEntries.Add(("Shop", "0xB9BC4E39"), null);
+            PropertyEntries.Add(("Shop", "0x48C1D679"), null);
+            PropertyEntries.Add(("Shop", "0x84AD8AFC"), null);
+            PropertyEntries.Add(("Shop", "0x98F2FDBC"), null);
+            PropertyEntries.Add(("Shop", "0x9471DC0F"), null);
+            PropertyEntries.Add(("Shop", "0xF791E3AC"), null);
+            PropertyEntries.Add(("Shop", "0x68FC1FDA"), null);
+            PropertyEntries.Add(("Shop", "0x9FF6B667"), null);
+            PropertyEntries.Add(("Shop", "0x64ED6743"), null);
+            PropertyEntries.Add(("Shop", "0xD8E08FEE"), null);
+            PropertyEntries.Add(("Shop", "0xD2E84C5F"), null);
+            PropertyEntries.Add(("Shop", "0x0C64B7B5"), null);
+            PropertyEntries.Add(("Shop", "0xD6CE2B66"), null);
+            PropertyEntries.Add(("Shop", "0xC7ADA7B4"), null);
+            PropertyEntries.Add(("Shop", "0x5F7A4C17"), null);
+            PropertyEntries.Add(("Shop", "0xE16FEDD2"), null);
+            PropertyEntries.Add(("Shop", "0xFBCA3ACC"), null);
+            PropertyEntries.Add(("Shop", "0x3E7D62F2"), null);
+            PropertyEntries.Add(("Shop", "0xFDECFFD2"), null);
+            PropertyEntries.Add(("Shop", "0x62018E52"), null);
+            PropertyEntries.Add(("Shop", "0x317645ED"), null);
+            PropertyEntries.Add(("Shop", "0x9D8C8362"), null);
+            PropertyEntries.Add(("Shop", "Map"), null);
+            PropertyEntries.Add(("Shop", "0xC756AC89"), null);
+            PropertyEntries.Add(("Shop", "0x09C34242"), null);
+            PropertyEntries.Add(("Shop", "0xE94C3343"), null);
+            PropertyEntries.Add(("Shop", "0x92AB1F71"), null);
+            PropertyEntries.Add(("Shop", "0xC9E8306A"), null);
+            PropertyEntries.Add(("Shop", "0x7E84ED89"), null);
+            PropertyEntries.Add(("Shop", "0x61A1CB2A"), null);
+            PropertyEntries.Add(("Shop", "0x90BE10A0"), null);
+            PropertyEntries.Add(("Shop", "0x453DC7F1"), null);
+            PropertyEntries.Add(("Shop", "0x20F8D2EC"), null);
+            PropertyEntries.Add(("Shop", "0xD78DDC8C"), null);
+
+            PropertyEntries.Add(("SlowMotionCamera", "0x5E8DACDC"), null);
+            PropertyEntries.Add(("SlowMotionCamera", "0x46F71B85"), null);
+            PropertyEntries.Add(("SlowMotionCamera", "0x5CF4FF90"), null);
+            PropertyEntries.Add(("SlowMotionCamera", "0x46F29E57"), null);
+            PropertyEntries.Add(("SlowMotionCamera", "0xFC130E75"), null);
+            PropertyEntries.Add(("SlowMotionCamera", "0x97005D09"), null);
+            PropertyEntries.Add(("SlowMotionCamera", "0x87EE875A"), null);
+            PropertyEntries.Add(("SlowMotionCamera", "0xC870B201"), null);
+            PropertyEntries.Add(("SlowMotionCamera", "0x088788CC"), null);
+            PropertyEntries.Add(("SlowMotionCamera", "0xE5A03149"), null);
+            PropertyEntries.Add(("SlowMotionCamera", "0x50E3E114"), null);
+            PropertyEntries.Add(("SlowMotionCamera", "0xAAE6AD59"), null);
+            PropertyEntries.Add(("SlowMotionCamera", "0x48DF574E"), null);
+            PropertyEntries.Add(("SlowMotionCamera", "0x5572F2B0"), null);
+            PropertyEntries.Add(("SlowMotionCamera", "0x1AA62A96"), null);
+            PropertyEntries.Add(("SlowMotionCamera", "0x9068DDED"), null);
+            PropertyEntries.Add(("SlowMotionCamera", "0x327E0260"), null);
+            PropertyEntries.Add(("SlowMotionCamera", "0x060EA5ED"), null);
+            PropertyEntries.Add(("SlowMotionCamera", "0xCA6212EF"), null);
+            PropertyEntries.Add(("SlowMotionCamera", "0x0464CA46"), null);
+            PropertyEntries.Add(("SlowMotionCamera", "0xCBF774B6"), null);
+            PropertyEntries.Add(("SlowMotionCamera", "0xC5C16F0C"), null);
+            PropertyEntries.Add(("SlowMotionCamera", "0x196EB060"), null);
+            PropertyEntries.Add(("SlowMotionCamera", "0x376E711A"), null);
+            PropertyEntries.Add(("SlowMotionCamera", "0x3BE62163"), null);
+            PropertyEntries.Add(("SlowMotionCamera", "0x3BC2A2FE"), null);
+            PropertyEntries.Add(("SlowMotionCamera", "0x512C8538"), null);
+            PropertyEntries.Add(("SlowMotionCamera", "0xCA60B9A9"), null);
+            PropertyEntries.Add(("SlowMotionCamera", "0xCB00FA4D"), null);
+            PropertyEntries.Add(("SlowMotionCamera", "0x57BAA790"), null);
+            PropertyEntries.Add(("SlowMotionCamera", "0xBE9903CA"), null);
+            PropertyEntries.Add(("SlowMotionCamera", "0x3AFD68B5"), null);
+
+            PropertyEntries.Add(("Sound", "SoundTriggerSettings"), null);
+            PropertyEntries.Add(("Sound", "TriggerOnce"), null);
+            PropertyEntries.Add(("Sound", "SoundAreaSettings"), null);
+            PropertyEntries.Add(("Sound", "SoundArea"), null);
+            PropertyEntries.Add(("Sound", "SoundTriggerName"), null);
+            PropertyEntries.Add(("Sound", "SoundDistSettings"), null);
+            PropertyEntries.Add(("Sound", "DistanceTriggered"), null);
+            PropertyEntries.Add(("Sound", "Distance"), null);
+            PropertyEntries.Add(("Sound", "SoundTimeSettings"), null);
+            PropertyEntries.Add(("Sound", "TimeTriggered"), null);
+            PropertyEntries.Add(("Sound", "Frequency"), null);
+            PropertyEntries.Add(("Sound", "Variation"), null);
+            PropertyEntries.Add(("Sound", "SoundScriptSettings"), null);
+            PropertyEntries.Add(("Sound", "ScriptTriggered"), null);
+            PropertyEntries.Add(("Sound", "0x7758E64D"), null);
+            PropertyEntries.Add(("Sound", "SoundAmbianceSettings"), null);
+            PropertyEntries.Add(("Sound", "0x28718268"), null);
+            PropertyEntries.Add(("Sound", "AmbiancePriority"), null);
+            PropertyEntries.Add(("Sound", "0x72F9D03F"), null);
+            PropertyEntries.Add(("Sound", "Sound3DSettings"), null);
+            PropertyEntries.Add(("Sound", "Sound3D"), null);
+            PropertyEntries.Add(("Sound", "SoundFake3DSettings"), null);
+            PropertyEntries.Add(("Sound", "Fake3D"), null);
+            PropertyEntries.Add(("Sound", "InnerRadius"), null);
+            PropertyEntries.Add(("Sound", "OuterRadius"), null);
+            PropertyEntries.Add(("Sound", "0x660D1368"), null);
+            PropertyEntries.Add(("Sound", "0x92AD58B9"), null);
+            PropertyEntries.Add(("Sound", "0x2F753989"), null);
+            PropertyEntries.Add(("Sound", "0xEA4E212D"), null);
+            PropertyEntries.Add(("Sound", "0x4CA89D6E"), null);
+
+            PropertyEntries.Add(("Spore", "Model"), null);
+            PropertyEntries.Add(("Spore", "FED_Color"), null);
+            PropertyEntries.Add(("Spore", "HumanBlueprint"), null);
+            PropertyEntries.Add(("Spore", "RandomBlueprint"), null);
+            PropertyEntries.Add(("Spore", "DayChance"), null);
+            PropertyEntries.Add(("Spore", "NightChance"), null);
+            PropertyEntries.Add(("Spore", "LowWTFMult"), null);
+            PropertyEntries.Add(("Spore", "HighWTFMult"), null);
+            PropertyEntries.Add(("Spore", "0x6D3EADA6"), null);
+            PropertyEntries.Add(("Spore", "0x3BBE3368"), null);
+            PropertyEntries.Add(("Spore", "Slacker"), null);
+            PropertyEntries.Add(("Spore", "NeedsEnabled"), null);
+            PropertyEntries.Add(("Spore", "0xD1FABE57"), null);
+            PropertyEntries.Add(("Spore", "WorldPop"), null);
+            PropertyEntries.Add(("Spore", "BubbleProof"), null);
+            PropertyEntries.Add(("Spore", "Vendor"), null);
+            PropertyEntries.Add(("Spore", "Persistent"), null);
+            PropertyEntries.Add(("Spore", "0xE193A972"), null);
+            PropertyEntries.Add(("Spore", "0xECE762E3"), null);
+            PropertyEntries.Add(("Spore", "Talkable"), null);
+            PropertyEntries.Add(("Spore", "0x0BAF1A92"), null);
+            PropertyEntries.Add(("Spore", "0xA73E9219"), null);
+            PropertyEntries.Add(("Spore", "Rooftop"), null);
+            PropertyEntries.Add(("Spore", "0xDF5A5C99"), null);
+            PropertyEntries.Add(("Spore", "Honkable"), null);
+            PropertyEntries.Add(("Spore", "AlwaysRespawn"), null);
+            PropertyEntries.Add(("Spore", "DieOnSpawn"), null);
+            PropertyEntries.Add(("Spore", "AttractionPt"), null);
+            PropertyEntries.Add(("Spore", "0xF930D873"), null);
+            PropertyEntries.Add(("Spore", "0xB5D4A9E6"), null);
+            PropertyEntries.Add(("Spore", "0x9FE905F6"), null);
+            PropertyEntries.Add(("Spore", "Labels"), null);
+            PropertyEntries.Add(("Spore", "Radius"), null);
+            PropertyEntries.Add(("Spore", "Weapon"), null);
+            PropertyEntries.Add(("Spore", "0xC520B7B1"), null);
+
+            PropertyEntries.Add(("Tank", "Labels"), null);
 
             PropertyEntries.Add(("Targetable", "Width"), typeof(float));
             PropertyEntries.Add(("Targetable", "Height"), typeof(float));
@@ -1979,7 +2802,133 @@ namespace SabTool.Data
             PropertyEntries.Add(("ToneMapping", "Threshold"), typeof(float));
             PropertyEntries.Add(("ToneMapping", "BloomLerp"), typeof(float));
 
+            PropertyEntries.Add(("Train", "StartSpeed"), null);
+            PropertyEntries.Add(("Train", "StreamDistance"), null);
+            PropertyEntries.Add(("Train", "StreamAtTrackSpeed"), null);
+            PropertyEntries.Add(("Train", "HighPriorityFence"), null);
+            PropertyEntries.Add(("Train", "TrainEngineName"), null);
+            PropertyEntries.Add(("Train", "Engine"), null);
+            PropertyEntries.Add(("Train", "EngineJumpForwards"), null);
+            PropertyEntries.Add(("Train", "EngineJumpBackwards"), null);
+            PropertyEntries.Add(("Train", "CarriageNames"), null);
+            PropertyEntries.Add(("Train", "TrainCarriageName"), null);
+            PropertyEntries.Add(("Train", "Carriage"), null);
+            PropertyEntries.Add(("Train", "FenceID"), null);
+            PropertyEntries.Add(("Train", "CarriageBackwards"), null);
+            PropertyEntries.Add(("Train", "CarriageJumpForwards"), null);
+            PropertyEntries.Add(("Train", "CarriageJumpBackwards"), null);
+
+            PropertyEntries.Add(("TrainCarriage", "Rooftop Passengers"), null);
+            PropertyEntries.Add(("TrainCarriage", "Rooftop Items"), null);
+            PropertyEntries.Add(("TrainCarriage", "Rooftop Weapons"), null);
+            PropertyEntries.Add(("TrainCarriage", "Rooftop Ammo"), null);
+            PropertyEntries.Add(("TrainCarriage", "ConnectionFrontBoneName"), null);
+            PropertyEntries.Add(("TrainCarriage", "ConnectionRearBoneName"), null);
+            PropertyEntries.Add(("TrainCarriage", "JumpFrontBoneName"), null);
+            PropertyEntries.Add(("TrainCarriage", "JumpRearBoneName"), null);
+            PropertyEntries.Add(("TrainCarriage", "RearDecoupleBoneName"), null);
+            PropertyEntries.Add(("TrainCarriage", "RearDecoupleStrength"), null);
+            PropertyEntries.Add(("TrainCarriage", "CarriageLength"), null);
+            PropertyEntries.Add(("TrainCarriage", "PlayerDecoupleRadius"), null);
+            PropertyEntries.Add(("TrainCarriage", "AirResistance"), null);
+            PropertyEntries.Add(("TrainCarriage", "EngineFriction"), null);
+            PropertyEntries.Add(("TrainCarriage", "CarriageFriction"), null);
+            PropertyEntries.Add(("TrainCarriage", "CarriageRestitution"), null);
+            PropertyEntries.Add(("TrainCarriage", "0x60781379"), null);
+            PropertyEntries.Add(("TrainCarriage", "0xF5FE1B33"), null);
+            PropertyEntries.Add(("TrainCarriage", "0x73A2311C"), null);
+            PropertyEntries.Add(("TrainCarriage", "0x0C516E20"), null);
+            PropertyEntries.Add(("TrainCarriage", "CanDecouple"), null);
+            PropertyEntries.Add(("TrainCarriage", "TrainAmmoEntry"), null);
+            PropertyEntries.Add(("TrainCarriage", "TrainAmmoBlueprint"), null);
+            PropertyEntries.Add(("TrainCarriage", "TrainAmmoBone"), null);
+            PropertyEntries.Add(("TrainCarriage", "TrainAmmoRotation"), null);
+            PropertyEntries.Add(("TrainCarriage", "TrainWeaponEntry"), null);
+            PropertyEntries.Add(("TrainCarriage", "TrainWeaponBlueprint"), null);
+            PropertyEntries.Add(("TrainCarriage", "TrainWeaponBone"), null);
+            PropertyEntries.Add(("TrainCarriage", "TrainWeaponRotation"), null);
+            PropertyEntries.Add(("TrainCarriage", "TrainItemEntry"), null);
+            PropertyEntries.Add(("TrainCarriage", "TrainItemBlueprint"), null);
+            PropertyEntries.Add(("TrainCarriage", "TrainItemBone"), null);
+            PropertyEntries.Add(("TrainCarriage", "TrainItemRotation"), null);
+            PropertyEntries.Add(("TrainCarriage", "TrainPassenger"), null);
+            PropertyEntries.Add(("TrainCarriage", "PassengerBlueprint"), null);
+            PropertyEntries.Add(("TrainCarriage", "PassengerBone"), null);
+            PropertyEntries.Add(("TrainCarriage", "PassengerRotation"), null);
+
+            PropertyEntries.Add(("TrainEngine", "0x5927AA10"), null);
+            PropertyEntries.Add(("TrainEngine", "0xF2823446"), null);
+            PropertyEntries.Add(("TrainEngine", "0x6833F52B"), null);
+            PropertyEntries.Add(("TrainEngine", "0x9A4ED549"), null);
+            PropertyEntries.Add(("TrainEngine", "0x1C7BA4FF"), null);
+            PropertyEntries.Add(("TrainEngine", "0xC9BDE34A"), null);
+            PropertyEntries.Add(("TrainEngine", "Rooftop Passengers"), null);
+            PropertyEntries.Add(("TrainEngine", "Rooftop Items"), null);
+            PropertyEntries.Add(("TrainEngine", "Rooftop Weapons"), null);
+            PropertyEntries.Add(("TrainEngine", "Rooftop Ammo"), null);
+            PropertyEntries.Add(("TrainEngine", "ConnectionFrontBoneName"), null);
+            PropertyEntries.Add(("TrainEngine", "ConnectionRearBoneName"), null);
+            PropertyEntries.Add(("TrainEngine", "JumpFrontBoneName"), null);
+            PropertyEntries.Add(("TrainEngine", "JumpRearBoneName"), null);
+            PropertyEntries.Add(("TrainEngine", "RearDecoupleBoneName"), null);
+            PropertyEntries.Add(("TrainEngine", "CabBoneName"), null);
+            PropertyEntries.Add(("TrainEngine", "CabRadius"), null);
+            PropertyEntries.Add(("TrainEngine", "CabActivationTime"), null);
+            PropertyEntries.Add(("TrainEngine", "RearDecoupleStrength"), null);
+            PropertyEntries.Add(("TrainEngine", "CarriageLength"), null);
+            PropertyEntries.Add(("TrainEngine", "PlayerDecoupleRadius"), null);
+            PropertyEntries.Add(("TrainEngine", "AirResistance"), null);
+            PropertyEntries.Add(("TrainEngine", "EngineFriction"), null);
+            PropertyEntries.Add(("TrainEngine", "MaxEngineSpdFwd"), null);
+            PropertyEntries.Add(("TrainEngine", "MaxEngineSpdBkwd"), null);
+            PropertyEntries.Add(("TrainEngine", "MaxEngineAccelFwd"), null);
+            PropertyEntries.Add(("TrainEngine", "MaxEngineAccelBkwd"), null);
+            PropertyEntries.Add(("TrainEngine", "MaxWheelBraking"), null);
+            PropertyEntries.Add(("TrainEngine", "CarriageFriction"), null);
+            PropertyEntries.Add(("TrainEngine", "CarriageRestitution"), null);
+            PropertyEntries.Add(("TrainEngine", "0x60781379"), null);
+            PropertyEntries.Add(("TrainEngine", "0xF5FE1B33"), null);
+            PropertyEntries.Add(("TrainEngine", "0x73A2311C"), null);
+            PropertyEntries.Add(("TrainEngine", "0x0C516E20"), null);
+            PropertyEntries.Add(("TrainEngine", "CanDecouple"), null);
+            PropertyEntries.Add(("TrainEngine", "TrainPassenger"), null);
+            PropertyEntries.Add(("TrainEngine", "PassengerBlueprint"), null);
+            PropertyEntries.Add(("TrainEngine", "PassengerBone"), null);
+            PropertyEntries.Add(("TrainEngine", "PassengerRotation"), null);
+
+            PropertyEntries.Add(("TrainList", "Trains"), null);
+            PropertyEntries.Add(("TrainList", "TrainName"), null);
+            PropertyEntries.Add(("TrainList", "Train"), null);
+
             PropertyEntries.Add(("Trappable", "0xE77DB9D6"), typeof(float));
+
+            PropertyEntries.Add(("Truck", "0xF055E2F1"), null);
+            PropertyEntries.Add(("Truck", "0x6E4E5A86"), null);
+
+            PropertyEntries.Add(("Turret", "DamagedByBullets"), null);
+            PropertyEntries.Add(("Turret", "DamagedByExplosions"), null);
+            PropertyEntries.Add(("Turret", "DamagedByFire"), null);
+            PropertyEntries.Add(("Turret", "0x23B7A240"), null);
+            PropertyEntries.Add(("Turret", "0xA8413DF8"), null);
+            PropertyEntries.Add(("Turret", "0xF063A2FC"), null);
+            PropertyEntries.Add(("Turret", "0xCA612893"), null);
+            PropertyEntries.Add(("Turret", "0xEEF41706"), null);
+            PropertyEntries.Add(("Turret", "Display Name"), null);
+            PropertyEntries.Add(("Turret", "SmokeHealthThreshold"), null);
+            PropertyEntries.Add(("Turret", "FireHealthThreshold"), null);
+            PropertyEntries.Add(("Turret", "DeathCountdownMin"), null);
+            PropertyEntries.Add(("Turret", "DeathCountdownMax"), null);
+            PropertyEntries.Add(("Turret", "0x7514BE0C"), null);
+            PropertyEntries.Add(("Turret", "0xC40E776E"), null);
+            PropertyEntries.Add(("Turret", "0x7A13EB63"), null);
+            PropertyEntries.Add(("Turret", "0xD48F11EE"), null);
+            PropertyEntries.Add(("Turret", "0x8BC7C405"), null);
+            PropertyEntries.Add(("Turret", "0x5D9068A3"), null);
+            PropertyEntries.Add(("Turret", "0x389D5EAE"), null);
+            PropertyEntries.Add(("Turret", "0x29AB6EDC"), null);
+            PropertyEntries.Add(("Turret", "0xA7DCD5CC"), null);
+            PropertyEntries.Add(("Turret", "GunnerSeatSpec"), null);
+            PropertyEntries.Add(("Turret", "DamagableParentName"), null);
 
             PropertyEntries.Add(("TweakableColors", "Index3Variations"), typeof(int));
             PropertyEntries.Add(("TweakableColors", "ColorRandWeight"), typeof(float));
@@ -2093,6 +3042,177 @@ namespace SabTool.Data
             PropertyEntries.Add(("Vehicle", "0xC795D87F"), typeof(float));
             PropertyEntries.Add(("Vehicle", "Max Speed"), typeof(float)); // unused?
 
+            PropertyEntries.Add(("VehicleCollision", "0x23E80197"), null);
+            PropertyEntries.Add(("VehicleCollision", "0x28BBFBF2"), null);
+            PropertyEntries.Add(("VehicleCollision", "0x4ABE700F"), null);
+            PropertyEntries.Add(("VehicleCollision", "0xC0C16868"), null);
+
+            PropertyEntries.Add(("VehicleWheelFx", "0x04BC825C"), null);
+            PropertyEntries.Add(("VehicleWheelFx", "0x223D30D9"), null);
+            PropertyEntries.Add(("VehicleWheelFx", "0xE7CF3F77"), null);
+            PropertyEntries.Add(("VehicleWheelFx", "0xD125DADF"), null);
+            PropertyEntries.Add(("VehicleWheelFx", "0x5930D9FA"), null);
+            PropertyEntries.Add(("VehicleWheelFx", "0x4E094A92"), null);
+            PropertyEntries.Add(("VehicleWheelFx", "0xBF1332E7"), null);
+            PropertyEntries.Add(("VehicleWheelFx", "0xE9D1BEA2"), null);
+            PropertyEntries.Add(("VehicleWheelFx", "0xE62074EA"), null);
+            PropertyEntries.Add(("VehicleWheelFx", "0xC2177C0E"), null);
+            PropertyEntries.Add(("VehicleWheelFx", "0xDEDDAC67"), null);
+            PropertyEntries.Add(("VehicleWheelFx", "0x87D58629"), null);
+            PropertyEntries.Add(("VehicleWheelFx", "0xE69DD9F2"), null);
+            PropertyEntries.Add(("VehicleWheelFx", "0x838A501B"), null);
+            PropertyEntries.Add(("VehicleWheelFx", "0xF3CE9025"), null);
+            PropertyEntries.Add(("VehicleWheelFx", "0x34D0FD44"), null);
+            PropertyEntries.Add(("VehicleWheelFx", "0xC92DE8D1"), null);
+            PropertyEntries.Add(("VehicleWheelFx", "0x9EFC134B"), null);
+            PropertyEntries.Add(("VehicleWheelFx", "0xCF408F7D"), null);
+            PropertyEntries.Add(("VehicleWheelFx", "0x0E536DF8"), null);
+            PropertyEntries.Add(("VehicleWheelFx", "0xD6878A86"), null);
+
+            PropertyEntries.Add(("VerletBoneObject", "Model"), null);
+            PropertyEntries.Add(("VerletBoneObject", "0x2D0F5053"), null);
+            PropertyEntries.Add(("VerletBoneObject", "0x45DFDFDF"), null);
+            PropertyEntries.Add(("VerletBoneObject", "0x08D113E1"), null);
+            PropertyEntries.Add(("VerletBoneObject", "0x1B3D2993"), null);
+            PropertyEntries.Add(("VerletBoneObject", "Bone"), null);
+            PropertyEntries.Add(("VerletBoneObject", "0xD5478E6F"), null);
+            PropertyEntries.Add(("VerletBoneObject", "0x76B63150"), null);
+            PropertyEntries.Add(("VerletBoneObject", "0xE0A9AA46"), null);
+            PropertyEntries.Add(("VerletBoneObject", "Mass"), null);
+            PropertyEntries.Add(("VerletBoneObject", "0x94A26A31"), null);
+            PropertyEntries.Add(("VerletBoneObject", "0x4F814BB8"), null);
+            PropertyEntries.Add(("VerletBoneObject", "0x073DC1F5"), null);
+            PropertyEntries.Add(("VerletBoneObject", "0x82C74C53"), null);
+            PropertyEntries.Add(("VerletBoneObject", "0xA3DB42D4"), null);
+            PropertyEntries.Add(("VerletBoneObject", "0x4A90F8AC"), null);
+            PropertyEntries.Add(("VerletBoneObject", "0x5DD0A17E"), null);
+            PropertyEntries.Add(("VerletBoneObject", "0x78568468"), null);
+            PropertyEntries.Add(("VerletBoneObject", "0x057212CC"), null);
+            PropertyEntries.Add(("VerletBoneObject", "Length"), null);
+            PropertyEntries.Add(("VerletBoneObject", "0xB9D5D4AD"), null);
+            PropertyEntries.Add(("VerletBoneObject", "0xFB9970A6"), null);
+            PropertyEntries.Add(("VerletBoneObject", "0x07F3D480"), null);
+            PropertyEntries.Add(("VerletBoneObject", "0x31F1D807"), null);
+
+            PropertyEntries.Add(("VirVehicleChassis", "Wheels"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0xCED3717B"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0x76544987"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0x7A83C9C0"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0x706EFA70"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0x786A89DA"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0xC5B6487E"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0xF078A8B2"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0xD80DDCCE"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "Collision Timer"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "Friction Timer"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "Engine Timer"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "Mass"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0x4E8750EB"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "Restitution"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "Friction"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0x8E7B15D0"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "COG"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "COGInAir"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "COGDead"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0xA9A80EBB"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "Inertia"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0x6D3A2F40"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0x7D3BAF33"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "MaxAngularVelocity"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "AngularDamping"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "LinearDamping"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "LDampingDown"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "ExtraGravity"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0x54867DDC"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0xA722EA49"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0xCA20921D"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0x89EE518C"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "Max Steering Angle"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "SteerAngFalloffKPHRange"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "SteerAngFalloffMax"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "SteerAngFalloffType"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "Steering Speed"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "SteerSpdFalloffKPHRange"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "SteerSpdFalloffMax"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "SteerSpdFalloffType"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "MaxSpeed"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "MaxSpeedReverse"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0x28095AE3"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0xA3E9B945"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0x60CEF36F"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0x47692AAA"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0xCCA6171F"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0x37ED9778"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0xD963361B"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0xBF119194"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "AccPointOffset"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0xDCB9DAA9"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "TorqueToWheels"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "TorqueUphillRatio"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "TorqueDownhillRatio"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0x6552C489"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0x86E1DDB8"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "HighFrictionIter"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "HandBrakeInertia"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0x91D7A17A"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0x64DC408E"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0x475D0968"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0x7633B56C"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0x63765D6D"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0xD4B31F1D"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0xBCB76E26"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0xC4BF279C"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0x93C1B6E7"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0xE05C53D9"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0x017B0E57"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0xD02ECA73"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0x11A6638D"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0xD4F77620"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0x3BCF045E"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0x33E76D53"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0x92647FFF"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0xBA081798"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0x94A81D1D"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "CamMaxUpOffset"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "CamMaxDownOffset"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "CamExtraDownOffsetCap"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "CamMaxYSpeed"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "CamMaxDownSpeedOffset"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "CamMaxFwdVehicleSpeed"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "CamMaxSpeed"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "CamMaxFwdSpeed"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0x1C0728F2"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0x92BF990B"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0x43D90911"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0x468C8923"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0x71F01184"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0x0DB4D4B9"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0x05E9F647"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0xED2CE7DF"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0x8700D608"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0x59DC921E"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0x99B8DDDA"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0x988C4BBB"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0x70957CA9"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0xCD8CD7CF"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0x0158D0D6"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0x4D740E02"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "TankRotateSpeedThresh"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "TankRotateAccelMult"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "VirVehicleWheelAttachment"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "Vehicle Wheel"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "WheelPos"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "WheelAxelID"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "TransmissionRatio"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "TorqueEfficiency"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "STEERING"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "Powered"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "Terrain Following"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "Suspension Activated"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "Friction Activated"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0x06B90DDC"), null);
+            PropertyEntries.Add(("VirVehicleChassis", "0x49BB3158"), null);
+
             PropertyEntries.Add(("VirVehicleEngine", "MaxRPM"), typeof(float));
             PropertyEntries.Add(("VirVehicleEngine", "MaxRPMResistance"), typeof(float));
             PropertyEntries.Add(("VirVehicleEngine", "MaxRPMTorque"), typeof(float));
@@ -2110,6 +3230,50 @@ namespace SabTool.Data
             PropertyEntries.Add(("VirVehicleSetup", "Vehicle Engine"), typeof(Crc));
             PropertyEntries.Add(("VirVehicleSetup", "Vehicle Transmission"), typeof(Crc));
 
+            PropertyEntries.Add(("VirVehicleTransmission", "Gears"), null);
+            PropertyEntries.Add(("VirVehicleTransmission", "VirVehicleTransmissionGear"), null);
+            PropertyEntries.Add(("VirVehicleTransmission", "GearRatio"), null);
+            PropertyEntries.Add(("VirVehicleTransmission", "0x145ED13C"), null);
+            PropertyEntries.Add(("VirVehicleTransmission", "ReverseRatio"), null);
+            PropertyEntries.Add(("VirVehicleTransmission", "UpShiftRPM"), null);
+            PropertyEntries.Add(("VirVehicleTransmission", "DownShiftRPM"), null);
+            PropertyEntries.Add(("VirVehicleTransmission", "ClutchDelay"), null);
+
+            PropertyEntries.Add(("VirVehicleWheel", "Suspension Length"), null);
+            PropertyEntries.Add(("VirVehicleWheel", "Suspension Offset"), null);
+            PropertyEntries.Add(("VirVehicleWheel", "Suspension Strength"), null);
+            PropertyEntries.Add(("VirVehicleWheel", "0xB576BDD0"), null);
+            PropertyEntries.Add(("VirVehicleWheel", "Suspension Damping"), null);
+            PropertyEntries.Add(("VirVehicleWheel", "Radius"), null);
+            PropertyEntries.Add(("VirVehicleWheel", "0x05F55B73"), null);
+            PropertyEntries.Add(("VirVehicleWheel", "0x9A228181"), null);
+            PropertyEntries.Add(("VirVehicleWheel", "0x103E4762"), null);
+            PropertyEntries.Add(("VirVehicleWheel", "0x0B934F56"), null);
+            PropertyEntries.Add(("VirVehicleWheel", "0xEDAED3E7"), null);
+            PropertyEntries.Add(("VirVehicleWheel", "0x7EE81714"), null);
+            PropertyEntries.Add(("VirVehicleWheel", "0xB3848EBD"), null);
+            PropertyEntries.Add(("VirVehicleWheel", "0x44B9AB07"), null);
+            PropertyEntries.Add(("VirVehicleWheel", "0xF203BFDE"), null);
+            PropertyEntries.Add(("VirVehicleWheel", "0x5AC6A66F"), null);
+            PropertyEntries.Add(("VirVehicleWheel", "0x76E24366"), null);
+            PropertyEntries.Add(("VirVehicleWheel", "0x3C49B65C"), null);
+            PropertyEntries.Add(("VirVehicleWheel", "Fwd Fric Brake Scalar"), null);
+            PropertyEntries.Add(("VirVehicleWheel", "Side Fric Brake Scalar"), null);
+            PropertyEntries.Add(("VirVehicleWheel", "0x501E3DEC"), null);
+            PropertyEntries.Add(("VirVehicleWheel", "0x33CB3C20"), null);
+            PropertyEntries.Add(("VirVehicleWheel", "0x7384EB89"), null);
+            PropertyEntries.Add(("VirVehicleWheel", "Fric Brake Blend Time"), null);
+            PropertyEntries.Add(("VirVehicleWheel", "Fwd Fric HandBrake Scalar"), null);
+            PropertyEntries.Add(("VirVehicleWheel", "Side Fric HandBrake Scalar"), null);
+            PropertyEntries.Add(("VirVehicleWheel", "0x4423C957"), null);
+            PropertyEntries.Add(("VirVehicleWheel", "0x0A8EA601"), null);
+            PropertyEntries.Add(("VirVehicleWheel", "0xCD5975AB"), null);
+            PropertyEntries.Add(("VirVehicleWheel", "0x2381791F"), null);
+            PropertyEntries.Add(("VirVehicleWheel", "Fric HandBrake Blend Time"), null);
+            PropertyEntries.Add(("VirVehicleWheel", "0x9FBB5028"), null);
+            PropertyEntries.Add(("VirVehicleWheel", "High Fric Fwd Max KPH"), null);
+            PropertyEntries.Add(("VirVehicleWheel", "High Fric Side Max KPH"), null);
+
             PropertyEntries.Add(("WaterController", "0x95FF5441"), typeof(Crc));
             PropertyEntries.Add(("WaterController", "0x3B2E2AA3"), typeof(float));
             PropertyEntries.Add(("WaterController", "0x33175C7A"), typeof(float));
@@ -2124,6 +3288,35 @@ namespace SabTool.Data
             PropertyEntries.Add(("WaterController", "Specular Intensity"), typeof(float));
 
             PropertyEntries.Add(("WaterFlow", "Force"), typeof(float));
+
+            PropertyEntries.Add(("WaterParticleFx", "0x78FA748E"), null);
+            PropertyEntries.Add(("WaterParticleFx", "0xD074EC86"), null);
+            PropertyEntries.Add(("WaterParticleFx", "0x13ADEC46"), null);
+            PropertyEntries.Add(("WaterParticleFx", "0xA3F3EB1F"), null);
+            PropertyEntries.Add(("WaterParticleFx", "0x89814DC5"), null);
+            PropertyEntries.Add(("WaterParticleFx", "0xBB650B6B"), null);
+            PropertyEntries.Add(("WaterParticleFx", "0x03155EAD"), null);
+
+            PropertyEntries.Add(("WaterTexture", "0x19461A2C"), null);
+            PropertyEntries.Add(("WaterTexture", "0x428217D7"), null);
+            PropertyEntries.Add(("WaterTexture", "0x20A3E58B"), null);
+            PropertyEntries.Add(("WaterTexture", "0x46A65FF4"), null);
+            PropertyEntries.Add(("WaterTexture", "0xF64D6840"), null);
+            PropertyEntries.Add(("WaterTexture", "0x981366E5"), null);
+            PropertyEntries.Add(("WaterTexture", "0x56C68CEE"), null);
+            PropertyEntries.Add(("WaterTexture", "0x3BAC73F3"), null);
+            PropertyEntries.Add(("WaterTexture", "0xB168F19C"), null);
+            PropertyEntries.Add(("WaterTexture", "0x9181E4AF"), null);
+            PropertyEntries.Add(("WaterTexture", "0xD8DE19E6"), null);
+            PropertyEntries.Add(("WaterTexture", "0x3E5C3CF1"), null);
+            PropertyEntries.Add(("WaterTexture", "0x8645ECD5"), null);
+            PropertyEntries.Add(("WaterTexture", "0xD1FF6630"), null);
+            PropertyEntries.Add(("WaterTexture", "0xA0A8AC87"), null);
+            PropertyEntries.Add(("WaterTexture", "0xBB2D4CFA"), null);
+            PropertyEntries.Add(("WaterTexture", "0x4686AD1F"), null);
+            PropertyEntries.Add(("WaterTexture", "0x987BA44C"), null);
+            PropertyEntries.Add(("WaterTexture", "0x68479D3D"), null);
+            PropertyEntries.Add(("WaterTexture", "0xD1AA035A"), null);
 
             PropertyEntries.Add(("Weapon", "0x7C0B86B9"), typeof(bool));
             PropertyEntries.Add(("Weapon", "0x334A7577"), typeof(int));
@@ -2274,6 +3467,211 @@ namespace SabTool.Data
             PropertyEntries.Add(("Weapon", "0xBD8F9C00"), typeof(float));
             PropertyEntries.Add(("Weapon", "AI far inaccuracy"), typeof(Vector2));
             PropertyEntries.Add(("Weapon", "0xC40ED65B"), typeof(int));
+            PropertyEntries.Add(("Weapon", "sighted float radius"), null);
+            PropertyEntries.Add(("Weapon", "Purchase Price"), null);
+            PropertyEntries.Add(("Weapon", "Repurchase Price"), null);
+            PropertyEntries.Add(("Weapon", "0xC63F11B4"), null);
+            PropertyEntries.Add(("Weapon", "ready anim"), null);
+            PropertyEntries.Add(("Weapon", "FlashMovie"), null);
+            PropertyEntries.Add(("Weapon", "FireSoundEvent"), null);
+            PropertyEntries.Add(("Weapon", "NoWillToFight"), null);
+            PropertyEntries.Add(("Weapon", "Zoom Levels"), null);
+            PropertyEntries.Add(("Weapon", "CameraSettingsAttachment"), null);
+            PropertyEntries.Add(("Weapon", "0xB4DAFD66"), null);
+            PropertyEntries.Add(("Weapon", "0x2F261817"), null);
+            PropertyEntries.Add(("Weapon", "0x46577933"), null);
+            PropertyEntries.Add(("Weapon", "0xB4676BCE"), null);
+            PropertyEntries.Add(("Weapon", "SubItem 1"), null);
+            PropertyEntries.Add(("Weapon", "SubItem 1 Amount"), null);
+            PropertyEntries.Add(("Weapon", "SubItem 2"), null);
+            PropertyEntries.Add(("Weapon", "SubItem 2 Amount"), null);
+            PropertyEntries.Add(("Weapon", "SubItem 3"), null);
+            PropertyEntries.Add(("Weapon", "SubItem 3 Amount"), null);
+            PropertyEntries.Add(("Weapon", "SubItem 4"), null);
+            PropertyEntries.Add(("Weapon", "SubItem 4 Amount"), null);
+            PropertyEntries.Add(("Weapon", "SoundBanks"), null);
+
+            PropertyEntries.Add(("WillToFight", "Is High Will to Fight?"), null);
+            PropertyEntries.Add(("WillToFight", "Use for day/night cycle?"), null);
+            PropertyEntries.Add(("WillToFight", "Start Hour"), null);
+            PropertyEntries.Add(("WillToFight", "Start Minute"), null);
+            PropertyEntries.Add(("WillToFight", "GlobalLighting"), null);
+            PropertyEntries.Add(("WillToFight", "Sun Diffuse Color"), null);
+            PropertyEntries.Add(("WillToFight", "Sun Specular Color"), null);
+            PropertyEntries.Add(("WillToFight", "Ambient Color"), null);
+            PropertyEntries.Add(("WillToFight", "Diffuse Intensity"), null);
+            PropertyEntries.Add(("WillToFight", "Specular Intensity"), null);
+            PropertyEntries.Add(("WillToFight", "Emissive Intensity"), null);
+            PropertyEntries.Add(("WillToFight", "Ambient Intensity"), null);
+            PropertyEntries.Add(("WillToFight", "Environment Map Intensity"), null);
+            PropertyEntries.Add(("WillToFight", "0xEAF2C50D"), null);
+            PropertyEntries.Add(("WillToFight", "0xEF03692A"), null);
+            PropertyEntries.Add(("WillToFight", "Override sun dir?"), null);
+            PropertyEntries.Add(("WillToFight", "Sun direction"), null);
+            PropertyEntries.Add(("WillToFight", "0xE235CD45"), null);
+            PropertyEntries.Add(("WillToFight", "0x622D27D2"), null);
+            PropertyEntries.Add(("WillToFight", "0xCABA5FA3"), null);
+            PropertyEntries.Add(("WillToFight", "0xEC245B3B"), null);
+            PropertyEntries.Add(("WillToFight", "0xA4151BC5"), null);
+            PropertyEntries.Add(("WillToFight", "0xC2B76E0C"), null);
+            PropertyEntries.Add(("WillToFight", "Skin"), null);
+            PropertyEntries.Add(("WillToFight", "Ambient Specular"), null);
+            PropertyEntries.Add(("WillToFight", "Top Falloff"), null);
+            PropertyEntries.Add(("WillToFight", "Bottom Falloff"), null);
+            PropertyEntries.Add(("WillToFight", "SSS Opacity"), null);
+            PropertyEntries.Add(("WillToFight", "Specular Shadow Opacity"), null);
+            PropertyEntries.Add(("WillToFight", "Top Color"), null);
+            PropertyEntries.Add(("WillToFight", "Bottom Color"), null);
+            PropertyEntries.Add(("WillToFight", "Spotlight Intensity"), null);
+            PropertyEntries.Add(("WillToFight", "0x0EBE12AB"), null);
+            PropertyEntries.Add(("WillToFight", "0x36FC5555"), null);
+            PropertyEntries.Add(("WillToFight", "Cloth"), null);
+            PropertyEntries.Add(("WillToFight", "Cloth Spotlight Intensity"), null);
+            PropertyEntries.Add(("WillToFight", "SSS Intensity"), null);
+            PropertyEntries.Add(("WillToFight", "0x503F8CB3"), null);
+            PropertyEntries.Add(("WillToFight", "0xFFF8C56D"), null);
+            PropertyEntries.Add(("WillToFight", "0x25D7DDC9"), null);
+            PropertyEntries.Add(("WillToFight", "0x7BF16181"), null);
+            PropertyEntries.Add(("WillToFight", "0xF9E9D916"), null);
+            PropertyEntries.Add(("WillToFight", "0x5BECB1F3"), null);
+            PropertyEntries.Add(("WillToFight", "0x546A546F"), null);
+            PropertyEntries.Add(("WillToFight", "0x9F8649C2"), null);
+            PropertyEntries.Add(("WillToFight", "0x12430911"), null);
+            PropertyEntries.Add(("WillToFight", "0xCD0B9642"), null);
+            PropertyEntries.Add(("WillToFight", "hair"), null);
+            PropertyEntries.Add(("WillToFight", "0xA5026CDD"), null);
+            PropertyEntries.Add(("WillToFight", "0x65ED29B6"), null);
+            PropertyEntries.Add(("WillToFight", "0x2579FED7"), null);
+            PropertyEntries.Add(("WillToFight", "0xAE124F3A"), null);
+            PropertyEntries.Add(("WillToFight", "0x191B77AA"), null);
+            PropertyEntries.Add(("WillToFight", "0xB3D09074"), null);
+            PropertyEntries.Add(("WillToFight", "0x7B3250B9"), null);
+            PropertyEntries.Add(("WillToFight", "0xF20B50C4"), null);
+            PropertyEntries.Add(("WillToFight", "0x739B2031"), null);
+            PropertyEntries.Add(("WillToFight", "0x0302E3D4"), null);
+            PropertyEntries.Add(("WillToFight", "0xC638C2D4"), null);
+            PropertyEntries.Add(("WillToFight", "0xC9A32E0A"), null);
+            PropertyEntries.Add(("WillToFight", "0xC3F4660B"), null);
+            PropertyEntries.Add(("WillToFight", "0x274A2852"), null);
+            PropertyEntries.Add(("WillToFight", "0xADE25AF7"), null);
+            PropertyEntries.Add(("WillToFight", "0xB8EBF50E"), null);
+            PropertyEntries.Add(("WillToFight", "Static lights Multiplier"), null);
+            PropertyEntries.Add(("WillToFight", "Bloom"), null);
+            PropertyEntries.Add(("WillToFight", "Threshold"), null);
+            PropertyEntries.Add(("WillToFight", "Weight Crisp"), null);
+            PropertyEntries.Add(("WillToFight", "Weight Blurred"), null);
+            PropertyEntries.Add(("WillToFight", "0xF7BEAB46"), null);
+            PropertyEntries.Add(("WillToFight", "0x66907990"), null);
+            PropertyEntries.Add(("WillToFight", "0x21751AA6"), null);
+            PropertyEntries.Add(("WillToFight", "0x3193B1ED"), null);
+            PropertyEntries.Add(("WillToFight", "0x6A6B91CD"), null);
+            PropertyEntries.Add(("WillToFight", "0x9B05051B"), null);
+            PropertyEntries.Add(("WillToFight", "0xAC4FC80D"), null);
+            PropertyEntries.Add(("WillToFight", "WillToFightFilter"), null);
+            PropertyEntries.Add(("WillToFight", "Saturation"), null);
+            PropertyEntries.Add(("WillToFight", "Input Midtones"), null);
+            PropertyEntries.Add(("WillToFight", "DepthBlurFilter"), null);
+            PropertyEntries.Add(("WillToFight", "Opacity"), null);
+            PropertyEntries.Add(("WillToFight", "Front Near Plane"), null);
+            PropertyEntries.Add(("WillToFight", "Front Far Plane"), null);
+            PropertyEntries.Add(("WillToFight", "Back Near Plane"), null);
+            PropertyEntries.Add(("WillToFight", "Back Far Plane"), null);
+            PropertyEntries.Add(("WillToFight", "Sky"), null);
+            PropertyEntries.Add(("WillToFight", "SkyDome"), null);
+            PropertyEntries.Add(("WillToFight", "Top Color Scale"), null);
+            PropertyEntries.Add(("WillToFight", "Bottom Color Scale"), null);
+            PropertyEntries.Add(("WillToFight", "Top-To-Bottom Falloff"), null);
+            PropertyEntries.Add(("WillToFight", "Sun Color"), null);
+            PropertyEntries.Add(("WillToFight", "Sun Scale"), null);
+            PropertyEntries.Add(("WillToFight", "Opposite Sun Color"), null);
+            PropertyEntries.Add(("WillToFight", "Opposite Sun Scale"), null);
+            PropertyEntries.Add(("WillToFight", "Atmosphere"), null);
+            PropertyEntries.Add(("WillToFight", "Thickness"), null);
+            PropertyEntries.Add(("WillToFight", "Start"), null);
+            PropertyEntries.Add(("WillToFight", "end"), null);
+            PropertyEntries.Add(("WillToFight", "0x735F6C3D"), null);
+            PropertyEntries.Add(("WillToFight", "Top"), null);
+            PropertyEntries.Add(("WillToFight", "Bottom"), null);
+            PropertyEntries.Add(("WillToFight", "0xAAD1408E"), null);
+            PropertyEntries.Add(("WillToFight", "0xABB379EF"), null);
+            PropertyEntries.Add(("WillToFight", "0x39D03FEA"), null);
+            PropertyEntries.Add(("WillToFight", "0xAFE68140"), null);
+            PropertyEntries.Add(("WillToFight", "Clouds"), null);
+            PropertyEntries.Add(("WillToFight", "Horizon Layers"), null);
+            PropertyEntries.Add(("WillToFight", "0xD663CEFB"), null);
+            PropertyEntries.Add(("WillToFight", "0xF1688BBD"), null);
+            PropertyEntries.Add(("WillToFight", "0xAC7A1EAB"), null);
+            PropertyEntries.Add(("WillToFight", "0x63AC2E85"), null);
+            PropertyEntries.Add(("WillToFight", "0x9A8D4DDD"), null);
+            PropertyEntries.Add(("WillToFight", "0x25161EA3"), null);
+            PropertyEntries.Add(("WillToFight", "0xF45E896E"), null);
+            PropertyEntries.Add(("WillToFight", "0xF9C44B22"), null);
+            PropertyEntries.Add(("WillToFight", "0x48DAE5C2"), null);
+            PropertyEntries.Add(("WillToFight", "0xE2A4612F"), null);
+            PropertyEntries.Add(("WillToFight", "0xA993685B"), null);
+            PropertyEntries.Add(("WillToFight", "0xE4B89239"), null);
+            PropertyEntries.Add(("WillToFight", "0x4FE6EED7"), null);
+            PropertyEntries.Add(("WillToFight", "0x7B074B03"), null);
+            PropertyEntries.Add(("WillToFight", "0xE11685F6"), null);
+            PropertyEntries.Add(("WillToFight", "0x22508C93"), null);
+            PropertyEntries.Add(("WillToFight", "0x5A1A44A9"), null);
+            PropertyEntries.Add(("WillToFight", "0xC1AE772B"), null);
+            PropertyEntries.Add(("WillToFight", "0x29C3EE40"), null);
+            PropertyEntries.Add(("WillToFight", "0xE6B4443E"), null);
+            PropertyEntries.Add(("WillToFight", "0xE7F6AD7E"), null);
+            PropertyEntries.Add(("WillToFight", "0xA83D4187"), null);
+            PropertyEntries.Add(("WillToFight", "0xEBF7339D"), null);
+            PropertyEntries.Add(("WillToFight", "0xBD9B68F6"), null);
+            PropertyEntries.Add(("WillToFight", "0xBCE2D22C"), null);
+            PropertyEntries.Add(("WillToFight", "0x23D97888"), null);
+            PropertyEntries.Add(("WillToFight", "0x83CF2626"), null);
+            PropertyEntries.Add(("WillToFight", "0xE2961490"), null);
+            PropertyEntries.Add(("WillToFight", "GodRays"), null);
+            PropertyEntries.Add(("WillToFight", "Color"), null);
+            PropertyEntries.Add(("WillToFight", "Color Scale"), null);
+            PropertyEntries.Add(("WillToFight", "Color2"), null);
+            PropertyEntries.Add(("WillToFight", "0x2537614E"), null);
+            PropertyEntries.Add(("WillToFight", "0xD59EA92A"), null);
+            PropertyEntries.Add(("WillToFight", "0x4A43F5A3"), null);
+            PropertyEntries.Add(("WillToFight", "0xC2783A55"), null);
+            PropertyEntries.Add(("WillToFight", "0x5D0F729E"), null);
+            PropertyEntries.Add(("WillToFight", "0x55A709AF"), null);
+            PropertyEntries.Add(("WillToFight", "0xB84AB675"), null);
+            PropertyEntries.Add(("WillToFight", "0x336F1AEB"), null);
+            PropertyEntries.Add(("WillToFight", "0xDB6B07B6"), null);
+            PropertyEntries.Add(("WillToFight", "0x46C2EAF3"), null);
+            PropertyEntries.Add(("WillToFight", "0x3B611C0D"), null);
+            PropertyEntries.Add(("WillToFight", "0x1F067A31"), null);
+            PropertyEntries.Add(("WillToFight", "Back Light Color"), null);
+            PropertyEntries.Add(("WillToFight", "Back Light Intensity"), null);
+            PropertyEntries.Add(("WillToFight", "Back Light Falloff"), null);
+            PropertyEntries.Add(("WillToFight", "Back Light Opacity Bias (In Shadow)"), null);
+            PropertyEntries.Add(("WillToFight", "Specular Cubemap Intensity"), null);
+            PropertyEntries.Add(("WillToFight", "HorizonCloudLayer"), null);
+            PropertyEntries.Add(("WillToFight", "Rotation Rate"), null);
+            PropertyEntries.Add(("WillToFight", "Rotation Offset"), null);
+            PropertyEntries.Add(("WillToFight", "Scale"), null);
+            PropertyEntries.Add(("WillToFight", "Alpha Bias"), null);
+            PropertyEntries.Add(("WillToFight", "0xF9BBC94B"), null);
+            PropertyEntries.Add(("WillToFight", "0x1FBE43B4"), null);
+            PropertyEntries.Add(("WillToFight", "Model"), null);
+            PropertyEntries.Add(("WillToFight", "0x631A1D4B"), null);
+            PropertyEntries.Add(("WillToFight", "Cloud Color"), null);
+            PropertyEntries.Add(("WillToFight", "Cloud Intensity"), null);
+            PropertyEntries.Add(("WillToFight", "0x0DBFF4D9"), null);
+            PropertyEntries.Add(("WillToFight", "0x0F26918E"), null);
+            PropertyEntries.Add(("WillToFight", "BloomLerp"), null);
+            PropertyEntries.Add(("WillToFight", "Weight Original"), null);
+            PropertyEntries.Add(("WillToFight", "Crisp Deviation"), null);
+            PropertyEntries.Add(("WillToFight", "Blurred Deviation"), null);
+            PropertyEntries.Add(("WillToFight", "Crisp Multiplier"), null);
+            PropertyEntries.Add(("WillToFight", "Blurred Multiplier"), null);
+            PropertyEntries.Add(("WillToFight", "Input Black"), null);
+
+            PropertyEntries.Add(("WillToFightNode", "Radius"), null);
+            PropertyEntries.Add(("WillToFightNode", "Time Clamp"), null);
+            PropertyEntries.Add(("WillToFightNode", "Weight"), null);
+            PropertyEntries.Add(("WillToFightNode", "Increment"), null);
 
             PropertyEntries.Add(("0xD0C6D015", "0xE813FE45"), typeof(int));
             PropertyEntries.Add(("0xD0C6D015", "Rotation"), typeof(Vector3));
@@ -2281,11 +3679,6 @@ namespace SabTool.Data
             PropertyEntries.Add(("0xD0C6D015", "LightVolume"), typeof(Crc));
             PropertyEntries.Add(("0xD0C6D015", "0xF2CCAF79"), typeof(Crc));
             PropertyEntries.Add(("0xD0C6D015", "0xFD4C5C69"), typeof(Crc));
-        }
-
-        public static Type GetTypeOfProperty(string group, string name)
-        {
-            return PropertyEntries.TryGetValue((group, name), out Type type) ? type : null;
         }
 
         private static string FormatEmptyType(byte[] bytes)
@@ -2403,9 +3796,5 @@ namespace SabTool.Data
             }
         }
 
-        public static string FormatCrc(uint crc)
-        {
-            return $"0x{crc:X8}";
-        }
     }
 }
