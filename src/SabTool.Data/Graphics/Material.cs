@@ -11,8 +11,8 @@ namespace SabTool.Data.Graphics
 
         public int Id { get; set; }
         public byte Unk1 { get; set; }
-        public byte Unk2 { get; set; }
-        public Crc Texture { get; set; }
+        public byte TextureCount { get; set; }
+        public Crc[] Textures { get; set; }
         public Crc PassNameCrc { get; set; }
         public uint Flags { get; set; }
         public RenderState[] RenderStates { get; set; }

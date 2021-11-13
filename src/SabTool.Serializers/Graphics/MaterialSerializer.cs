@@ -213,6 +213,8 @@ namespace SabTool.Serializers.Graphics
 
         private static List<Material> DeserializeMaterials(BinaryReader reader, int materialCount, Material.Pass[] passes, Crc[] textures, Material.RenderState[][] renderStates, Material.TextureState[][] textureStates, Material.Unk3[] unk3s, Material.ShaderParameter[] vertexParameters, Material.ShaderParameter[] pixelParameters)
         {
+            Material.Container.Clear();
+
             var ZPassCrc = Hash.StringToHash("Z-Pass");
             var CastShadowPassCrc = Hash.StringToHash("Cast-Shadow-Pass");
             var ReceiveShadowPassCrc = Hash.StringToHash("Receive-Shadow-Pass");
@@ -248,18 +250,21 @@ namespace SabTool.Serializers.Graphics
                 else
                 {
                     Material.Container.Add(key, material);
+
                     material.Keys.Add(key);
                 }
 
                 material.Id = reader.ReadInt32();
-                material.Unk2 = (byte)reader.ReadInt32();
+                material.TextureCount = (byte)reader.ReadInt32();
 
                 var textureIndex = reader.ReadInt32();
                 if (textureIndex != -1)
                 {
-                    material.Texture = textures[textureIndex];
+                    material.Textures = new Crc[material.TextureCount];
+                    for (var j = 0; j < material.TextureCount; ++j)
+                        material.Textures[j] = textures[textureIndex + j];
 
-                    if (material.Unk2 == 1 && material.Texture == new Crc(0x35AF3A0E))
+                    if (material.TextureCount == 1 && material.Textures[0] == new Crc(0x35AF3A0E))
                         material.Id |= 0x8000000;
                 }
 
