@@ -135,7 +135,7 @@ namespace SabTool.Utils.Extensions
             return new AffineTransform(scale, rotation, translation);
         }
 
-        public static T[] ReadConstArray<T>(this BinaryReader _, int count, Func<T> readerFunction) where T : new()
+        public static T[] ReadConstArray<T>(this BinaryReader _, int count, Func<T> readerFunction)
         {
             var result = new T[count];
 
@@ -145,7 +145,7 @@ namespace SabTool.Utils.Extensions
             return result;
         }
 
-        public static T[] ReadConstArray<T>(this BinaryReader reader, int count, Func<BinaryReader, T> readerFunction) where T : new()
+        public static T[] ReadConstArray<T>(this BinaryReader reader, int count, Func<BinaryReader, T> readerFunction)
         {
             var result = new T[count];
 

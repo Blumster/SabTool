@@ -6,8 +6,6 @@ using System.Text;
 
 namespace SabTool.Data.Graphics
 {
-    using Utils;
-
     public class Primitive
     {
         public Mesh Mesh { get; set; }
@@ -94,7 +92,7 @@ namespace SabTool.Data.Graphics
                         VDType.Short2 => new Vector2(BitConverter.ToInt16(arr, off), BitConverter.ToInt16(arr, off + 2)),
                         VDType.Short2N => new Vector2(BitConverter.ToInt16(arr, off) / 32767.0f, BitConverter.ToInt16(arr, off + 2) / 32767.0f),
                         VDType.UShort2N => new Vector2(BitConverter.ToUInt16(arr, off) / 65535.0f, BitConverter.ToUInt16(arr, off + 2) / 65535.0f),
-                        VDType.Float16_2 => new Vector2((float)ExtBitConverter.ToHalf(arr, off), (float)ExtBitConverter.ToHalf(arr, off + 2)),
+                        VDType.Float16_2 => new Vector2((float)BitConverter.ToHalf(arr, off), (float)BitConverter.ToHalf(arr, off + 2)),
                         _ => throw new NotSupportedException("This Vertex Declaration type is not supported for vertexes!")
                     };
 
@@ -129,8 +127,8 @@ namespace SabTool.Data.Graphics
                         VDType.Short2 => new Vector3(BitConverter.ToInt16(arr, off), BitConverter.ToInt16(arr, off + 2), 0.0f),
                         VDType.Short2N => new Vector3(BitConverter.ToInt16(arr, off) / 32767.0f, BitConverter.ToInt16(arr, off + 2) / 32767.0f, 0.0f),
                         VDType.UShort2N => new Vector3(BitConverter.ToUInt16(arr, off) / 65535.0f, BitConverter.ToUInt16(arr, off + 2) / 65535.0f, 0.0f),
-                        VDType.Float16_2 => new Vector3((float)ExtBitConverter.ToHalf(arr, off), (float)ExtBitConverter.ToHalf(arr, off + 2), 0.0f),
-                        VDType.Float16_4 => new Vector3((float)ExtBitConverter.ToHalf(arr, off), (float)ExtBitConverter.ToHalf(arr, off + 2), (float)ExtBitConverter.ToHalf(arr, off + 4)),
+                        VDType.Float16_2 => new Vector3((float)BitConverter.ToHalf(arr, off), (float)BitConverter.ToHalf(arr, off + 2), 0.0f),
+                        VDType.Float16_4 => new Vector3((float)BitConverter.ToHalf(arr, off), (float)BitConverter.ToHalf(arr, off + 2), (float)BitConverter.ToHalf(arr, off + 4)),
                         _ => throw new NotSupportedException("This Vertex Declaration type is not supported for vertexes!")
                     };
 
@@ -173,8 +171,8 @@ namespace SabTool.Data.Graphics
                         VDType.UShort4N => new Vector4(BitConverter.ToUInt16(arr, off) / 65535.0f, BitConverter.ToUInt16(arr, off + 2) / 65535.0f, BitConverter.ToUInt16(arr, off + 4) / 65535.0f, BitConverter.ToUInt16(arr, off + 6) / 65535.0f),
                         VDType.UDec3 => new Vector4(BitConverter.ToUInt32(arr, off) & 0x3FF, (BitConverter.ToUInt32(arr, off) & 0xFFC00) >> 10, (BitConverter.ToUInt32(arr, off) & 0x3FF00000) >> 20, 1.0f),
                         VDType.Dec3N => new Vector4((BitConverter.ToInt32(arr, off) & 0x3FF) / 511.0f, ((BitConverter.ToInt32(arr, off) & 0xFFC00) >> 10) / 511.0f, ((BitConverter.ToInt32(arr, off) & 0x3FF00000) >> 20) / 511.0f, 1.0f),
-                        VDType.Float16_2 => new Vector4((float)ExtBitConverter.ToHalf(arr, off), (float)ExtBitConverter.ToHalf(arr, off + 2), 0.0f, 1.0f),
-                        VDType.Float16_4 => new Vector4((float)ExtBitConverter.ToHalf(arr, off), (float)ExtBitConverter.ToHalf(arr, off + 2), (float)ExtBitConverter.ToHalf(arr, off + 4), (float)ExtBitConverter.ToHalf(arr, off + 6)),
+                        VDType.Float16_2 => new Vector4((float)BitConverter.ToHalf(arr, off), (float)BitConverter.ToHalf(arr, off + 2), 0.0f, 1.0f),
+                        VDType.Float16_4 => new Vector4((float)BitConverter.ToHalf(arr, off), (float)BitConverter.ToHalf(arr, off + 2), (float)BitConverter.ToHalf(arr, off + 4), (float)BitConverter.ToHalf(arr, off + 6)),
                         _ => throw new NotSupportedException("This Vertex Declaration type is not supported for vertexes!")
                     };
 

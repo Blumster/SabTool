@@ -21,7 +21,7 @@ namespace SabTool.Utils.Extensions
             {
                 if (controller(str[c]))
                 {
-                    yield return str.Substring(nextPiece, c - nextPiece);
+                    yield return str[nextPiece..c];
 
                     nextPiece = c + 1;
                 }

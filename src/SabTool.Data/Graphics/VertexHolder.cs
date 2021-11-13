@@ -136,8 +136,8 @@ namespace SabTool.Data.Graphics
                             VDType.UShort4N => new Vector4(BitConverter.ToUInt16(arr, off) / 65535.0f, BitConverter.ToUInt16(arr, off + 2) / 65535.0f, BitConverter.ToUInt16(arr, off + 4) / 65535.0f, BitConverter.ToUInt16(arr, off + 6) / 65535.0f),
                             VDType.UDec3 => new Vector4(BitConverter.ToUInt32(arr, off) & 0x3FF, (BitConverter.ToUInt32(arr, off) & 0xFFC00) >> 10, (BitConverter.ToUInt32(arr, off) & 0x3FF00000) >> 20, 1.0f),
                             VDType.Dec3N => new Vector4((BitConverter.ToInt32(arr, off) & 0x3FF) / 511.0f, ((BitConverter.ToInt32(arr, off) & 0xFFC00) >> 10) / 511.0f, ((BitConverter.ToInt32(arr, off) & 0x3FF00000) >> 20) / 511.0f, 1.0f),
-                            VDType.Float16_2 => new Vector4((float)ExtBitConverter.ToHalf(arr, off), (float)ExtBitConverter.ToHalf(arr, off + 2), 0.0f, 1.0f),
-                            VDType.Float16_4 => new Vector4((float)ExtBitConverter.ToHalf(arr, off), (float)ExtBitConverter.ToHalf(arr, off + 2), (float)ExtBitConverter.ToHalf(arr, off + 4), (float)ExtBitConverter.ToHalf(arr, off + 6)),
+                            VDType.Float16_2 => new Vector4((float)BitConverter.ToHalf(arr, off), (float)BitConverter.ToHalf(arr, off + 2), 0.0f, 1.0f),
+                            VDType.Float16_4 => new Vector4((float)BitConverter.ToHalf(arr, off), (float)BitConverter.ToHalf(arr, off + 2), (float)BitConverter.ToHalf(arr, off + 4), (float)BitConverter.ToHalf(arr, off + 6)),
                             VDType.Unused => "Unused",
                             _ => "Unknown type",
                         };
