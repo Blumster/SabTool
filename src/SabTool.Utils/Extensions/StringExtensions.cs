@@ -7,8 +7,8 @@ namespace SabTool.Utils.Extensions
     {
         public static string TrimMatchingQuotes(this string input, char quote)
         {
-            if (input.Length >= 2 && input[0] == quote && input[input.Length - 1] == quote)
-                return input.Substring(1, input.Length - 2);
+            if (input.Length >= 2 && input[0] == quote && input[^1] == quote)
+                return input[1..^1];
 
             return input;
         }
@@ -27,7 +27,7 @@ namespace SabTool.Utils.Extensions
                 }
             }
 
-            yield return str.Substring(nextPiece);
+            yield return str[nextPiece..];
         }
     }
 }

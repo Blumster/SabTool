@@ -43,14 +43,11 @@ namespace SabTool.Serializers
                 {
                     var name = reader.ReadStringWithMaxLength(reader.ReadInt32());
                     var type = reader.ReadStringWithMaxLength(reader.ReadInt32());
-                    var unkval = reader.ReadInt32();
+                    var propertyCount = reader.ReadInt32();
 
                     var blueprint = new Blueprint(type, name);
 
-                    ReadProperties(blueprint, reader, unkval);
-
-                    //if (unkval != blueprint.GetPropertyCount())
-                    //Debugger.Break();
+                    ReadProperties(blueprint, reader, propertyCount);
 
                     blueprints.Add(blueprint);
                 }
@@ -58,10 +55,6 @@ namespace SabTool.Serializers
                 if (bpStartPosition + bpSize != reader.BaseStream.Position)
                     Debugger.Break();
             }
-            var msgs = asd.ToList();
-            msgs.Sort();
-            foreach (var a in msgs)
-                Console.WriteLine(a);
 
             return blueprints;
         }
@@ -77,8 +70,6 @@ namespace SabTool.Serializers
 
                 var propertyStartPosition = reader.BaseStream.Position;
 
-                var found = false;
-
                 if (!PropertyEntries.TryGetValue((blueprint.Type, propertyName), out Type propertyType))
                 {
                     var parents = HierarchyEntries[blueprint.Type];
@@ -87,14 +78,9 @@ namespace SabTool.Serializers
                     {
                         if (PropertyEntries.TryGetValue((parentType, propertyName), out propertyType))
                         {
-                            found = true;
                             break;
                         }
                     }
-                }
-                else
-                {
-                    found = true;
                 }
 
                 if (propertyType != null)
@@ -103,15 +89,8 @@ namespace SabTool.Serializers
                 }
                 else
                 {
-                    if (found)
-                    {
-                        asd.Add($"Unset type for:  {blueprint.Type}::{blueprint.Name}.{propertyName}! Data: {ReadPropertyValue(reader, null, propertySize)}");
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Missing type for: {blueprint.Type}::{blueprint.Name}.{propertyName}");
-                        Debugger.Break();
-                    }
+                    Console.WriteLine($"Missing type for: {blueprint.Type}::{blueprint.Name}.{propertyName}");
+                    Debugger.Break();
                 }
 
                 if (propertyStartPosition + propertySize != reader.BaseStream.Position)
@@ -125,8 +104,6 @@ namespace SabTool.Serializers
                 }
             }
         }
-
-        private static HashSet<string> asd = new();
 
         public static void SerializeRaw(List<Blueprint> blueprints, Stream stream)
         {

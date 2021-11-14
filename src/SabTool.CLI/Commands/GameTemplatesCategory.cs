@@ -94,7 +94,7 @@ namespace SabTool.CLI.Commands
 
             public override bool Execute(IEnumerable<string> arguments)
             {
-                if (arguments.Count() < 1)
+                if (arguments.Any())
                 {
                     Console.WriteLine("ERROR: Not enough arguments given!");
                     return false;
