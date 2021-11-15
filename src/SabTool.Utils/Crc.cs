@@ -27,6 +27,19 @@ namespace SabTool.Utils
             return string.IsNullOrEmpty(stringValue) ? $"0x{Value:X8}" : stringValue;
         }
 
+        public static bool operator==(Crc left, Crc right)
+        {
+            if (ReferenceEquals(left, null) || ReferenceEquals(right, null))
+                return ReferenceEquals(left, null) && ReferenceEquals(right, null);
+
+            return left.Value == right.Value;
+        }
+
+        public static bool operator!=(Crc left, Crc right)
+        {
+            return !(left == right);
+        }
+
         public override string ToString()
         {
             return $"0x{Value:X8} ({Hash.HashToString(Value)})";
