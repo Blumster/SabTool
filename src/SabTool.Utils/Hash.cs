@@ -11,7 +11,8 @@ namespace SabTool.Utils
 {
     public static class Hash
     {
-        private static readonly Dictionary<uint, string> lookupTable = new Dictionary<uint, string>();
+        private static readonly Dictionary<uint, string> lookupTable = new();
+        private static readonly HashSet<uint> missingHashes = new();
 
         public const uint FNV32Offset = 0x811C9DC5u;
         public const uint FNV32Prime = 0x1000193u;
@@ -44,9 +45,24 @@ namespace SabTool.Utils
                 lookupTable.Add(hash, parts[1]);
             }
 
+            if (File.Exists("Missing.txt"))
+            {
+                foreach (var line in File.ReadAllLines("Missing.txt"))
+                {
+                    if (!uint.TryParse(line[2..], NumberStyles.HexNumber, CultureInfo.InvariantCulture, out uint hash))
+                    {
+                        Console.WriteLine($"HASH: Unable to parse {line} as uint!");
+                        continue;
+                    }
+
+                    missingHashes.Add(hash);
+                }
+            }
+
             /* Debug code: It writes back the contents of the lookup table. This way redundant entries can be filtered out after addig rows to the file.
              * Notice: It will overwrite the file that was copied to the output directory, not the one in the project files!
             Save();
+            SaveMissing();
             */
         }
 
@@ -63,7 +79,44 @@ namespace SabTool.Utils
             File.WriteAllLines("Hashes.txt", lines);
         }
 
+        public static void SaveMissing()
+        {
+            var lines = new string[missingHashes.Count];
+            var i = 0;
+
+            foreach (var hash in missingHashes.OrderBy(h => h))
+            {
+                lines[i++] = $"0x{hash:X8}";
+            }
+
+            File.WriteAllLines("Missing.txt", lines);
+        }
+
         public static uint FNV32string(string source, int maxLen = -1)
+        {
+            var hash = InternalFNV32string(source, maxLen);
+
+            if (missingHashes.Remove(hash))
+            {
+                if (lookupTable.ContainsKey(hash))
+                {
+                    if (source.ToLowerInvariant() != lookupTable[hash].ToLowerInvariant())
+                    {
+                        Console.WriteLine($"HASH: Different string for the same hash! Hash: 0x{hash:X8}: \"{source}\" != \"{lookupTable[hash]}\"");
+                    }
+                }
+                else
+                {
+                    lookupTable.Add(hash, source);
+
+                    Console.WriteLine($"Found hash 0x{hash:X8} -> {source}");
+                }
+            }
+
+            return hash;
+        }
+
+        private static uint InternalFNV32string(string source, int maxLen = -1)
         {
             if (string.IsNullOrEmpty(source))
                 return 0;
@@ -73,7 +126,7 @@ namespace SabTool.Utils
 
             for (var i = 0; i < bytes.Length && (maxLen == -1 || i < maxLen); ++i)
                 hash = FNV32Prime * (hash ^ (bytes[i] | 0x20u));
-            
+
             return (hash ^ 0x2Au) * FNV32Prime;
         }
 
@@ -81,6 +134,8 @@ namespace SabTool.Utils
         {
             if (lookupTable.ContainsKey(hash))
                 return lookupTable[hash];
+
+            missingHashes.Add(hash);
 
             return null;
         }
@@ -91,11 +146,13 @@ namespace SabTool.Utils
                 if (pair.Value.ToLowerInvariant() == source.ToLowerInvariant())
                     return pair.Key;*/
 
-            var hash = FNV32string(source);
+            var hash = InternalFNV32string(source);
 
             if (!lookupTable.ContainsKey(hash))
             {
                 lookupTable.Add(hash, source);
+
+                missingHashes.Remove(hash);
 
                 return hash;
             }

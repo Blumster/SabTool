@@ -150,6 +150,32 @@ namespace SabTool.CLI.Commands
             }
         }
 
+        public class TestCommand : BaseCommand
+        {
+            public override string Key { get; } = "test";
+            public override string Shortcut { get; } = "t";
+            public override string Usage { get; } = "";
+
+            public override bool Execute(IEnumerable<string> arguments)
+            {
+                for (var i = 0u; i < 100u; ++i)
+                {
+                    for (var j = 0u; j < 8u; ++j)
+                    {
+                        var start = i * (uint)Math.Pow(10, j);
+                        var end = (i + 1) * (uint)Math.Pow(10, j);
+
+                        for (var k = start; k < end; ++k)
+                        {
+                            Hash.FNV32string($@"France\{i}\{k}.pack");
+                        }
+                    }
+                }
+
+                return true;
+            }
+        }
+
         public class SaveCommand : BaseCommand
         {
             public override string Key { get; } = "save";
@@ -159,6 +185,7 @@ namespace SabTool.CLI.Commands
             public override bool Execute(IEnumerable<string> arguments)
             {
                 Hash.Save();
+                Hash.SaveMissing();
 
                 return true;
             }
