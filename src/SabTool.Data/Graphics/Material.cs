@@ -39,15 +39,12 @@ namespace SabTool.Data.Graphics
 
         public enum TextureStateType
         {
-
         }
 
         public class TextureState
         {
             public TextureStateType Type { get; set; }
             public uint Value { get; set; }
-
-
         }
 
         public class Unk3
@@ -65,19 +62,6 @@ namespace SabTool.Data.Graphics
             public Vector4[] VectorParameters { get; set; }
             public int[][] IntParameters { get; set; }
             public bool[] BoolParameters { get; set; }
-        }
-
-        public class Pass
-        {
-            public Crc PassNameCrc { get; set; }
-            public uint Flags { get; set; }
-            public int RenderStateIndex { get; set; }
-            public int TextureStateIndex { get; set; }
-            public int Unk3Index { get; set; }
-            public int PixelParameterIndex { get; set; }
-            public int VertexParameterIndex { get; set; }
-            public int PixelShaderUnk { get; set; }
-            public int VertexShaderUnk { get; set; }
         }
         #endregion
     }

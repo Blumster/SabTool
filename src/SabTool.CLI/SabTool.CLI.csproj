@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SabTool.Data\SabTool.Data.csproj" />
+    <ProjectReference Include="..\SabTool.Depot\SabTool.Depot.csproj" />
     <ProjectReference Include="..\SabTool.Serializers\SabTool.Serializers.csproj" />
     <ProjectReference Include="..\SabTool.Utils\SabTool.Utils.csproj" />
   </ItemGroup>

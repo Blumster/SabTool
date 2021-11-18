@@ -23,7 +23,7 @@ namespace SabTool.Data.Packs
         public uint CountF8 { get; set; }
         public float FloatFC { get; set; }
         public float Float100 { get; set; }
-        public uint Flags { get; set; }
+        public uint Flags { get; set; } // 0x8: dynpack? 0x10: no extension? 0x100: palettepack? no 0x8 and no 0x100: pack?
         public byte[] Array104 { get; set; }
         public uint TextureCount { get; set; }
         public TextureInfo[] TextureInfoArray { get; set; }

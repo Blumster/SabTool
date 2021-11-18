@@ -6,7 +6,8 @@ using System.Linq;
 namespace SabTool.CLI.Commands
 {
     using Base;
-    using Data;
+    using Depot;
+    using Serializers;
 
     public class LooseFilesCategory : BaseCategory
     {
@@ -30,7 +31,7 @@ namespace SabTool.CLI.Commands
         {
             public override string Key { get; } = "unpack";
             public override string Shortcut { get; } = "u";
-            public override string Usage { get; } = "<loose file path> <output directory path>";
+            public override string Usage { get; } = "<game base path> <output directory path>";
 
             public override bool Execute(IEnumerable<string> arguments)
             {
@@ -40,23 +41,21 @@ namespace SabTool.CLI.Commands
                     return false;
                 }
 
-                var filePath = arguments.ElementAt(0);
-                var outputFolder = arguments.ElementAt(1);
+                ResourceDepot.Instance.Initialize(arguments.ElementAt(0));
+                ResourceDepot.Instance.Load(Resource.LooseFiles);
 
-                if (!File.Exists(filePath))
-                {
-                    Console.WriteLine("ERROR: Loose file doesn't exist!");
-                    return false;
-                }
+                var outputFolder = arguments.ElementAt(1);
 
                 Directory.CreateDirectory(outputFolder);
 
-                var looseFile = new LooseFile();
+                var looseFiles = ResourceDepot.Instance.GetLooseFiles();
+                if (looseFiles == null)
+                {
+                    Console.WriteLine("ERROR: LooseFiles were not loaded!");
+                    return false;
+                }
 
-                using (var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
-                    looseFile.Read(fs);
-
-                foreach (var file in looseFile.Files)
+                foreach (var file in looseFiles)
                 {
                     var outFilePath = Path.Combine(outputFolder, file.Name);
                     var directoryName = Path.GetDirectoryName(outFilePath);
@@ -65,7 +64,14 @@ namespace SabTool.CLI.Commands
 
                     Console.WriteLine($"Unpacking {file}...");
 
-                    File.WriteAllBytes(outFilePath, file.Data);
+                    var looseFile = ResourceDepot.Instance.GetLooseFile(file.Name);
+                    if (looseFile == null)
+                    {
+                        Console.WriteLine("ERROR: LooseFile can't be read!");
+                        return false;
+                    }
+
+                    File.WriteAllBytes(outFilePath, looseFile.GetBuffer());
                 }
 
                 Console.WriteLine("Files successfully unpacked!");
@@ -102,7 +108,7 @@ namespace SabTool.CLI.Commands
                     return false;
                 }
 
-                var looseFile = new LooseFile();
+                /*var looseFile = new LooseFile();
 
                 if (Path.GetFileName(filePath) == "loosefiles_BinPC.pack")
                 {
@@ -117,7 +123,7 @@ namespace SabTool.CLI.Commands
 
                         var entry = new LooseFileEntry(pair.Value, pair.Key, path);
 
-                        looseFile.AddFile(entry);
+                        looseFile.Files.Add(entry);
 
                         Console.WriteLine($"Adding: \"{entry}\" to loose file...");
                     }
@@ -146,7 +152,9 @@ namespace SabTool.CLI.Commands
                     looseFile.Write(fs);
 
                 Console.WriteLine("Loose file successfully packed! Path: {0}", filePath);
-                return true;
+                return true;*/
+                Console.WriteLine("Temporarily disabled...");
+                return false;
             }
         }
     }

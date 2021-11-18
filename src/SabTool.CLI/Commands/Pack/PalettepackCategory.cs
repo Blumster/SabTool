@@ -9,6 +9,7 @@ namespace SabTool.CLI.Commands.Pack
     using Data;
     using Data.Packs;
     using Utils;
+    using Serializers.Megapacks;
 
     public class PalettepackCategory : BaseCategory
     {
@@ -51,7 +52,7 @@ namespace SabTool.CLI.Commands.Pack
 
                 Directory.CreateDirectory(outputDir);
 
-                var looseFilePath = Path.Combine(basePath, @"France\loosefiles_BinPC.pack");
+                /*var looseFilePath = Path.Combine(basePath, @"France\loosefiles_BinPC.pack");
 
                 if (!File.Exists(looseFilePath))
                 {
@@ -71,14 +72,9 @@ namespace SabTool.CLI.Commands.Pack
                     return false;
                 }
 
-                var globalMap = new GlobalMap();
+                using var ms = new MemoryStream(globalMapEntry.Data);
 
-                using (var ms = new MemoryStream(globalMapEntry.Data))
-                {
-                    using var reader = new BinaryReader(ms);
-
-                    globalMap.Read(reader, globalMapEntry.Name);
-                }
+                var globalMap = GlobalMapSerializer.DeserializeRaw(ms);
 
                 if (Directory.Exists(palettepackFilePath))
                 {
@@ -100,7 +96,7 @@ namespace SabTool.CLI.Commands.Pack
                 else if (File.Exists(palettepackFilePath))
                 {
                     return Process(palettepackFilePath, outputDir, globalMap);
-                }
+                }*/
 
                 return false;
             }

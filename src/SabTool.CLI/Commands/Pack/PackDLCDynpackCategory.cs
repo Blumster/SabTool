@@ -7,6 +7,7 @@ namespace SabTool.CLI.Commands.Pack
 {
     using Base;
     using Data.Packs;
+    using Serializers.Megapacks;
     using Utils;
 
     public class PackDLCDynpackCategory : BaseCategory
@@ -58,14 +59,9 @@ namespace SabTool.CLI.Commands.Pack
                     return false;
                 }
 
-                var globalMap = new GlobalMap();
+                using var ms = new FileStream(globalFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
 
-                using (var ms = new FileStream(globalFilePath, FileMode.Open, FileAccess.Read, FileShare.Read))
-                {
-                    using var reader = new BinaryReader(ms);
-
-                    globalMap.Read(reader, globalFilePath);
-                }
+                var globalMap = GlobalMapSerializer.DeserializeRaw(ms);
 
                 if (Directory.Exists(dynpackFilePath))
                 {

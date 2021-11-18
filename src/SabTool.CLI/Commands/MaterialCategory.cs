@@ -6,6 +6,7 @@ using System.Linq;
 namespace SabTool.CLI.Commands
 {
     using Base;
+    using Depot;
     using Serializers.Graphics;
 
     public class MaterialCategory : BaseCategory
@@ -33,31 +34,22 @@ namespace SabTool.CLI.Commands
                     return false;
                 }
 
-                var basePath = arguments.ElementAt(0);
-                var outputDir = arguments.ElementAt(1);
-
-                if (!Directory.Exists(basePath))
+                if (!ResourceDepot.IsInitialized)
                 {
-                    Console.WriteLine("ERROR: The game base path does not exist!");
-                    return false;
+                    ResourceDepot.Instance.Initialize(arguments.ElementAt(0));
                 }
+
+                ResourceDepot.Instance.Load(Resource.Materials);
+
+                var outputDir = arguments.ElementAt(1);
 
                 Directory.CreateDirectory(outputDir);
 
-                var materialsFilePath = Path.Combine(basePath, MaterialsRawFileName);
-                if (!File.Exists(materialsFilePath))
-                {
-                    Console.WriteLine($"ERROR: Materials file could not be found under \"{materialsFilePath}\"!");
-                    return false;
-                }
-
-                using var inFileStream = new FileStream(materialsFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-
-                var materials = MaterialSerializer.DeserializeRaw(inFileStream);
-
                 using var outFileStream = new FileStream(Path.Combine(outputDir, MaterialsJsonFileName), FileMode.Create, FileAccess.Write, FileShare.None);
 
-                MaterialSerializer.SerializeJSON(materials, outFileStream);
+                var materials = ResourceDepot.Instance.GetMaterials();
+
+                MaterialSerializer.SerializeJSON(materials.Select(p => p.Value).ToList(), outFileStream);
 
                 return true;
             }

@@ -8,6 +8,7 @@ namespace SabTool.CLI.Commands.Pack
     using Base;
     using Data;
     using Data.Packs;
+    using Serializers.Megapacks;
     using Utils;
 
     public class DynpackCategory : BaseCategory
@@ -51,7 +52,7 @@ namespace SabTool.CLI.Commands.Pack
 
                 Directory.CreateDirectory(outputDir);
 
-                var looseFilePath = Path.Combine(basePath, @"France\loosefiles_BinPC.pack");
+                /*var looseFilePath = Path.Combine(basePath, @"France\loosefiles_BinPC.pack");
 
                 if (!File.Exists(looseFilePath))
                 {
@@ -71,14 +72,9 @@ namespace SabTool.CLI.Commands.Pack
                     return false;
                 }
 
-                var globalMap = new GlobalMap();
+                using var ms = new MemoryStream(globalMapEntry.Data);
 
-                using (var ms = new MemoryStream(globalMapEntry.Data))
-                {
-                    using var reader = new BinaryReader(ms);
-
-                    globalMap.Read(reader, globalMapEntry.Name);
-                }
+                var globalMap = GlobalMapSerializer.DeserializeRaw(ms);
 
                 if (Directory.Exists(dynpackFilePath))
                 {
@@ -101,12 +97,13 @@ namespace SabTool.CLI.Commands.Pack
                 else if (File.Exists(dynpackFilePath))
                 {
                     return Process(dynpackFilePath, outputDir, globalMap);
-                }
+                }*/
 
+                Console.WriteLine("Temporarily disabled...");
                 return false;
             }
 
-            private static bool Process(string filePath, string outputDir, GlobalMap globalMap)
+            /*private static bool Process(string filePath, string outputDir, GlobalMap globalMap)
             {
                 Console.WriteLine($"Processing {filePath}...");
                 var crc = new Crc(Hash.StringToHash(Path.GetFileNameWithoutExtension(filePath)));
@@ -134,7 +131,7 @@ namespace SabTool.CLI.Commands.Pack
                 Console.WriteLine();
 
                 return true;
-            }
+            }*/
         }
     }
 }

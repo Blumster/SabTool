@@ -8,8 +8,8 @@ using Newtonsoft.Json;
 
 namespace SabTool.Serializers.Graphics
 {
-    using Converters;
     using Data.Graphics;
+    using Json.Converters;
     using Utils;
     using Utils.Extensions;
 
@@ -185,16 +185,16 @@ namespace SabTool.Serializers.Graphics
             return reader.ReadConstArray(textureCount, r => new Crc(r.ReadUInt32()));
         }
 
-        private static Material.Pass[] DeserializePassArray(BinaryReader reader, int passCount)
+        private static Pass[] DeserializePassArray(BinaryReader reader, int passCount)
         {
             if (!reader.CheckHeaderString("WSPA", reversed: true))
                 throw new Exception("Invalid magic found!");
 
-            var passes = new Material.Pass[passCount];
+            var passes = new Pass[passCount];
 
             for (var i = 0; i < passCount; ++i)
             {
-                passes[i] = new Material.Pass
+                passes[i] = new Pass
                 {
                     PassNameCrc = reader.ReadUInt32(),
                     Flags = reader.ReadUInt32(),
@@ -211,7 +211,7 @@ namespace SabTool.Serializers.Graphics
             return passes;
         }
 
-        private static List<Material> DeserializeMaterials(BinaryReader reader, int materialCount, Material.Pass[] passes, Crc[] textures, Material.RenderState[][] renderStates, Material.TextureState[][] textureStates, Material.Unk3[] unk3s, Material.ShaderParameter[] vertexParameters, Material.ShaderParameter[] pixelParameters)
+        private static List<Material> DeserializeMaterials(BinaryReader reader, int materialCount, Pass[] passes, Crc[] textures, Material.RenderState[][] renderStates, Material.TextureState[][] textureStates, Material.Unk3[] unk3s, Material.ShaderParameter[] vertexParameters, Material.ShaderParameter[] pixelParameters)
         {
             Material.Container.Clear();
 
@@ -362,6 +362,19 @@ namespace SabTool.Serializers.Graphics
             using var writer = new StreamWriter(stream, Encoding.UTF8, leaveOpen: true);
 
             writer.Write(JsonConvert.SerializeObject(materials, Formatting.Indented, new CrcConverter()));
+        }
+
+        private class Pass
+        {
+            public Crc PassNameCrc { get; set; }
+            public uint Flags { get; set; }
+            public int RenderStateIndex { get; set; }
+            public int TextureStateIndex { get; set; }
+            public int Unk3Index { get; set; }
+            public int PixelParameterIndex { get; set; }
+            public int VertexParameterIndex { get; set; }
+            public int PixelShaderUnk { get; set; }
+            public int VertexShaderUnk { get; set; }
         }
     }
 }

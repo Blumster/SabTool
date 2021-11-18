@@ -2,12 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Numerics;
 
-using SharpGLTF.Geometry;
-using SharpGLTF.Geometry.VertexTypes;
-using SharpGLTF.Materials;
-using SharpGLTF.Scenes;
 using SharpGLTF.Schema2;
 
 namespace SabTool.Data.Packs.Assets
@@ -21,7 +16,6 @@ namespace SabTool.Data.Packs.Assets
     {
         public Crc Name { get; }
         public Model Model { get; set; }
-        public Mesh Mesh { get; set; }
         public string ModelName { get; set; }
 
         public MeshAsset(Crc name)
@@ -49,36 +43,26 @@ namespace SabTool.Data.Packs.Assets
 
             Console.WriteLine($"Reading mesh {ModelName}...");
 
-            var headerData = reader.ReadDecompressedBytes(headerCompressedSize);
-            using (var headerReader = new BinaryReader(new MemoryStream(headerData, false)))
+            using (var modelStream = new MemoryStream(reader.ReadDecompressedBytes(headerCompressedSize), false))
             {
-                Model = new Model();
-                if (!Model.Read(headerReader))
-                    return false;
+                // TODO
+                //Model = ModelSerializer.DeserializeRaw(modelStream);
 
-                Mesh = new Mesh();
-                if (!Mesh.ReadHeader(headerReader))
-                    return false;
-
-                if (headerReader.BaseStream.Position != headerReader.BaseStream.Length)
+                if (modelStream.Position != modelStream.Length)
                 {
-                    Console.WriteLine($"Under read of the header data of the mesh asset! Pos: {headerReader.BaseStream.Position} | Expected: {headerReader.BaseStream.Length}");
+                    Console.WriteLine($"Under read of the header data of the mesh asset! Pos: {modelStream.Position} | Expected: {modelStream.Length}");
                     return false;
                 }
             }
 
-            var vertexData = reader.ReadDecompressedBytes(vertexCompressedSize);
-            using (var vertexReader = new BinaryReader(new MemoryStream(vertexData, false)))
+            using (var vertexStream = new MemoryStream(reader.ReadDecompressedBytes(vertexCompressedSize), false))
             {
-                if (!Mesh.ReadVertices(vertexReader))
-                {
-                    Console.WriteLine("Unable to read Vertex data based on the Mesh header!");
-                    return false;
-                }
+                // TODO
+                //MeshSerializer.DeserializeVerticesRaw(Model.Mesh, vertexStream);
 
-                if (vertexReader.BaseStream.Position != vertexReader.BaseStream.Length)
+                if (vertexStream.Position != vertexStream.Length)
                 {
-                    Console.WriteLine($"Under read of the vertex data of the mesh asset! Pos: {vertexReader.BaseStream.Position} | Expected: {vertexReader.BaseStream.Length}");
+                    Console.WriteLine($"Under read of the vertex data of the mesh asset! Pos: {vertexStream.Position} | Expected: {vertexStream.Length}");
                     return false;
                 }
             }
@@ -98,8 +82,6 @@ namespace SabTool.Data.Packs.Assets
 
         public void Export(string outputPath)
         {
-            File.WriteAllText(Path.Combine(outputPath, $"{ModelName}-dump.txt"), Model.DumpString() + Mesh.DumpString());
-
             var model = ModelRoot.CreateModel();
             var scene = model.UseScene(ModelName);
 
@@ -109,7 +91,7 @@ namespace SabTool.Data.Packs.Assets
 
             var skeleton = skin.Skeleton = scene.CreateNode("Skeleton");
             
-            var skeletonData = Mesh.Skeleton;
+            var skeletonData = Model.Mesh.Skeleton;
 
             var skeletonNodes = new Dictionary<short, Node>()
             {
@@ -133,9 +115,9 @@ namespace SabTool.Data.Packs.Assets
 
             var node = scene.CreateNode("Root");
 
-            for (var i = 0; i < Mesh.NumPrimitives; ++i)
+            for (var i = 0; i < Model.Mesh.NumPrimitives; ++i)
             {
-                var prim = Mesh.Primitives[i];
+                var prim = Model.Mesh.Primitives[i];
 
                 var primNode = node.CreateNode();
                 

@@ -105,7 +105,7 @@ namespace SabTool.Data.GameTemplatesOld
 
         private void ReadProperty(BluaReader reader, string type, uint crc, int size, HashSet<string> parents)
         {
-            var typeCrc = Hash.FNV32string(type);
+            var typeCrc = Hash.StringToHash(type);
 
             var name = Hash.HashToString(crc);
 
@@ -113,7 +113,7 @@ namespace SabTool.Data.GameTemplatesOld
             {
                 foreach (var parent in parents)
                 {
-                    if (PropertyTypes.TryGetValue(new(Hash.FNV32string(parent), crc), out entry))
+                    if (PropertyTypes.TryGetValue(new(Hash.StringToHash(parent), crc), out entry))
                     {
                         type = parent;
                         break;

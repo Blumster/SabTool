@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -110,15 +111,23 @@ namespace SabTool.CLI.Base
 
             var res = false;
 
-            try
+            // If the application is being debugged, let the exception fall through to the debugger to check it
+            if (Debugger.IsAttached)
             {
                 res = _commands[commandKey].Execute(commandParts.Skip(1));
             }
-            catch (Exception e)
+            else
             {
-                Console.WriteLine("Exception occured while running the command! Exception: {0}", e);
+                try
+                {
+                    res = _commands[commandKey].Execute(commandParts.Skip(1));
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Exception occured while running the command! Exception: {0}", e);
+                }
             }
-            
+
             if (!res)
             {
                 Console.WriteLine();
