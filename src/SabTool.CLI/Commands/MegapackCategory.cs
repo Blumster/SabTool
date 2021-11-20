@@ -45,9 +45,9 @@ namespace SabTool.CLI.Commands
                 {
                     writer.WriteLine($"Megapack: {megapackFile}");
 
-                    foreach (var crc in ResourceDepot.Instance.GetFileEntries(megapackFile))
+                    foreach (var fileEntry in ResourceDepot.Instance.GetFileEntries(megapackFile))
                     {
-                        writer.WriteLine($"Entry: {crc}");
+                        writer.WriteLine(fileEntry.ToPrettyString());
                     }
 
                     writer.WriteLine();

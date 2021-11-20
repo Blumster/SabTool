@@ -119,7 +119,7 @@
                 yield return megapack.Key;
         }
 
-        public IEnumerable<Crc> GetFileEntries(string key)
+        public IEnumerable<FileEntry> GetFileEntries(string key)
         {
             if (Megapacks.TryGetValue(key, out var entry))
             {
@@ -128,7 +128,7 @@
 
                 foreach (var entryPair in entry.Megapack.FileEntries)
                 {
-                    yield return entryPair.Key;
+                    yield return entryPair.Value;
                 }
             }
         }
