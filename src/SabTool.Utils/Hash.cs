@@ -92,11 +92,11 @@ namespace SabTool.Utils
             File.WriteAllLines("Missing.txt", lines);
         }
 
-        public static uint FNV32string(string source, int maxLen = -1)
+        public static uint FNV32string(string source, int maxLen = -1, bool addToLookup = true)
         {
             var hash = InternalFNV32string(source, maxLen);
 
-            if (missingHashes.Remove(hash))
+            if (addToLookup && missingHashes.Remove(hash))
             {
                 if (lookupTable.ContainsKey(hash))
                 {
