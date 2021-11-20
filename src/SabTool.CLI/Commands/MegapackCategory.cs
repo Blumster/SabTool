@@ -76,7 +76,7 @@ namespace SabTool.CLI.Commands
 
             public override string Key { get; } = "unpack";
             public override string Shortcut { get; } = "u";
-            public override string Usage { get; } = "<game base path> <output directory>";
+            public override string Usage { get; } = "<game base path> <output directory> [relative megapack file path]";
 
             public override bool Execute(IEnumerable<string> arguments)
             {
@@ -86,70 +86,58 @@ namespace SabTool.CLI.Commands
                     return false;
                 }
 
-                var basePath = arguments.ElementAt(0);
-                var outputDir = arguments.ElementAt(1);
+                ResourceDepot.Instance.Initialize(arguments.ElementAt(0));
+                ResourceDepot.Instance.Load(Resource.Megapacks);
 
-                if (!Directory.Exists(basePath))
-                {
-                    Console.WriteLine("ERROR: The game base path does not exist!");
-                    return false;
-                }
+                var outputDir = arguments.ElementAt(1);
 
                 Directory.CreateDirectory(outputDir);
 
-                /*var looseFilePath = Path.Combine(basePath, @"France\loosefiles_BinPC.pack");
+                string fileToUnpack = null;
 
-                if (!File.Exists(looseFilePath))
+                if (arguments.Count() == 3)
+                    fileToUnpack = arguments.ElementAt(2);
+
+                foreach (var megapackFile in ResourceDepot.Instance.GetMegapacks())
                 {
-                    Console.WriteLine($"ERROR: Loosefile could not be found under \"{looseFilePath}\"!");
-                    return false;
-                }
-
-                foreach (var filePath in Megafiles)
-                {
-                    var fullPath = Path.Combine(basePath, filePath);
-
-                    if (!filePath.Contains("patch") && !File.Exists(fullPath))
-                    {
-                        Console.WriteLine($"ERROR: Missing non-optional megapack: {filePath}!");
-                        return false;
-                    }
-                }
-
-                var looseFile = new LooseFile();
-
-                using (var fs = new FileStream(looseFilePath, FileMode.Open, FileAccess.Read, FileShare.Read))
-                    looseFile.Read(fs);
-
-                var globalMapEntry = looseFile.Files.Where(f => f.Name == "global.map").FirstOrDefault();
-                if (globalMapEntry == null)
-                {
-                    Console.WriteLine("ERROR: Could not read global.map from loosefiles!");
-                    return false;
-                }
-
-                using var ms = new MemoryStream(globalMapEntry.Data);
-                
-                var globalMap = GlobalMapSerializer.DeserializeRaw(ms);
-
-                foreach (var filePath in Megafiles)
-                {
-                    var fullPath = Path.Combine(basePath, filePath);
-                    var megaOutDir = Path.Combine(outputDir, Path.GetFileName(fullPath));
-
-                    if (!File.Exists(fullPath))
+                    if (!string.IsNullOrEmpty(fileToUnpack) && megapackFile != fileToUnpack)
                         continue;
 
-                    using var fs = new FileStream(fullPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+                    Console.WriteLine($"Unpacking {megapackFile}...");
+                    
+                    var megapackOutputDir = Path.Combine(outputDir, megapackFile);
 
-                    var megafile = GlobalMegaFileSerializer.DeserializeRaw(fs);
-                    megafile.Export(fs, megaOutDir);
+                    var i = 0;
+
+                    foreach (var fileEntry in ResourceDepot.Instance.GetFileEntries(megapackFile))
+                    {
+                        var entryStream = ResourceDepot.Instance.GetPackStream(fileEntry.Path);
+                        if (entryStream == null)
+                        {
+                            Console.WriteLine($"Unable to unpack {fileEntry.Path}, no data fround for it!");
+                            continue;
+                        }
+
+                        var realFilePath = fileEntry.Path.GetString();
+                        if (string.IsNullOrEmpty(realFilePath))
+                            realFilePath = $"{fileEntry.Name.GetStringOrHexString()}.pack"; // TODO: based on the streamblock, can be dynpack, palettepack or pack
+
+                        var outputFilePath = Path.Combine(megapackOutputDir, realFilePath);
+
+                        var outputFileDir = Path.GetDirectoryName(outputFilePath);
+                        Directory.CreateDirectory(outputFileDir);
+
+                        using var fs = new FileStream(outputFilePath, FileMode.Create, FileAccess.Write, FileShare.None);
+
+                        entryStream.CopyTo(fs);
+
+                        ++i;
+                    }
+
+                    Console.WriteLine($"Successfully unpacked {megapackFile} to {megapackOutputDir} ({i} files)!");
                 }
 
-                Console.WriteLine("Successfully unpacked the global megapacks!");
-                return true;*/
-                Console.WriteLine("Temporarily disabled...");
-                return false;
+                return true;
             }
         }
 
