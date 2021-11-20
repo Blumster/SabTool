@@ -75,5 +75,15 @@ namespace SabTool.Data.Packs
         public Crc Name { get; set; }
         public int Size { get; set; }
         public long Offset { get; set; }
+
+        public string ToPrettyString(int namePad = 50)
+        {
+            return $"FileEntry(Size: 0x{Size:X8}, offset: 0x{Offset:X8}, Name: {Name.ToString().PadRight(namePad)}, Path: {Path})";
+        }
+
+        public override string ToString()
+        {
+            return ToPrettyString(0);
+        }
     }
 }
