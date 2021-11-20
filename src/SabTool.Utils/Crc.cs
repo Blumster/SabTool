@@ -29,8 +29,8 @@ namespace SabTool.Utils
 
         public static bool operator==(Crc left, Crc right)
         {
-            if (ReferenceEquals(left, null) || ReferenceEquals(right, null))
-                return ReferenceEquals(left, null) && ReferenceEquals(right, null);
+            if (left is null || right is null)
+                return left is null && right is null;
 
             return left.Value == right.Value;
         }
