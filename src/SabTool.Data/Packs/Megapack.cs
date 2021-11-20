@@ -71,8 +71,8 @@ namespace SabTool.Data.Packs
 
     public class FileEntry
     {
-        public Crc Crc { get; set; }
-        public Crc Crc2 { get; set; }
+        public Crc Path { get; set; }
+        public Crc Name { get; set; }
         public int Size { get; set; }
         public long Offset { get; set; }
     }

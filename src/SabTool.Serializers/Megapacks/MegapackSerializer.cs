@@ -29,13 +29,13 @@ namespace SabTool.Serializers.Megapacks
                 var entry = DeserializeFileEntryRaw(reader);
 
                 // Store the hashes
-                if (!string.IsNullOrEmpty(entry.Crc2.GetString()))
+                if (!string.IsNullOrEmpty(entry.Name.GetString()))
                 {
-                    Hash.StringToHash($"global\\{entry.Crc2.GetString()}.dynpack");
-                    Hash.StringToHash($"global\\{entry.Crc2.GetString()}.palettepack");
+                    Hash.StringToHash($"global\\{entry.Name.GetString()}.dynpack");
+                    Hash.StringToHash($"global\\{entry.Name.GetString()}.palettepack");
                 }
 
-                megapack.FileEntries.Add(entry.Crc, entry);
+                megapack.FileEntries.Add(entry.Path, entry);
             }
 
             megapack.BlockPathToNameCrcs = new Tuple<Crc, Crc>[megapack.FileCount];
@@ -51,12 +51,12 @@ namespace SabTool.Serializers.Megapacks
                 }
 
                 var entry = megapack.FileEntries[megapack.BlockPathToNameCrcs[i].Item1];
-                if (entry.Crc == megapack.BlockPathToNameCrcs[i].Item1 && entry.Crc2 == megapack.BlockPathToNameCrcs[i].Item2)
+                if (entry.Path == megapack.BlockPathToNameCrcs[i].Item1 && entry.Name == megapack.BlockPathToNameCrcs[i].Item2)
                 {
                     continue;
                 }
 
-                Console.WriteLine($"BlockPathToNameCrcs Crc mismatch! {entry.Crc} != {megapack.BlockPathToNameCrcs[i].Item1} || {entry.Crc2} != {megapack.BlockPathToNameCrcs[i].Item2}");
+                Console.WriteLine($"BlockPathToNameCrcs Crc mismatch! {entry.Path} != {megapack.BlockPathToNameCrcs[i].Item1} || {entry.Name} != {megapack.BlockPathToNameCrcs[i].Item2}");
             }
 
             return megapack;
@@ -66,8 +66,8 @@ namespace SabTool.Serializers.Megapacks
         {
             return new FileEntry
             {
-                Crc = new(reader.ReadUInt32()),
-                Crc2 = new(reader.ReadUInt32()),
+                Path = new(reader.ReadUInt32()),
+                Name = new(reader.ReadUInt32()),
                 Size = reader.ReadInt32(),
                 Offset = reader.ReadInt64()
             };
