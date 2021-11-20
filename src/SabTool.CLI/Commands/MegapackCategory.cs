@@ -25,14 +25,14 @@ namespace SabTool.CLI.Commands
 
             public override bool Execute(IEnumerable<string> arguments)
             {
-                if (arguments.Count() < 2)
+                if (arguments.Count() < 1)
                 {
                     Console.WriteLine("ERROR: Not enough arguments given!");
                     return false;
                 }
 
                 ResourceDepot.Instance.Initialize(arguments.ElementAt(0));
-                ResourceDepot.Instance.Load(Resource.All);
+                ResourceDepot.Instance.Load(Resource.Megapacks);
 
                 var writer = Console.Out;
 
