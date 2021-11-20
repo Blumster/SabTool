@@ -41,12 +41,59 @@ namespace SabTool.CLI.Commands
                     writer = new StreamWriter(arguments.ElementAt(1), false, Encoding.UTF8);
                 }
 
+                //var found = false;
+
                 foreach (var megapackFile in ResourceDepot.Instance.GetMegapacks())
                 {
                     writer.WriteLine($"Megapack: {megapackFile}");
 
                     foreach (var fileEntry in ResourceDepot.Instance.GetFileEntries(megapackFile))
                     {
+                        /*if (fileEntry.Name.Value < 0x80000000u)
+                        {
+                            var strValue = fileEntry.Name.Value.ToString();
+
+                            if (strValue.Length >= 2)
+                            {
+                                var pathString = $@"France\{strValue[..2]}\{strValue}.pack";
+                                var pathHash = Hash.FNV32string(pathString, addToLookup: false);
+                                var existing = Hash.HashToString(pathHash);
+
+                                if (pathHash == fileEntry.Path.Value)
+                                {
+                                    if (string.IsNullOrEmpty(existing))
+                                    {
+                                        Hash.StringToHash(pathString);
+
+                                        found = true;
+                                    }
+                                    else if (existing.ToLowerInvariant() != pathString.ToLowerInvariant())
+                                    {
+                                        Console.WriteLine($"Hash 0x{pathHash:X8} collision for \"{existing.ToLowerInvariant()}\" and \"{pathString.ToLowerInvariant()}\"!");
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                var pathString = $@"France\{strValue}.pack";
+                                var pathHash = Hash.FNV32string(pathString, addToLookup: false);
+                                var existing = Hash.HashToString(pathHash);
+
+                                if (pathHash == fileEntry.Path.Value)
+                                {
+                                    if (string.IsNullOrEmpty(existing))
+                                    {
+                                        Hash.StringToHash(pathString);
+
+                                        found = true;
+                                    }
+                                    else if (existing.ToLowerInvariant() != pathString.ToLowerInvariant())
+                                    {
+                                        Console.WriteLine($"Hash 0x{pathHash:X8} collision for \"{existing.ToLowerInvariant()}\" and \"{pathString.ToLowerInvariant()}\"!");
+                                    }
+                                }
+                            }
+                        }*/
                         writer.WriteLine(fileEntry.ToPrettyString());
                     }
 
@@ -59,6 +106,12 @@ namespace SabTool.CLI.Commands
                 {
                     writer.Close();
                 }
+
+                /*if (found)
+                {
+                    Hash.Save();
+                    Hash.SaveMissing();
+                }*/
 
                 return true;
             }
