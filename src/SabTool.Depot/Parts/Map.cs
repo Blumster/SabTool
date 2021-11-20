@@ -4,7 +4,13 @@
     {
         public bool LoadMaps(bool reload)
         {
-            return false;
+            Console.WriteLine("Loading Maps...");
+
+            LoadedResources |= Resource.Maps;
+
+            Console.WriteLine("Maps loaded!");
+
+            return true;
         }
     }
 }
