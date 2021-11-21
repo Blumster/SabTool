@@ -9,7 +9,7 @@
         private const string MaterialsFileName = "France.materials";
         private Dictionary<Crc, Material> Materials { get; } = new();
 
-        private bool LoadMaterials(bool reload)
+        private bool LoadMaterials()
         {
             try
             {

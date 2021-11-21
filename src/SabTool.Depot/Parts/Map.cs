@@ -2,7 +2,7 @@
 {
     public partial class ResourceDepot
     {
-        public bool LoadMaps(bool reload)
+        public bool LoadMaps()
         {
             Console.WriteLine("Loading Maps...");
 

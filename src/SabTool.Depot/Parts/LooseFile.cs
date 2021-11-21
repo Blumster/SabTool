@@ -9,7 +9,7 @@
         private ICollection<LooseFile>? LooseFiles { get; set; }
         private FileStream? LooseFilesFileStream { get; set; }
 
-        private bool LoadLooseFiles(bool reload)
+        private bool LoadLooseFiles()
         {
             try
             {

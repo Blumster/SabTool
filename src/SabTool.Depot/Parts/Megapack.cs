@@ -40,7 +40,7 @@
 
         private Dictionary<string, MegapackEntry> Megapacks { get; } = new();
 
-        public bool LoadMegapacks(bool reload)
+        public bool LoadMegapacks()
         {
             Console.WriteLine("Loading Megapacks...");
 
@@ -53,7 +53,7 @@
 
                 var entry = new MegapackEntry(filePath);
 
-                if (!LoadMegapack(entry, reload))
+                if (!LoadMegapack(entry))
                     continue;
 
                 Megapacks.Add(megapack, entry);
@@ -66,7 +66,7 @@
             return true;
         }
 
-        private static bool LoadMegapack(MegapackEntry entry, bool reload)
+        private static bool LoadMegapack(MegapackEntry entry)
         {
             try
             {

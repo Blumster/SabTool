@@ -2,7 +2,7 @@
 {
     public partial class ResourceDepot
     {
-        public bool LoadBlueprints(bool reload)
+        public bool LoadBlueprints()
         {
             LoadedResources |= Resource.Blueprints;
 

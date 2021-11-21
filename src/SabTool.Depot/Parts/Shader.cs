@@ -2,7 +2,7 @@
 {
     public partial class ResourceDepot
     {
-        private bool LoadShaders(bool reload)
+        private bool LoadShaders()
         {
             return true;
         }

@@ -58,7 +58,7 @@
             return (LoadedResources & resource) != Resource.None;
         }
 
-        public bool Load(Resource resources, bool reload = false)
+        public bool Load(Resource resources)
         {
             if (string.IsNullOrEmpty(GamePath))
             {
@@ -78,10 +78,10 @@
                 return false;
             }
 
-            return LoadResources(resources, reload);
+            return LoadResources(resources);
         }
 
-        private bool LoadResources(Resource resources, bool reload)
+        private bool LoadResources(Resource resources)
         {
             var resourceOrder = new HashSet<Resource>();
 
@@ -107,21 +107,21 @@
             var loadOrder = resourceOrder.TopologicalSort(resource => CollectAllDependencies(resource), Resource.None);
             foreach (var load in loadOrder)
             {
-                LoadResource(load, reload);
+                LoadResource(load);
             }
 
             return true;
         }
 
-        private bool LoadResource(Resource resource, bool reload)
+        private bool LoadResource(Resource resource)
         {
-            if (IsResourceLoaded(resource) && !reload)
+            if (IsResourceLoaded(resource))
                 return true;
 
             if (!LoadingInfos.TryGetValue(resource, out var info))
                 return false;
 
-            if (!info.LoaderFunction(reload))
+            if (!info.LoaderFunction())
                 return false;
 
             LoadedResources |= resource;

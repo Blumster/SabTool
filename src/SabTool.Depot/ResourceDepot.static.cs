@@ -20,7 +20,7 @@
             }
         }
 
-        private record ResourceLoadingInfo(Func<bool, bool> LoaderFunction, HashSet<Resource> Dependencies);
+        private record ResourceLoadingInfo(Func<bool> LoaderFunction, HashSet<Resource> Dependencies);
         private static Dictionary<Resource, ResourceLoadingInfo> LoadingInfos { get; } = new()
         {
             { Resource.Megapacks,  new(LoadMegapacksStatic,  new() { Resource.Maps }) },
@@ -55,34 +55,34 @@
             return container;
         }
 
-        private static bool LoadMegapacksStatic(bool reload)
+        private static bool LoadMegapacksStatic()
         {
-            return Instance.LoadMegapacks(reload);
+            return Instance.LoadMegapacks();
         }
 
-        private static bool LoadMaterialsStatic(bool reload)
+        private static bool LoadMaterialsStatic()
         {
-            return Instance.LoadMaterials(reload);
+            return Instance.LoadMaterials();
         }
 
-        private static bool LoadShadersStatic(bool reload)
+        private static bool LoadShadersStatic()
         {
-            return Instance.LoadShaders(reload);
+            return Instance.LoadShaders();
         }
 
-        private static bool LoadLooseFilesStatic(bool reload)
+        private static bool LoadLooseFilesStatic()
         {
-            return Instance.LoadLooseFiles(reload);
+            return Instance.LoadLooseFiles();
         }
 
-        private static bool LoadMapsStatic(bool reload)
+        private static bool LoadMapsStatic()
         {
-            return Instance.LoadMaps(reload);
+            return Instance.LoadMaps();
         }
 
-        private static bool LoadBlueprintsStatic(bool reload)
+        private static bool LoadBlueprintsStatic()
         {
-            return Instance.LoadBlueprints(reload);
+            return Instance.LoadBlueprints();
         }
     }
 }
