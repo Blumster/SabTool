@@ -1,21 +1,23 @@
 ﻿namespace SabTool.Data
 {
+    using Utils;
+
     public class LooseFile
     {
-        public uint Crc { get; set; }
+        public Crc Crc { get; set; }
         public string Name { get; set; }
         public long DataOffset { get; set; }
         public int Size { get; set; }
         public string FilePath { get; set; }
 
-        public LooseFile(uint crc, string fileName, string filePath)
+        public LooseFile(Crc crc, string fileName, string filePath)
         {
             Crc = crc;
             Name = fileName;
             FilePath = filePath;
         }
 
-        public LooseFile(uint crc, string fileName, long dataOffset, int size)
+        public LooseFile(Crc crc, string fileName, long dataOffset, int size)
         {
             Crc = crc;
             Name = fileName;

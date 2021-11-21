@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace SabTool.Serializers
 {
     using Data;
+    using Utils;
     using Utils.Extensions;
 
     public static class LooseFileSerializer
@@ -20,7 +19,7 @@ namespace SabTool.Serializers
 
             while (stream.Position < stream.Length)
             {
-                var crc = reader.ReadUInt32();
+                var crc = new Crc(reader.ReadUInt32());
                 var size = reader.ReadInt32();
                 var name = reader.ReadStringFromCharArray(120);
 
@@ -53,7 +52,7 @@ namespace SabTool.Serializers
 
                 var dataBytes = File.ReadAllBytes(file.FilePath);
 
-                writer.Write(file.Crc);
+                writer.Write(file.Crc.Value);
                 writer.Write(dataBytes.Length);
                 writer.Write(nameBytes);
 
