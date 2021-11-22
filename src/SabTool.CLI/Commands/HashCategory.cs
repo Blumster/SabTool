@@ -38,6 +38,19 @@ namespace SabTool.CLI.Commands
             }
         }
 
+        public class StatCommand : BaseCommand
+        {
+            public override string Key { get; } = "stat";
+            public override string Shortcut { get; } = "st";
+            public override string Usage { get; } = "";
+
+            public override bool Execute(IEnumerable<string> arguments)
+            {
+                Hash.PrintStatistics();
+                return true;
+            }
+        }
+
         public class ReplaceCommand : BaseCommand
         {
             public override string Key { get; } = "replace";
