@@ -15,7 +15,7 @@
             {
                 Console.WriteLine($"Loading LooseFiles from {LooseFilesFileName}...");
 
-                LooseFilesFileStream = new FileStream(GetGameFilePath(LooseFilesFileName), FileMode.Open, FileAccess.Read, FileShare.Read);
+                LooseFilesFileStream = new FileStream(GetGamePath(LooseFilesFileName), FileMode.Open, FileAccess.Read, FileShare.Read);
 
                 LooseFiles = LooseFileSerializer.DeserializeRaw(LooseFilesFileStream);
             }

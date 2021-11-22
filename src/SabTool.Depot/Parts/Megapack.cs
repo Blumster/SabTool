@@ -46,7 +46,7 @@
 
             foreach (var megapack in PossibleMegapackFiles)
             {
-                var filePath = GetGameFilePath(megapack);
+                var filePath = GetGamePath(megapack);
 
                 if (!File.Exists(filePath))
                     continue;

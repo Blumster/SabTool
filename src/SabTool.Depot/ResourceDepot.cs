@@ -72,7 +72,7 @@
                 return false;
             }
 
-            if (!File.Exists(GetGameFilePath(GameExecutableName)))
+            if (!File.Exists(GetGamePath(GameExecutableName)))
             {
                 Console.WriteLine("ResourceDepot: The specified GamePath doesn't exist!");
                 return false;
@@ -129,9 +129,9 @@
             return true;
         }
 
-        private string GetGameFilePath(string fileName)
+        private string GetGamePath(string path)
         {
-            return Path.Combine(GamePath, fileName);
+            return Path.Combine(GamePath, path);
         }
     }
 }

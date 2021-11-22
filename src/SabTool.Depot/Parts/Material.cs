@@ -13,7 +13,7 @@
         {
             try
             {
-                using var fs = new FileStream(GetGameFilePath(MaterialsFileName), FileMode.Open, FileAccess.Read, FileShare.Read);
+                using var fs = new FileStream(GetGamePath(MaterialsFileName), FileMode.Open, FileAccess.Read, FileShare.Read);
 
                 Console.WriteLine($"Loading Materials from {MaterialsFileName}...");
 
