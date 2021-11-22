@@ -83,6 +83,39 @@ namespace SabTool.Utils.Extensions
             return sb.ToString();
         }
 
+        public static string ReadUTF8StringOn(this BinaryReader reader, int length)
+        {
+            var bytes = reader.ReadBytes(length);
+            var validBytes = 0;
+
+            for (; validBytes < length; ++validBytes)
+            {
+                if (bytes[validBytes] == 0)
+                {
+                    break;
+                }
+            }
+
+            return Encoding.UTF8.GetString(bytes, 0, validBytes);
+        }
+
+        public static string ReadUTF16StringOn(this BinaryReader reader, int length)
+        {
+            var byteLength = length * 2;
+            var bytes = reader.ReadBytes(byteLength);
+            var validBytes = 0;
+
+            for (; validBytes < byteLength; validBytes += 2)
+            {
+                if (bytes[validBytes] == 0 && bytes[validBytes + 1] == 0)
+                {
+                    break;
+                }
+            }
+
+            return Encoding.Unicode.GetString(bytes, 0, validBytes);
+        }
+
         public static byte[] ReadDecompressedBytes(this BinaryReader reader, int compressedLength)
         {
             var sourceBuff = reader.ReadBytes(compressedLength);
