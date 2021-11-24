@@ -29,7 +29,7 @@
             { Resource.LooseFiles, new(() => Instance.LoadLooseFiles(), new() { Resource.None }) },
             { Resource.Maps,       new(() => Instance.LoadMaps(),       new() { Resource.LooseFiles }) },
             { Resource.Blueprints, new(() => Instance.LoadBlueprints(), new() { Resource.LooseFiles }) },
-            { Resource.Dialogs,    new(() => Instance.LoadDialogs(),    new() { Resource.None }) },
+            { Resource.Cinematics, new(() => Instance.LoadCinematics(), new() { Resource.LooseFiles }) },
         };
 
         private static HashSet<Resource> CollectAllDependencies(Resource resource, HashSet<Resource>? container = null)

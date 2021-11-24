@@ -12,9 +12,9 @@
         LooseFiles = 0x08,
         Maps       = 0x10,
         Blueprints = 0x20,
-        Dialogs    = 0x40,
+        Cinematics = 0x40,
 
-        All        = Megapacks | Materials | Shaders | LooseFiles | Maps | Blueprints | Dialogs,
+        All        = Megapacks | Materials | Shaders | LooseFiles | Maps | Blueprints | Cinematics,
     }
 
     public partial class ResourceDepot
