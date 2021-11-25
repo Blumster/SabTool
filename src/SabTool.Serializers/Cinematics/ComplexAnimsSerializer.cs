@@ -25,7 +25,7 @@ namespace SabTool.Serializers.Cinematics
 
             var version = reader.ReadInt16();
             if (version != Version)
-                throw new Exception($"Invalid version {version} for ComplexAnims.cxa file!");
+                throw new Exception($"Invalid version {version} for ComplexAnimations!");
 
             var structures = new List<ComplexAnimStructure>();
 
@@ -34,7 +34,7 @@ namespace SabTool.Serializers.Cinematics
                 structures.Add(DeserializeCXA2(reader));
 
                 if (stream.Position == stream.Length - 4 && !reader.CheckHeaderString("CEND", reversed: true))
-                    throw new Exception("Invalid end for ComplexAnims.cxa file!");
+                    throw new Exception("Invalid end for ComplexAnimations!");
             }
 
             return structures;
