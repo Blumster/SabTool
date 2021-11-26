@@ -15,6 +15,8 @@ namespace SabTool.Depot
 
         private Dictionary<string, Dialog> Dialogs { get; set; } = new();
         private List<ComplexAnimStructure> ComplexAnims { get; set; }
+        private List<Cinematic> Cinematics { get; set; }
+        private List<Cinematic> DLCCinematics { get; set; }
 
         public bool LoadCinematics()
         {
@@ -22,6 +24,8 @@ namespace SabTool.Depot
 
             LoadDialogs();
             LoadComplexAnims();
+            LoadCinematicsFile();
+            LoadDLCCinematicsFile();
 
             Console.WriteLine("Cinematics loaded!");
 
@@ -65,6 +69,30 @@ namespace SabTool.Depot
             Console.WriteLine("  ComplexAnims loaded!");
         }
 
+        private void LoadCinematicsFile()
+        {
+            Console.WriteLine("  Loading Cinematics...");
+
+            using var cinematicsStream = GetLooseFile(@"Cinematics\Cinematics.cinpack");
+
+            Cinematics = CinematicsSerializer.DeserializeRaw(cinematicsStream);
+
+            Console.WriteLine("  Cinematics loaded!");
+        }
+
+        private void LoadDLCCinematicsFile()
+        {
+            Console.WriteLine("  Loading DLC Cinematics...");
+
+            var complexAnimsFilePath = GetGamePath(@"DLC\01\Cinematics\Cinematics.cinpack");
+
+            using var fs = new FileStream(complexAnimsFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+
+            DLCCinematics = CinematicsSerializer.DeserializeRaw(fs);
+
+            Console.WriteLine("  DLC Cinematics loaded!");
+        }
+
         public IEnumerable<KeyValuePair<string, Dialog>> GetDialogs()
         {
             foreach (var dialog in Dialogs)
@@ -74,6 +102,16 @@ namespace SabTool.Depot
         public IEnumerable<ComplexAnimStructure> GetComplexAnimStructures()
         {
             return ComplexAnims;
+        }
+
+        public IEnumerable<Cinematic> GetCinematics()
+        {
+            return Cinematics;
+        }
+
+        public IEnumerable<Cinematic> GetDLCCinematics()
+        {
+            return DLCCinematics;
         }
     }
 }
