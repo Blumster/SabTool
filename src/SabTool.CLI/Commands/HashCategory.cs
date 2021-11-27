@@ -243,5 +243,53 @@ namespace SabTool.CLI.Commands
                 return true;
             }
         }
+
+        public class GenerateFromSourceFilesCommand : BaseCommand
+        {
+            private static readonly Regex StringRegex = new("\"([^\"]+)?\"", RegexOptions.Compiled);
+
+            public override string Key { get; } = "generate-from-source-files";
+            public override string Shortcut { get; } = "gs";
+            public override string Usage { get; } = "<input directory path> [extension]";
+
+            public override bool Execute(IEnumerable<string> arguments)
+            {
+                if (arguments.Count() < 1)
+                {
+                    Console.WriteLine("ERROR: Not enough arguments given!");
+                    return false;
+                }
+
+                var inputDirPath = arguments.ElementAt(0);
+                if (!Directory.Exists(inputDirPath))
+                {
+                    Console.WriteLine("ERROR: Non-existant input directory given!");
+                    return false;
+                }
+
+                var ext = "*";
+                if (arguments.Count() == 2)
+                    ext = arguments.ElementAt(1);
+
+                foreach (var file in Directory.EnumerateFiles(inputDirPath, $"*.{ext}", SearchOption.AllDirectories))
+                {
+                    var content = File.ReadAllText(file);
+
+                    var matches = StringRegex.Matches(content);
+                    foreach (Match match in matches)
+                    {
+                        if (!match.Success || string.IsNullOrEmpty(match.Groups[1].Value))
+                            continue;
+
+                        var str = match.Groups[1].Value;
+                        str = str.Replace(@"\\", @"\");
+
+                        Hash.FNV32string(str);
+                    }
+                }
+
+                return true;
+            }
+        }
     }
 }
