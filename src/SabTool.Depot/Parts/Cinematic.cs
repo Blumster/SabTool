@@ -14,6 +14,8 @@ namespace SabTool.Depot
         private const string DialogTextFileName = "GameText.dlg";
 
         private Dictionary<string, Dialog> Dialogs { get; set; } = new();
+        private List<ConversationStructure> Conversations { get; set; }
+        private List<ConversationStructure> DLCConversations { get; set; }
         private List<ComplexAnimStructure> ComplexAnims { get; set; }
         private List<Cinematic> Cinematics { get; set; }
         private List<Cinematic> DLCCinematics { get; set; }
@@ -23,6 +25,8 @@ namespace SabTool.Depot
             Console.WriteLine("Loading Cinematics...");
 
             LoadDialogs();
+            LoadConversations();
+            LoadDLCConversations();
             LoadComplexAnims();
             LoadCinematicsFile();
             LoadDLCCinematicsFile();
@@ -54,6 +58,30 @@ namespace SabTool.Depot
             }
 
             Console.WriteLine("  Dialogs loaded!");
+        }
+
+        private void LoadConversations()
+        {
+            Console.WriteLine("  Loading Conversations...");
+
+            using var conversationsStream = GetLooseFile(@"Cinematics\Conversations\Conversations.cnvpack");
+
+            Conversations = ConversationsSerializer.DeserializeRaw(conversationsStream);
+
+            Console.WriteLine("  Conversations loaded!");
+        }
+
+        private void LoadDLCConversations()
+        {
+            Console.WriteLine("  Loading DLC Conversations...");
+
+            var conversationsFilePath = GetGamePath(@"DLC\01\Cinematics\Conversations\Conversations.cnvpack");
+
+            using var fs = new FileStream(conversationsFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+
+            DLCConversations = ConversationsSerializer.DeserializeRaw(fs);
+
+            Console.WriteLine("  DLC Conversations loaded!");
         }
 
         private void LoadComplexAnims()
@@ -97,6 +125,16 @@ namespace SabTool.Depot
         {
             foreach (var dialog in Dialogs)
                 yield return dialog;
+        }
+
+        public IEnumerable<ConversationStructure> GetConversations()
+        {
+            return Conversations;
+        }
+
+        public IEnumerable<ConversationStructure> GetDLCConversations()
+        {
+            return DLCConversations;
         }
 
         public IEnumerable<ComplexAnimStructure> GetComplexAnimStructures()

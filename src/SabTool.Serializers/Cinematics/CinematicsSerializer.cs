@@ -40,8 +40,6 @@ namespace SabTool.Serializers.Cinematics
 
             foreach (var entry in entries)
             {
-                Console.WriteLine($"    Loading cinematic: {entry.Name}...");
-
                 stream.Position = entry.Offset;
 
                 cinematics.Add(DeserializeCinematic(reader, entry.Name));
