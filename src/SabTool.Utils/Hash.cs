@@ -152,7 +152,7 @@ namespace SabTool.Utils
                 {
                     lookupTable.Add(hash, source);
 
-                    Console.WriteLine($"Found hash 0x{hash:X8} -> {source}");
+                    Console.WriteLine($"Found hash 0x{hash:X8}:{source}");
                 }
             }
 
