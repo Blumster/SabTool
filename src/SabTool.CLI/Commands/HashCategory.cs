@@ -198,7 +198,6 @@ namespace SabTool.CLI.Commands
             public override bool Execute(IEnumerable<string> arguments)
             {
                 Hash.Save();
-                Hash.SaveMissing();
 
                 return true;
             }

@@ -21,7 +21,7 @@ namespace SabTool.Utils
         {
             foreach (var line in File.ReadAllLines("Hashes.txt"))
             {
-                var parts = line.Split(':');
+                var parts = line.Split(':', 2);
                 if (parts.Length < 2)
                 {
                     Console.WriteLine($"HASH: Invalid line found: \"{line}\"");
@@ -68,6 +68,10 @@ namespace SabTool.Utils
 
         public static void Save()
         {
+            Cleanup();
+
+            Console.WriteLine("Saving hashes...");
+
             var lines = new string[lookupTable.Count];
             var i = 0;
 
@@ -77,12 +81,11 @@ namespace SabTool.Utils
             }
 
             File.WriteAllLines("Hashes.txt", lines);
-        }
 
-        public static void SaveMissing()
-        {
-            var lines = new string[missingHashes.Count];
-            var i = 0;
+            Console.WriteLine("Saving missing hashes...");
+
+            lines = new string[missingHashes.Count];
+            i = 0;
 
             foreach (var hash in missingHashes.OrderBy(h => h))
             {
@@ -90,6 +93,38 @@ namespace SabTool.Utils
             }
 
             File.WriteAllLines("Missing.txt", lines);
+        }
+
+        public static void Cleanup()
+        {
+            Console.WriteLine("Cleaning up hashes...");
+
+            var toRemove = new List<uint>();
+            var toRecalc = new List<string>();
+
+            foreach (var hash in lookupTable)
+            {
+                var reHash = InternalFNV32string(hash.Value);
+                if (reHash != hash.Key)
+                {
+                    Console.WriteLine($"Invalid saved hash 0x{hash.Key:X8} found for \"0x{reHash:X8} -> {hash.Value}\"!");
+
+                    toRemove.Add(hash.Key);
+                    toRecalc.Add(hash.Value);
+                    continue;
+                }
+
+                if (missingHashes.Remove(hash.Key))
+                {
+                    Console.WriteLine($"Removed already known hash \"0x{hash.Key:X8} -> {hash.Value}\" from missing hashes!");
+                }
+            }
+
+            foreach (var hash in toRemove)
+                lookupTable.Remove(hash);
+
+            foreach (var str in toRecalc)
+                StringToHash(str);
         }
 
         public static void PrintStatistics()
