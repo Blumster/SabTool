@@ -19,6 +19,7 @@ namespace SabTool.Depot
         private List<ComplexAnimStructure> ComplexAnims { get; set; }
         private List<Cinematic> Cinematics { get; set; }
         private List<Cinematic> DLCCinematics { get; set; }
+        private List<RandomText> RandomTexts { get; set; }
 
         public bool LoadCinematics()
         {
@@ -30,6 +31,7 @@ namespace SabTool.Depot
             LoadComplexAnims();
             LoadCinematicsFile();
             LoadDLCCinematicsFile();
+            LoadRandomTexts();
 
             Console.WriteLine("Cinematics loaded!");
 
@@ -121,6 +123,19 @@ namespace SabTool.Depot
             Console.WriteLine("  DLC Cinematics loaded!");
         }
 
+        private void LoadRandomTexts()
+        {
+            Console.WriteLine("  Loading Random Texts...");
+
+            var randomTextsFilePath = GetGamePath(@"Cinematics\Dialog\Random\RandomText.rnd");
+
+            using var fs = new FileStream(randomTextsFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+
+            RandomTexts = RandomTextSerializer.DeserializeRaw(fs);
+
+            Console.WriteLine("  Random Texts loaded!");
+        }
+
         public IEnumerable<KeyValuePair<string, Dialog>> GetDialogs()
         {
             foreach (var dialog in Dialogs)
@@ -150,6 +165,11 @@ namespace SabTool.Depot
         public IEnumerable<Cinematic> GetDLCCinematics()
         {
             return DLCCinematics;
+        }
+
+        public IEnumerable<RandomText> GetRandomTexts()
+        {
+            return RandomTexts;
         }
     }
 }

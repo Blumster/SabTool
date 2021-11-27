@@ -13,7 +13,7 @@
 
         public override void Setup()
         {
-            SetupWithTypes(typeof(Cinematics.CinematicsCategory), typeof(ComplexAnimsCategory), typeof(ConversationsCategory), typeof(DialogCategory));
+            SetupWithTypes(typeof(Cinematics.CinematicsCategory), typeof(ComplexAnimsCategory), typeof(ConversationsCategory), typeof(DialogCategory), typeof(RandomTextCategory));
         }
     }
 }
