@@ -13,8 +13,9 @@
         Maps       = 0x10,
         Blueprints = 0x20,
         Cinematics = 0x40,
+        Sounds     = 0x80,
 
-        All        = Megapacks | Materials | Shaders | LooseFiles | Maps | Blueprints | Cinematics,
+        All        = Megapacks | Materials | Shaders | LooseFiles | Maps | Blueprints | Cinematics | Sounds,
     }
 
     public partial class ResourceDepot

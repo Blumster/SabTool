@@ -20,6 +20,11 @@ namespace SabTool.Utils
             return Hash.HashToString(Value);
         }
 
+        public string GetHexString()
+        {
+            return $"0x{Value:X8}";
+        }
+
         public string GetStringOrHexString()
         {
             var stringValue = GetString();

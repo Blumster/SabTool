@@ -30,6 +30,7 @@
             { Resource.Maps,       new(() => Instance.LoadMaps(),       new() { Resource.LooseFiles }) },
             { Resource.Blueprints, new(() => Instance.LoadBlueprints(), new() { Resource.LooseFiles }) },
             { Resource.Cinematics, new(() => Instance.LoadCinematics(), new() { Resource.LooseFiles }) },
+            { Resource.Sounds,     new(() => Instance.LoadSounds(),     new() { Resource.None }) },
         };
 
         private static HashSet<Resource> CollectAllDependencies(Resource resource, HashSet<Resource>? container = null)

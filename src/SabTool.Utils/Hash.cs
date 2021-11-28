@@ -219,8 +219,8 @@ namespace SabTool.Utils
         };
 
         private const int TaskCount = 2;
-        private static long[] Progress = new long[TaskCount];
-        private static StringBuilder[] Builders = new StringBuilder[TaskCount];
+        private static readonly long[] Progress = new long[TaskCount];
+        private static readonly StringBuilder[] Builders = new StringBuilder[TaskCount];
 
         public static void Bruteforce(int length, uint hash)
         {
