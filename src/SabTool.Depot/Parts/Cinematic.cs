@@ -14,12 +14,12 @@ namespace SabTool.Depot
         private const string DialogTextFileName = "GameText.dlg";
 
         private Dictionary<string, Dialog> Dialogs { get; set; } = new();
-        private List<ConversationStructure> Conversations { get; set; }
-        private List<ConversationStructure> DLCConversations { get; set; }
-        private List<ComplexAnimStructure> ComplexAnims { get; set; }
-        private List<Cinematic> Cinematics { get; set; }
-        private List<Cinematic> DLCCinematics { get; set; }
-        private List<RandomText> RandomTexts { get; set; }
+        private List<ConversationStructure>? Conversations { get; set; }
+        private List<ConversationStructure>? DLCConversations { get; set; }
+        private List<ComplexAnimStructure>? ComplexAnims { get; set; }
+        private List<Cinematic>? Cinematics { get; set; }
+        private List<Cinematic>? DLCCinematics { get; set; }
+        private List<RandomText>? RandomTexts { get; set; }
 
         public bool LoadCinematics()
         {
@@ -142,32 +142,32 @@ namespace SabTool.Depot
                 yield return dialog;
         }
 
-        public IEnumerable<ConversationStructure> GetConversations()
+        public IEnumerable<ConversationStructure>? GetConversations()
         {
             return Conversations;
         }
 
-        public IEnumerable<ConversationStructure> GetDLCConversations()
+        public IEnumerable<ConversationStructure>? GetDLCConversations()
         {
             return DLCConversations;
         }
 
-        public IEnumerable<ComplexAnimStructure> GetComplexAnimStructures()
+        public IEnumerable<ComplexAnimStructure>? GetComplexAnimStructures()
         {
             return ComplexAnims;
         }
 
-        public IEnumerable<Cinematic> GetCinematics()
+        public IEnumerable<Cinematic>? GetCinematics()
         {
             return Cinematics;
         }
 
-        public IEnumerable<Cinematic> GetDLCCinematics()
+        public IEnumerable<Cinematic>? GetDLCCinematics()
         {
             return DLCCinematics;
         }
 
-        public IEnumerable<RandomText> GetRandomTexts()
+        public IEnumerable<RandomText>? GetRandomTexts()
         {
             return RandomTexts;
         }
