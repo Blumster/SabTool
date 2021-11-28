@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace SabTool.CLI.Commands
+namespace SabTool.CLI.Commands.Graphics
 {
     using Base;
     using Depot;
