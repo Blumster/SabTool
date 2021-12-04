@@ -14,7 +14,7 @@ namespace SabTool.Data.Packs
         private static readonly uint[] OffIndices = new uint[9] { 6, 7, 0, 2, 8, 4, 3, 1, 5 };
 
         public string FileName { get; set; }
-        public uint[] Palettes { get; } = new uint[32];
+        public Crc[] Palettes { get; } = new Crc[32];
         public Vector3 Midpoint { get; set; }
         public float FieldC0 { get; set; }
         public Vector3[] Extents { get; } = new Vector3[2];
@@ -27,16 +27,19 @@ namespace SabTool.Data.Packs
         public byte[] Array104 { get; set; }
         public uint TextureCount { get; set; }
         public TextureInfo[] TextureInfoArray { get; set; }
-        public uint CountFor128_124 { get; set; }
-        public TextureInfo[] Array128 { get; set; }
+        public uint TextureCount2 { get; set; }
+        public TextureInfo[] TextureInfoArray2 { get; set; }
         public uint[] EntryCounts { get; } = new uint[9];
         public Entry[][] Entries { get; } = new Entry[9][];
-        public Dictionary<uint, uint[]> FenceTree { get; } = new();
+        public Dictionary<Crc, uint[]> FenceTree { get; } = new();
         public uint Count1ACFor1B0And1B4_1AC { get; set; }
         public Crc[] Array1B0 { get; set; }
         public byte[] Array1B4 { get; set; }
         public Crc Id { get; set; }
-        public ushort CountFor1B0_19C { get; set; }
+        public ushort PaletteCount { get; set; }
+        public int FenceTreeCount { get; set; }
+        public short UnkShort { get; set; }
+        public short Index { get; set; }
         public uint HeaderEnd { get; set; }
 
 
@@ -232,8 +235,8 @@ namespace SabTool.Data.Packs
             if (TextureInfoArray != null)
                 TextureInfoArray = null;
 
-            if (Array128 != null)
-                Array128 = null;
+            if (TextureInfoArray2 != null)
+                TextureInfoArray2 = null;
 
             TextureCount = reader.ReadUInt32();
             if (TextureCount > 0)
@@ -250,18 +253,18 @@ namespace SabTool.Data.Packs
                 }
             }
 
-            CountFor128_124 = reader.ReadUInt32();
-            if (CountFor128_124 > 0)
+            TextureCount2 = reader.ReadUInt32();
+            if (TextureCount2 > 0)
             {
-                Array128 = new TextureInfo[CountFor128_124];
+                TextureInfoArray2 = new TextureInfo[TextureCount2];
 
-                for (var i = 0; i < CountFor128_124; ++i)
+                for (var i = 0; i < TextureCount2; ++i)
                 {
-                    Array128[i] = new();
-                    Array128[i].Crc = new(reader.ReadUInt32());
-                    Array128[i].UncompressedSize = reader.ReadUInt32();
+                    TextureInfoArray2[i] = new();
+                    TextureInfoArray2[i].Crc = new(reader.ReadUInt32());
+                    TextureInfoArray2[i].UncompressedSize = reader.ReadUInt32();
 
-                    TotalTextureSize += Array128[i].UncompressedSize;
+                    TotalTextureSize += TextureInfoArray2[i].UncompressedSize;
                 }
             }
         }
@@ -286,45 +289,14 @@ namespace SabTool.Data.Packs
                 }
             }
 
-            //ushort unkCnt = 0;
-
-            CountFor1B0_19C = (ushort)br.ReadInt32();
-            if (CountFor1B0_19C > 0)
+            PaletteCount = (ushort)br.ReadInt32();
+            if (PaletteCount > 0)
             {
-                //var field24Ind = 0;
-
-                for (var i = 0; i < CountFor1B0_19C; ++i)
+                for (var i = 0; i < PaletteCount; ++i)
                 {
-                    var streamBlockId = new Crc(br.ReadUInt32());
-
-                    //var v14 = StreamingManager.Instance.Sub9EE6B0(streamBlockId, (Flags & 0x1C00) == 0x800);
-
-                    /*if (CountFor1B0_19C != 0)
-                    {
-                        var j = 0;
-                        var field24Ind2 = 0;
-
-                        for (; j < CountFor1B0_19C; ++j)
-                        {
-                            if (Palettes[field24Ind2++] == v14)
-                                break;
-                        }
-
-                        if (j == CountFor1B0_19C)
-                        {
-                            ++unkCnt;
-                            Palettes[field24Ind++] = v14;
-                        }
-                    }
-                    else
-                    {
-                        ++unkCnt;
-                        Palettes[field24Ind++] = v14;
-                    }*/
+                    Palettes[i] = new Crc(br.ReadUInt32());
                 }
             }
-
-            //CountFor1B0_19C = unkCnt;
 
             var fenceTreeCount = br.ReadInt32();
             if (fenceTreeCount > 0)

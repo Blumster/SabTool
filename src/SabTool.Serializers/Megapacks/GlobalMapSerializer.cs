@@ -2,9 +2,12 @@
 using System.IO;
 using System.Text;
 
+using Newtonsoft.Json;
+
 namespace SabTool.Serializers.Megapacks
 {
     using Data.Packs;
+    using Json.Converters;
     using Utils;
     using Utils.Extensions;
 
@@ -156,6 +159,18 @@ namespace SabTool.Serializers.Megapacks
             }
 
             static float GetMiddlePoint(float f1, float f2) => f1 + ((f2 - f1) / 2.0f);
+        }
+
+        public static GlobalMap DeserializeJSON(Stream stream)
+        {
+            return null;
+        }
+
+        public static void SerializeJSON(GlobalMap globalMap, Stream stream)
+        {
+            using var writer = new StreamWriter(stream, Encoding.UTF8, leaveOpen: true);
+
+            writer.Write(JsonConvert.SerializeObject(globalMap, Formatting.Indented, new CrcConverter()));
         }
     }
 }

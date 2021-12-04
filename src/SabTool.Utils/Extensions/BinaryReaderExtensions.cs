@@ -39,6 +39,9 @@ namespace SabTool.Utils.Extensions
 
         public static string ReadStringWithMaxLength(this BinaryReader reader, int maxLength, bool breakOnNewLine = false)
         {
+            if (maxLength == 0)
+                return string.Empty;
+
             var sb = new StringBuilder();
             byte b = 0;
             var length = maxLength;
