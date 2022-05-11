@@ -5,17 +5,18 @@
     [Flags]
     public enum Resource
     {
-        None       = 0x00,
-        Megapacks  = 0x01,
-        Materials  = 0x02,
-        Shaders    = 0x04,
-        LooseFiles = 0x08,
-        Maps       = 0x10,
-        Blueprints = 0x20,
-        Cinematics = 0x40,
-        Sounds     = 0x80,
+        None       = 0x0000,
+        Megapacks  = 0x0001,
+        Materials  = 0x0002,
+        Shaders    = 0x0004,
+        LooseFiles = 0x0008,
+        Maps       = 0x0010,
+        Blueprints = 0x0020,
+        Cinematics = 0x0040,
+        Sounds     = 0x0080,
+        Lua        = 0x0100,
 
-        All        = Megapacks | Materials | Shaders | LooseFiles | Maps | Blueprints | Cinematics | Sounds,
+        All        = Megapacks | Materials | Shaders | LooseFiles | Maps | Blueprints | Cinematics | Sounds | Lua,
     }
 
     public partial class ResourceDepot

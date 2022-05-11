@@ -9,7 +9,6 @@ namespace SabTool.Serializers.Sounds
 {
     using Data.Sounds;
     using Json.Converters;
-    using Utils;
     using Utils.Extensions;
 
     public static class SoundPackSerializer
