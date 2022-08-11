@@ -5,7 +5,7 @@ using SabTool.Serializers.Lua;
 
 public partial class ResourceDepot
 {
-    private LuaPackage LuaScriptsPackage { get; set; }
+    private LuaPackage? LuaScriptsPackage { get; set; }
 
     public bool LoadLua()
     {
@@ -26,6 +26,6 @@ public partial class ResourceDepot
 
     public IEnumerable<LuaPackage.Entry> GetLuaEntries()
     {
-        return LuaScriptsPackage.Entries;
+        return LuaScriptsPackage != null ? LuaScriptsPackage.Entries : Enumerable.Empty<LuaPackage.Entry>();
     }
 }

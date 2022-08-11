@@ -13,8 +13,8 @@
         {
             Console.WriteLine("Loading Maps...");
 
-            //LoadGlobalMap();
-            //LoadDLCGlobalMap();
+            LoadGlobalMap();
+            LoadDLCGlobalMap();
             LoadFranceMap();
             LoadDLCFranceMap();
 
