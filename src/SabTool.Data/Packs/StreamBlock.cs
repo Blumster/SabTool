@@ -11,7 +11,7 @@ namespace SabTool.Data.Packs
 
     public class StreamBlock
     {
-        private static readonly uint[] OffIndices = new uint[9] { 6, 7, 0, 2, 8, 4, 3, 1, 5 };
+        public static readonly uint[] OffIndices = new uint[9] { 6, 7, 0, 2, 8, 4, 3, 1, 5 };
 
         public string FileName { get; set; }
         public Crc[] Palettes { get; } = new Crc[32];

@@ -68,6 +68,8 @@ namespace SabTool.Serializers.Megapacks
 
                         var len4 = reader.ReadInt32();
                         var data4 = reader.ReadBytes(len4);
+
+                        // TODO
                     }
                 }
 

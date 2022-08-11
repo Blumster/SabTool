@@ -28,9 +28,7 @@ namespace SabTool.Data.Packs.Assets
             Hash.StringToHash(Name); // save to the lookup table
 
             if (Name.Contains('~'))
-            {
-                Name = Name.Substring(0, Name.IndexOf('~'));
-            }
+                Name = Name[..Name.IndexOf('~')];
 
             var fmt = reader.ReadUInt32();
             if (fmt != 0x31545844 && fmt != 0x33545844 && fmt != 0x35545844) // DXT1, DXT3, DXT5
@@ -45,10 +43,9 @@ namespace SabTool.Data.Packs.Assets
             var numMipmaps = reader.ReadInt16();
             var dataSize = reader.ReadInt32();
             var numChunks = reader.ReadInt32();
+
             if (numChunks == 0)
-            {
                 numChunks = 1;
-            }
 
             DDSFiles = new byte[numChunks][];
 
@@ -65,9 +62,7 @@ namespace SabTool.Data.Packs.Assets
 
                     var ddsFlags = 0x1007;
                     if (numMipmaps > 0)
-                    {
                         ddsFlags |= 0x20000;
-                    }
 
                     // DDS_HEADER start
 
@@ -81,9 +76,7 @@ namespace SabTool.Data.Packs.Assets
                     ddsWriter.Write((int)numMipmaps); // dwMipMapCount
 
                     for (var k = 0; k < 11; ++k)
-                    {
                         ddsWriter.Write(0); // dwReserved[11]
-                    }
 
                     // DDS_PIXELFORMAT start
                     ddsWriter.Write(0x20); // dwSize
@@ -137,9 +130,7 @@ namespace SabTool.Data.Packs.Assets
         public void Export(string outputPath)
         {
             if (DDSFiles == null)
-            {
                 return;
-            }
 
             if (DDSFiles.Length == 1)
             {
@@ -155,9 +146,7 @@ namespace SabTool.Data.Packs.Assets
             for (var i = 0; i < DDSFiles.Length; ++i)
             {
                 if (DDSFiles[i] == null)
-                {
                     continue;
-                }
 
                 var localName = $"{Name}{i}.dds";
                 var outputFilePath = Path.Combine(outputPath, localName);
