@@ -18,7 +18,7 @@ namespace SabTool.Data.Packs
         public List<StreamBlock> Interiors { get; set; }
         public List<StreamBlock> CinematicBlocks { get; set; }
 
-        public PaletteBlock? GetPaletteBlock(int x, int y)
+        public PaletteBlock GetPaletteBlock(int x, int y)
         {
             return Palettes.TryGetValue((x, y), out var paletteBlock) ? paletteBlock : null;
         }

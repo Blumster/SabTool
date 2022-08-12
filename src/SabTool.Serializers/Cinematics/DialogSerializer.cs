@@ -5,91 +5,90 @@ using System.Text;
 
 using Newtonsoft.Json;
 
-namespace SabTool.Serializers.Cinematics
+namespace SabTool.Serializers.Cinematics;
+
+using SabTool.Data.Cinematics;
+using SabTool.Serializers.Json.Converters;
+using SabTool.Utils;
+using SabTool.Utils.Extensions;
+
+public static class DialogSerializer
 {
-    using Data.Cinematics;
-    using Json.Converters;
-    using Utils;
-    using Utils.Extensions;
+    public const int Version = 5;
 
-    public static class DialogSerializer
+    public static Dialog DeserialzieRaw(Stream stream)
     {
-        public const int Version = 5;
+        using var reader = new BinaryReader(stream, Encoding.UTF8, true);
 
-        public static Dialog DeserialzieRaw(Stream stream)
+        var dialog = new Dialog();
+
+        var version = reader.ReadInt32();
+        if (version != Version)
+            throw new Exception("Invalid GameText.dlg version found!");
+
+        dialog.Texts = ReadTextArray(reader);
+
+        var subCount = reader.ReadInt32();
+
+        dialog.SubTexts = new(subCount);
+
+        for (var i = 0; i < subCount; ++i)
         {
-            using var reader = new BinaryReader(stream, Encoding.UTF8, true);
+            var id = new Crc(reader.ReadUInt32());
+            var offset = reader.ReadInt32();
 
-            var dialog = new Dialog();
+            var startPosition = stream.Position;
 
-            var version = reader.ReadInt32();
-            if (version != Version)
-                throw new Exception("Invalid GameText.dlg version found!");
+            stream.Position = offset;
 
-            dialog.Texts = ReadTextArray(reader);
+            dialog.SubTexts.Add(id, ReadTextArray(reader));
 
-            var subCount = reader.ReadInt32();
+            stream.Position = startPosition;
+        }
 
-            dialog.SubTexts = new(subCount);
+        return dialog;
+    }
 
-            for (var i = 0; i < subCount; ++i)
+    private static List<DialogText> ReadTextArray(BinaryReader reader)
+    {
+        var entryCount = reader.ReadInt32();
+        _ = reader.ReadInt32(); // total character count
+
+        var texts = new List<DialogText>(entryCount);
+
+        for (var i = 0; i < entryCount; ++i)
+        {
+            if (!reader.CheckHeaderString("DTXT", reversed: true))
+                throw new Exception("Invalid GameText start tag!");
+
+            texts.Add(new DialogText
             {
-                var id = new Crc(reader.ReadUInt32());
-                var offset = reader.ReadInt32();
-
-                var startPosition = stream.Position;
-
-                stream.Position = offset;
-
-                dialog.SubTexts.Add(id, ReadTextArray(reader));
-
-                stream.Position = startPosition;
-            }
-
-            return dialog;
+                Id = new Crc(reader.ReadUInt32()),
+                VoiceOver = reader.ReadUTF8StringOn(reader.ReadInt16()),
+                Text = reader.ReadUTF16StringOn(reader.ReadInt16())
+            });
         }
 
-        private static List<DialogText> ReadTextArray(BinaryReader reader)
-        {
-            var entryCount = reader.ReadInt32();
-            _ = reader.ReadInt32(); // total character count
+        if (!reader.CheckHeaderString("CEND", reversed: true))
+            throw new Exception("Invalid GameText block end tag!");
 
-            var texts = new List<DialogText>(entryCount);
+        return texts;
+    }
 
-            for (var i = 0; i < entryCount; ++i)
-            {
-                if (!reader.CheckHeaderString("DTXT", reversed: true))
-                    throw new Exception("Invalid GameText start tag!");
+    public static void SerializeRaw(Dialog dialog, Stream stream)
+    {
 
-                texts.Add(new DialogText
-                {
-                    Id = new Crc(reader.ReadUInt32()),
-                    VoiceOver = reader.ReadUTF8StringOn(reader.ReadInt16()),
-                    Text = reader.ReadUTF16StringOn(reader.ReadInt16())
-                });
-            }
+    }
 
-            if (!reader.CheckHeaderString("CEND", reversed: true))
-                throw new Exception("Invalid GameText block end tag!");
+    public static Dialog? DeserializeJSON(Stream stream)
+    {
+        return null;
+    }
 
-            return texts;
-        }
+    public static void SerializeJSON(Dialog dialog, Stream stream)
+    {
+        using var writer = new StreamWriter(stream, Encoding.UTF8, leaveOpen: true);
 
-        public static void SerializeRaw(Dialog dialog, Stream stream)
-        {
-
-        }
-
-        public static Dialog DeserializeJSON(Stream stream)
-        {
-            return null;
-        }
-
-        public static void SerializeJSON(Dialog dialog, Stream stream)
-        {
-            using var writer = new StreamWriter(stream, Encoding.UTF8, leaveOpen: true);
-
-            writer.Write(JsonConvert.SerializeObject(dialog, Formatting.Indented, new CrcConverter()));
-        }
+        writer.Write(JsonConvert.SerializeObject(dialog, Formatting.Indented, new CrcConverter()));
     }
 }

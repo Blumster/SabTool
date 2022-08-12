@@ -4,77 +4,76 @@ using System.Text;
 
 using Newtonsoft.Json;
 
-namespace SabTool.Serializers.Graphics
+namespace SabTool.Serializers.Graphics;
+
+using SabTool.Data.Graphics;
+using SabTool.Serializers.Json.Converters;
+using SabTool.Utils;
+using SabTool.Utils.Extensions;
+
+public static class ModelSerializer
 {
-    using Data.Graphics;
-    using Json.Converters;
-    using Utils;
-    using Utils.Extensions;
-
-    public static class ModelSerializer
+    public static Model DeserializeRaw(Stream stream)
     {
-        public static Model DeserializeRaw(Stream stream)
+        var model = new Model
         {
-            var model = new Model
-            {
-                Mesh = MeshSerializer.DeserializeRaw(stream)
-            };
+            Mesh = MeshSerializer.DeserializeRaw(stream)
+        };
 
-            using var reader = new BinaryReader(stream, Encoding.UTF8, true);
+        using var reader = new BinaryReader(stream, Encoding.UTF8, true);
 
-            var currentStart = stream.Position;
+        var currentStart = stream.Position;
 
-            stream.Position += 0x4C;
+        stream.Position += 0x4C;
 
-            model.Field4C = reader.ReadVector3();
-            model.BoxAndRadius = reader.ReadVector4();
-            model.Field68 = reader.ReadInt32();
+        model.Field4C = reader.ReadVector3();
+        model.BoxAndRadius = reader.ReadVector4();
+        model.Field68 = reader.ReadInt32();
 
-            stream.Position += 0xC;
+        stream.Position += 0xC;
 
-            model.Field78 = reader.ReadInt32();
+        model.Field78 = reader.ReadInt32();
 
-            stream.Position += 0x18;
+        stream.Position += 0x18;
 
-            model.Name = new Crc(reader.ReadUInt32());
+        model.Name = new Crc(reader.ReadUInt32());
 
-            stream.Position += 0x18;
+        stream.Position += 0x18;
 
-            model.FieldB0 = reader.ReadInt32();
+        model.FieldB0 = reader.ReadInt32();
 
-            stream.Position += 0x5;
+        stream.Position += 0x5;
 
-            model.FieldB9 = reader.ReadByte();
+        model.FieldB9 = reader.ReadByte();
 
-            stream.Position += 0x1;
+        stream.Position += 0x1;
 
-            model.FieldBB = reader.ReadByte();
+        model.FieldBB = reader.ReadByte();
 
-            stream.Position += 0x3;
+        stream.Position += 0x3;
 
-            model.FieldBF = reader.ReadByte();
+        model.FieldBF = reader.ReadByte();
 
-            if (currentStart + 0xC0 != stream.Position)
-                throw new Exception($"Under or orver read of the model part of the mesh asset! Pos: {stream.Position} | Expected: {currentStart + 0xC0}");
+        if (currentStart + 0xC0 != stream.Position)
+            throw new Exception($"Under or orver read of the model part of the mesh asset! Pos: {stream.Position} | Expected: {currentStart + 0xC0}");
 
-            return model;
-        }
+        return model;
+    }
 
-        public static void SerializeRaw(Model model, Stream stream)
-        {
+    public static void SerializeRaw(Model model, Stream stream)
+    {
 
-        }
+    }
 
-        public static Model DeserializeJSON(Stream stream)
-        {
-            return null;
-        }
+    public static Model? DeserializeJSON(Stream stream)
+    {
+        return null;
+    }
 
-        public static void SerializeJSON(Model model, Stream stream)
-        {
-            using var writer = new StreamWriter(stream, Encoding.UTF8, leaveOpen: true);
+    public static void SerializeJSON(Model model, Stream stream)
+    {
+        using var writer = new StreamWriter(stream, Encoding.UTF8, leaveOpen: true);
 
-            writer.Write(JsonConvert.SerializeObject(model, Formatting.Indented, new CrcConverter()));
-        }
+        writer.Write(JsonConvert.SerializeObject(model, Formatting.Indented, new CrcConverter()));
     }
 }

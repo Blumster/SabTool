@@ -29,7 +29,7 @@
         {
             Console.WriteLine("  Loading Global Map...");
 
-            using var globalMapStream = GetLooseFile("global.map");
+            using var globalMapStream = GetLooseFile("global.map") ?? throw new Exception("Global map is missing from the loose files!");
 
             GlobalMap = GlobalMapSerializer.DeserializeRaw(globalMapStream);
 
@@ -53,7 +53,7 @@
         {
             Console.WriteLine("  Loading France Map...");
 
-            using var franceMapStream = GetLooseFile("France.map");
+            using var franceMapStream = GetLooseFile("France.map") ?? throw new Exception("France map is missing from the loose files!");
 
             FranceMap = FranceMapSerializer.DeserializeRaw(franceMapStream);
 

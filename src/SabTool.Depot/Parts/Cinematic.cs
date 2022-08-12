@@ -66,7 +66,7 @@ namespace SabTool.Depot
         {
             Console.WriteLine("  Loading Conversations...");
 
-            using var conversationsStream = GetLooseFile(@"Cinematics\Conversations\Conversations.cnvpack");
+            using var conversationsStream = GetLooseFile(@"Cinematics\Conversations\Conversations.cnvpack") ?? throw new Exception("Conversations cnvpack is missing from the loosefiles!");
 
             Conversations = ConversationsSerializer.DeserializeRaw(conversationsStream);
 
@@ -103,7 +103,7 @@ namespace SabTool.Depot
         {
             Console.WriteLine("  Loading Cinematics...");
 
-            using var cinematicsStream = GetLooseFile(@"Cinematics\Cinematics.cinpack");
+            using var cinematicsStream = GetLooseFile(@"Cinematics\Cinematics.cinpack") ?? throw new Exception("Cinematics cinpack is missing from the loose files!");
 
             Cinematics = CinematicsSerializer.DeserializeRaw(cinematicsStream);
 
