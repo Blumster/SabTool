@@ -13,7 +13,7 @@
 
         public override void Setup()
         {
-            SetupWithTypes(typeof(MaterialCategory));
+            SetupWithTypes(typeof(MaterialCategory), typeof(ShaderCategory));
         }
     }
 }

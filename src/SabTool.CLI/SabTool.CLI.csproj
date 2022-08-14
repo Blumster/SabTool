@@ -4,7 +4,8 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
     <StartupObject>SabTool.CLI.Program</StartupObject>
-    <LangVersion>9.0</LangVersion>
+      <ImplicitUsings>enable</ImplicitUsings>
+      <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\lib\HlslDecompiler\HlslDecompiler.csproj" />
     <ProjectReference Include="..\SabTool.Data\SabTool.Data.csproj" />
     <ProjectReference Include="..\SabTool.Depot\SabTool.Depot.csproj" />
     <ProjectReference Include="..\SabTool.Serializers\SabTool.Serializers.csproj" />
