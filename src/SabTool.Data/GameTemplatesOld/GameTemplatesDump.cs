@@ -2694,7 +2694,7 @@ namespace SabTool.Data.GameTemplatesOld
             { new(0x787C0871, 0xA6107C89), new(null, typeof(FloatVector2)) },
             { new(0x787C0871, 0xB838A7E9), new(null, typeof(FloatVector2)) },
             { new(0x787C0871, 0xB4D334D8), new(null, typeof(bool)) },
-            { new(0x787C0871, 0xB4685717), new(null, typeof(int)) },
+            { new(0x787C0871, 0xB4685717), new(null, typeof(Crc)) },
             { new(0x787C0871, 0xB4C6842E), new(null, typeof(float)) },
             { new(0x787C0871, 0xB5C71325), new(null, typeof(Crc)) },
             { new(0x787C0871, 0xB8627450), new(null, typeof(float)) },
