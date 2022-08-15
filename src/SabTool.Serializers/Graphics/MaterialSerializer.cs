@@ -5,6 +5,7 @@ using System.Numerics;
 using System.Text;
 
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace SabTool.Serializers.Graphics;
 
@@ -94,7 +95,7 @@ public static class MaterialSerializer
             {
                 textureStates[i][j] = new Material.TextureState
                 {
-                    Type = (Material.TextureStateType)reader.ReadInt32(),
+                    Type = (Material.TextureStateType)reader.ReadUInt32(),
                     Value = reader.ReadUInt32()
                 };
             }
@@ -196,14 +197,14 @@ public static class MaterialSerializer
         {
             passes[i] = new Pass(new(reader.ReadUInt32()))
             {
-                Flags = reader.ReadUInt32(),
+                Flags = (Material.MaterialFlags)reader.ReadUInt32(),
                 RenderStateIndex = reader.ReadInt32(),
                 TextureStateIndex = reader.ReadInt32(),
                 Unk3Index = reader.ReadInt32(),
                 PixelParameterIndex = reader.ReadInt32(),
                 VertexParameterIndex = reader.ReadInt32(),
-                PixelShaderUnk = reader.ReadInt32(),
-                VertexShaderUnk = reader.ReadInt32()
+                PixelShader = new(reader.ReadUInt32()),
+                VertexShader = new(reader.ReadUInt32())
             };
         }
 
@@ -273,7 +274,7 @@ public static class MaterialSerializer
                 var pass = passes[passIndex];
 
                 material.PassNameCrc = pass.PassNameCrc;
-                material.Flags = pass.Flags | 0x1000000;
+                material.Flags = pass.Flags | (Material.MaterialFlags)0x1000000;
 
                 if (pass.RenderStateIndex != -1)
                     material.RenderStates = renderStates[pass.RenderStateIndex];
@@ -290,11 +291,11 @@ public static class MaterialSerializer
                 if (pass.PixelParameterIndex != -1)
                     material.PixelShaderParameters = pixelParameters[pass.PixelParameterIndex];
 
-                material.VertexShader = pass.VertexShaderUnk;
-                material.PixelShader = pass.PixelShaderUnk;
+                material.VertexShader = pass.VertexShader;
+                material.PixelShader = pass.PixelShader;
             }
 
-            if ((material.Flags & 0x800) != 0)
+            if ((material.Flags & (Material.MaterialFlags)0x800) != 0)
             {
                 // TODO
             }
@@ -324,13 +325,13 @@ public static class MaterialSerializer
                 {
                     material.Unk1 = 75;
                 }
-                else if ((material.Flags & 1) == 0 || (material.Flags & 4) != 0)
+                else if ((material.Flags & Material.MaterialFlags.AlphaBlend) == 0 || (material.Flags & Material.MaterialFlags.Decal) != 0)
                 {
                     material.Unk1 = (byte)(material.PassNameCrc.Value != DetailObjectPassCrc ? 47 : 70);
                 }
                 else
                 {
-                    material.Unk1 = (byte)((material.Flags & 0x8000) != 0 ? 109 : 102);
+                    material.Unk1 = (byte)((material.Flags & (Material.MaterialFlags)0x8000) != 0 ? 109 : 102);
                 }
             }
             else
@@ -360,20 +361,20 @@ public static class MaterialSerializer
     {
         using var writer = new StreamWriter(stream, Encoding.UTF8, leaveOpen: true);
 
-        writer.Write(JsonConvert.SerializeObject(materials, Formatting.Indented, new CrcConverter()));
+        writer.Write(JsonConvert.SerializeObject(materials, Formatting.Indented, new CrcConverter(), new StringEnumConverter()));
     }
 
     private class Pass
     {
         public Crc PassNameCrc { get; set; }
-        public uint Flags { get; set; }
+        public Material.MaterialFlags Flags { get; set; }
         public int RenderStateIndex { get; set; }
         public int TextureStateIndex { get; set; }
         public int Unk3Index { get; set; }
         public int PixelParameterIndex { get; set; }
         public int VertexParameterIndex { get; set; }
-        public int PixelShaderUnk { get; set; }
-        public int VertexShaderUnk { get; set; }
+        public Crc PixelShader { get; set; } = new(0);
+        public Crc VertexShader { get; set; } = new(0);
 
         public Pass(Crc passNameCrc)
         {
