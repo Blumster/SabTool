@@ -14,12 +14,13 @@ using SabTool.Utils.Extensions;
 
 public static class SkeletonSerializer
 {
-    public static Skeleton DeserializeRaw(Stream stream)
+    public static Skeleton DeserializeRaw(Stream stream, int numBones)
     {
         using var reader = new BinaryReader(stream, Encoding.UTF8, true);
 
         var skeleton = new Skeleton
         {
+            NumBones = numBones,
             SomeSize = reader.ReadInt32(),
             Int4 = reader.ReadInt32(),
             Int8 = reader.ReadInt32(),

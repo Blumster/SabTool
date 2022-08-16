@@ -119,14 +119,6 @@ namespace SabTool.CLI.Commands
 
         public class UnpackCommand : BaseCommand
         {
-            public static readonly List<string> Megafiles = new()
-            {
-                @"Global\Dynamic0.megapack",
-                @"Global\palettes0.megapack",
-                @"Global\patchdynamic0.megapack",
-                @"Global\patchpalettes0.megapack"
-            };
-
             public override string Key { get; } = "unpack";
             public override string Shortcut { get; } = "u";
             public override string Usage { get; } = "<game base path> <output directory> [relative megapack file path]";

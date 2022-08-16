@@ -1,11 +1,12 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Numerics;
 using System.Text;
 
 using Newtonsoft.Json;
 
-namespace SabTool.Serializers.Megapacks;
+namespace SabTool.Serializers.Packs;
 
 using SabTool.Data.Packs;
 using SabTool.Serializers.Json.Converters;
@@ -44,6 +45,7 @@ public static class FranceMapSerializer
             paletteCount = franceMap.NumStreamBlocks = reader.ReadInt32();
             franceMap.FieldDA84 = reader.ReadInt32();
 
+            #region Garbage
             var count = reader.ReadInt32();
 
             if (count > 0)
@@ -70,6 +72,7 @@ public static class FranceMapSerializer
                     // TODO
                 }
             }
+            #endregion
 
             for (var i = 0; i < 3; ++i)
             {
@@ -113,6 +116,9 @@ public static class FranceMapSerializer
 
         for (var i = 0; i < count3; ++i)
             franceMap.CinematicBlocks.Add(StreamBlockSerializer.DeserializeFromMapRaw(stream));
+
+        var sumCinBlocks = franceMap.CinematicBlocks.Select(c => c.EntryCounts.Sum(s => s)).Sum();
+        var sumIntBlocks = franceMap.Interiors.Select(i => i.EntryCounts.Sum(s => s)).Sum();
 
         return franceMap;
     }

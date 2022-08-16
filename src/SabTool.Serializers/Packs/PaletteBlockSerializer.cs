@@ -5,7 +5,7 @@ using System.Text;
 
 using Newtonsoft.Json;
 
-namespace SabTool.Serializers.Megapacks;
+namespace SabTool.Serializers.Packs;
 
 using SabTool.Data.Packs;
 using SabTool.Serializers.Json.Converters;

@@ -4,6 +4,11 @@
 
     public class Bone
     {
+        public static Bone DefaultBone { get; } = new Bone
+        {
+            Crc = new Crc(0x204E3386u) // "DefaultBone"
+        };
+
         public Crc UnkNamePtr { get; set; }
         public byte UnkByte { get; set; }
         public Crc Crc { get; set; }

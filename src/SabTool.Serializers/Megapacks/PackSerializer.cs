@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 namespace SabTool.Serializers.Megapacks;
 
 using SabTool.Data.Packs;
+using SabTool.Serializers.Packs;
 using SabTool.Utils.Extensions;
 
 public static class PackSerializer

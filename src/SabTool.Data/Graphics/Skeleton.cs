@@ -8,7 +8,10 @@ namespace SabTool.Data.Graphics
     {
         public static Skeleton SingleBoneInstance { get; } = new Skeleton
         {
-            NumBones = 1
+            NumBones = 1,
+            Indices = new short[] { -1 },
+            Bones = new Bone[1] { Bone.DefaultBone },
+            UnkBasePoses = new AffineTransform[1] { AffineTransform.Identity }
         };
 
         public int NumBones { get; set; }

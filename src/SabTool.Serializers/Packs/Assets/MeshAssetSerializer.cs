@@ -32,13 +32,15 @@ public static class MeshAssetSerializer
 
         Console.WriteLine($"Reading mesh {meshAsset.ModelName}...");
 
-        using (var modelStream = new MemoryStream(reader.ReadDecompressedBytes(headerCompressedSize), false))
-        {
-            meshAsset.Model = ModelSerializer.DeserializeRaw(modelStream);
+        using var modelStream = headerRealSize == headerCompressedSize
+            ? new MemoryStream(reader.ReadBytes(headerRealSize))
+            : new MemoryStream(reader.ReadDecompressedBytes(headerCompressedSize), false);
+        
+        meshAsset.Model = ModelSerializer.DeserializeRaw(modelStream);
+        meshAsset.Model.Mesh = MeshSerializer.DeserializeRaw(modelStream);
 
-            if (modelStream.Position != modelStream.Length)
-                throw new Exception($"Under read of the header data of the mesh asset! Pos: {modelStream.Position} | Expected: {modelStream.Length}");
-        }
+        if (modelStream.Position != modelStream.Length)
+            throw new Exception($"Under read of the header data of the mesh asset! Pos: {modelStream.Position} | Expected: {modelStream.Length}");
 
         using (var vertexStream = new MemoryStream(reader.ReadDecompressedBytes(vertexCompressedSize), false))
         {

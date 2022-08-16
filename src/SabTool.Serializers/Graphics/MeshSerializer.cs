@@ -61,7 +61,7 @@ public static class MeshSerializer
         }
         else
         {
-            mesh.Skeleton = SkeletonSerializer.DeserializeRaw(reader.BaseStream);
+            mesh.Skeleton = SkeletonSerializer.DeserializeRaw(reader.BaseStream, mesh.NumBones);
 
             if (mesh.Skeleton == null)
                 throw new Exception("Unable to deserialize the Mesh's Skeleton!");

@@ -1,12 +1,14 @@
 ﻿namespace SabTool.Depot
 {
     using Data.Packs;
+    using SabTool.Serializers.Packs;
     using Serializers.Megapacks;
+    using Utils;
 
     public partial class ResourceDepot
     {
         public GlobalMap? GlobalMap { get; set; }
-        private GlobalMap? DLCGlobalMap { get; set; }
+        public GlobalMap? DLCGlobalMap { get; set; }
         public FranceMap? FranceMap { get; set; }
 
         public bool LoadMaps()

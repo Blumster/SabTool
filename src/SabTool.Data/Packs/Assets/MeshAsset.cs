@@ -8,72 +8,13 @@ using SharpGLTF.Schema2;
 namespace SabTool.Data.Packs.Assets
 {
     using Graphics;
-    using Packs;
     using Utils;
-    using Utils.Extensions;
 
-    public class MeshAsset : IStreamBlockAsset
+    public class MeshAsset
     {
         public Crc Name { get; }
         public Model Model { get; set; }
         public string ModelName { get; set; }
-
-        public MeshAsset(Crc name)
-        {
-            Name = name;
-        }
-
-        public bool Read(MemoryStream data)
-        {
-            using var reader = new BinaryReader(data);
-
-            if (!reader.CheckHeaderString("MSHA", reversed: true))
-            {
-                Console.WriteLine("Invalid mesh header string!");
-                return false;
-            }
-
-            var headerRealSize = reader.ReadInt32();
-            var vertexRealSize = reader.ReadInt32();
-            var headerCompressedSize = reader.ReadInt32();
-            var vertexCompressedSize = reader.ReadInt32();
-            ModelName = reader.ReadStringFromCharArray(256);
-
-            var hash = Hash.StringToHash(ModelName);
-
-            Console.WriteLine($"Reading mesh {ModelName}...");
-
-            using (var modelStream = new MemoryStream(reader.ReadDecompressedBytes(headerCompressedSize), false))
-            {
-                // TODO
-                //Model = ModelSerializer.DeserializeRaw(modelStream);
-
-                if (modelStream.Position != modelStream.Length)
-                {
-                    Console.WriteLine($"Under read of the header data of the mesh asset! Pos: {modelStream.Position} | Expected: {modelStream.Length}");
-                    return false;
-                }
-            }
-
-            using (var vertexStream = new MemoryStream(reader.ReadDecompressedBytes(vertexCompressedSize), false))
-            {
-                // TODO
-                //MeshSerializer.DeserializeVerticesRaw(Model.Mesh, vertexStream);
-
-                if (vertexStream.Position != vertexStream.Length)
-                {
-                    Console.WriteLine($"Under read of the vertex data of the mesh asset! Pos: {vertexStream.Position} | Expected: {vertexStream.Length}");
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        public bool Write(MemoryStream writer)
-        {
-            throw new NotImplementedException();
-        }
 
         public void Import(string filePath)
         {

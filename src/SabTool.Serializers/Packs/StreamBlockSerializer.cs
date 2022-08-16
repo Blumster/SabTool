@@ -4,10 +4,11 @@ using System.Text;
 
 using Newtonsoft.Json;
 
-namespace SabTool.Serializers.Megapacks;
+namespace SabTool.Serializers.Packs;
 
 using SabTool.Data.Packs;
 using SabTool.Serializers.Json.Converters;
+using SabTool.Serializers.Packs.Assets;
 using SabTool.Utils;
 using SabTool.Utils.Extensions;
 
@@ -215,7 +216,7 @@ public static class StreamBlockSerializer
         }
     }
 
-    public static void SerialzieRaw(StreamBlock streamBlock, Stream stream)
+    public static void SerializeRaw(StreamBlock streamBlock, Stream stream)
     {
 
     }
@@ -231,4 +232,93 @@ public static class StreamBlockSerializer
 
         writer.Write(JsonConvert.SerializeObject(streamBlock, Formatting.Indented, new CrcConverter()));
     }
+
+    public static void Export(StreamBlock streamBlock, string outputPath)
+    {
+        var offInd = 0;
+
+        do
+        {
+            var off = StreamBlock.OffIndices[offInd];
+
+            if (streamBlock.EntryCounts[off] == 0)
+            {
+                ++offInd;
+                continue;
+            }
+
+            for (var i = 0; i < streamBlock.EntryCounts[off]; ++i)
+            {
+                var entry = streamBlock.Entries[off][i];
+
+                var extension = "bin";
+
+                try
+                {
+                    switch (off)
+                    {
+                        case 0:
+                            var meshAsset = MeshAssetSerializer.DeserializeRaw(new MemoryStream(entry.Payload, false));
+
+                            meshAsset.Export(outputPath);
+                            continue;
+
+                        case 1:
+                            var textureAsset = TextureAssetSerializer.DeserializeRaw(new MemoryStream(entry.Payload, false), entry.Crc);
+
+                            textureAsset?.Export(outputPath);
+                            continue;
+
+                        case 2:
+                            extension = "physics";
+                            break;
+
+                        case 3:
+                            extension = "pathgraph";
+                            Console.WriteLine("PATHGRAPH! {0}", string.IsNullOrWhiteSpace(entry.Crc.GetString()) ? $"0x{entry.Crc.Value:X8}.{extension}" : $"{entry.Crc.GetString()}.{extension}");
+                            break;
+
+                        case 4:
+                            extension = "aifence";
+                            Console.WriteLine("AIFENCE! {0}", string.IsNullOrWhiteSpace(entry.Crc.GetString()) ? $"0x{entry.Crc.Value:X8}.{extension}" : $"{entry.Crc.GetString()}.{extension}");
+                            break;
+
+                        case 5:
+                            extension = "unknown";
+                            Console.WriteLine("UNK! {0}", string.IsNullOrWhiteSpace(entry.Crc.GetString()) ? $"0x{entry.Crc.Value:X8}.{extension}" : $"{entry.Crc.GetString()}.{extension}");
+                            break;
+
+                        case 6:
+                            extension = "soundbank";
+                            Console.WriteLine("SOUNDBANK! {0}", string.IsNullOrWhiteSpace(entry.Crc.GetString()) ? $"0x{entry.Crc.Value:X8}.{extension}" : $"{entry.Crc.GetString()}.{extension}");
+                            break;
+
+                        case 7:
+                            extension = "gfx";
+                            break;
+
+                        case 8:
+                            extension = "wsd";
+                            Console.WriteLine("WSD! {0}", string.IsNullOrWhiteSpace(entry.Crc.GetString()) ? $"0x{entry.Crc.Value:X8}.{extension}" : $"{entry.Crc.GetString()}.{extension}");
+                            break;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Unable to export {entry.Crc.GetStringOrHexString()}! Exporting as raw! Exception:");
+                    Console.WriteLine(ex.ToString());
+                }
+
+                var outputFilePath = Path.Combine(outputPath, $"{entry.Crc.GetStringOrHexString()}.{extension}");
+
+                Directory.CreateDirectory(Path.GetDirectoryName(outputFilePath)!);
+
+                File.WriteAllBytes(outputFilePath, entry.Payload);
+            }
+
+            ++offInd;
+        }
+        while (offInd < 9);
+    }
+
 }

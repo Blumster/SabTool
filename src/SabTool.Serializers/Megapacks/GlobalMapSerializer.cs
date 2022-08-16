@@ -8,6 +8,7 @@ namespace SabTool.Serializers.Megapacks;
 
 using SabTool.Data.Packs;
 using SabTool.Serializers.Json.Converters;
+using SabTool.Serializers.Packs;
 using SabTool.Utils.Extensions;
 
 public static class GlobalMapSerializer

@@ -15,14 +15,10 @@ public static class ModelSerializer
 {
     public static Model DeserializeRaw(Stream stream)
     {
-        var model = new Model
-        {
-            Mesh = MeshSerializer.DeserializeRaw(stream)
-        };
-
         using var reader = new BinaryReader(stream, Encoding.UTF8, true);
 
         var currentStart = stream.Position;
+        var model = new Model();
 
         stream.Position += 0x4C;
 
@@ -55,7 +51,7 @@ public static class ModelSerializer
         model.FieldBF = reader.ReadByte();
 
         if (currentStart + 0xC0 != stream.Position)
-            throw new Exception($"Under or orver read of the model part of the mesh asset! Pos: {stream.Position} | Expected: {currentStart + 0xC0}");
+            throw new Exception($"Under or over read of the model part of the mesh asset! Pos: {stream.Position} | Expected: {currentStart + 0xC0}");
 
         return model;
     }
