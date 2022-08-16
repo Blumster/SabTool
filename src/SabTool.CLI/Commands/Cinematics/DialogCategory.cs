@@ -34,7 +34,7 @@ namespace SabTool.CLI.Commands.Cinematics
                 var outputDirectory = arguments.ElementAt(1);
                 Directory.CreateDirectory(outputDirectory);
 
-                string language = null;
+                string? language = null;
                 if (arguments.Count() == 3)
                     language = arguments.ElementAt(2);
 
@@ -49,6 +49,12 @@ namespace SabTool.CLI.Commands.Cinematics
                     var outputFilePath = Path.Combine(outputDirectory, DialogRootPath, $@"{ entry.Key}\dialogs.json");
 
                     var outputFileDirectory = Path.GetDirectoryName(outputFilePath);
+                    if (outputFileDirectory == null)
+                    {
+                        Console.WriteLine("ERROR: Output directory is invalid!");
+                        return false;
+                    }
+
                     Directory.CreateDirectory(outputFileDirectory);
 
                     using var fs = new FileStream(outputFilePath, FileMode.Create, FileAccess.Write, FileShare.None);

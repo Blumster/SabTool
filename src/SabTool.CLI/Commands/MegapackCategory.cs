@@ -25,7 +25,7 @@ namespace SabTool.CLI.Commands
 
             public override bool Execute(IEnumerable<string> arguments)
             {
-                if (arguments.Count() < 1)
+                if (!arguments.Any())
                 {
                     Console.WriteLine("ERROR: Not enough arguments given!");
                     return false;
@@ -138,7 +138,7 @@ namespace SabTool.CLI.Commands
 
                 Directory.CreateDirectory(outputDir);
 
-                string fileToUnpack = null;
+                string? fileToUnpack = null;
 
                 if (arguments.Count() == 3)
                     fileToUnpack = arguments.ElementAt(2);
@@ -169,8 +169,14 @@ namespace SabTool.CLI.Commands
 
                         var outputFilePath = Path.Combine(megapackOutputDir, realFilePath);
 
-                        var outputFileDir = Path.GetDirectoryName(outputFilePath);
-                        Directory.CreateDirectory(outputFileDir);
+                        var outputFileDirectory = Path.GetDirectoryName(outputFilePath);
+                        if (outputFileDirectory == null)
+                        {
+                            Console.WriteLine("ERROR: Output directory is invalid!");
+                            return false;
+                        }
+
+                        Directory.CreateDirectory(outputFileDirectory);
 
                         using var fs = new FileStream(outputFilePath, FileMode.Create, FileAccess.Write, FileShare.None);
 

@@ -59,6 +59,11 @@ namespace SabTool.CLI.Commands
                 {
                     var outFilePath = Path.Combine(outputFolder, file.Name);
                     var directoryName = Path.GetDirectoryName(outFilePath);
+                    if (directoryName == null)
+                    {
+                        Console.WriteLine("ERROR: Output directory is invalid!");
+                        return false;
+                    }
 
                     Directory.CreateDirectory(directoryName);
 

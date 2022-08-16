@@ -39,7 +39,7 @@ namespace SabTool.CLI.Commands.Cinematics
 
                 var outputFilePath = Path.Combine(outputDirectory, ComplexAnimsRootPath, "complex-anims.json");
 
-                var outputFileDirectory = Path.GetDirectoryName(outputFilePath);
+                var outputFileDirectory = Path.GetDirectoryName(outputFilePath)!;
                 Directory.CreateDirectory(outputFileDirectory);
 
                 using var fs = new FileStream(outputFilePath, FileMode.Create, FileAccess.Write, FileShare.None);

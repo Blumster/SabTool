@@ -108,17 +108,20 @@ public static class FranceMapSerializer
         franceMap.Interiors ??= new(interiorCount);
 
         for (var i = 0; i < interiorCount; ++i)
-            franceMap.Interiors.Add(StreamBlockSerializer.DeserializeFromMapRaw(stream));
+        {
+            var block = StreamBlockSerializer.DeserializeFromMapRaw(stream);
+            franceMap.Interiors.Add(block.Id, block);
+        }
 
         var count3 = reader.ReadInt32();
 
         franceMap.CinematicBlocks ??= new(count3);
 
         for (var i = 0; i < count3; ++i)
-            franceMap.CinematicBlocks.Add(StreamBlockSerializer.DeserializeFromMapRaw(stream));
-
-        var sumCinBlocks = franceMap.CinematicBlocks.Select(c => c.EntryCounts.Sum(s => s)).Sum();
-        var sumIntBlocks = franceMap.Interiors.Select(i => i.EntryCounts.Sum(s => s)).Sum();
+        {
+            var block = StreamBlockSerializer.DeserializeFromMapRaw(stream);
+            franceMap.CinematicBlocks.Add(block.Id, block);
+        }
 
         return franceMap;
     }

@@ -60,7 +60,7 @@ namespace SabTool.CLI.Commands
                     {
                         var folder = Path.GetDirectoryName(outputPath);
                         if (!Directory.Exists(folder))
-                            Directory.CreateDirectory(folder);
+                            Directory.CreateDirectory(folder!);
 
                         File.WriteAllBytes(outputPath, entry.Data);
                     }

@@ -41,7 +41,7 @@ namespace SabTool.CLI.Commands.Cinematics
                 // Main
                 var outputFilePath = Path.Combine(outputDirectory, ConversationsRootPath, "Conversations.json");
 
-                var outputFileDirectory = Path.GetDirectoryName(outputFilePath);
+                var outputFileDirectory = Path.GetDirectoryName(outputFilePath)!;
                 Directory.CreateDirectory(outputFileDirectory);
 
                 using var fs = new FileStream(outputFilePath, FileMode.Create, FileAccess.Write, FileShare.None);
@@ -51,7 +51,7 @@ namespace SabTool.CLI.Commands.Cinematics
                 // DLC
                 outputFilePath = Path.Combine(outputDirectory, ConversationsRootPathDLC, "Conversations.json");
 
-                outputFileDirectory = Path.GetDirectoryName(outputFilePath);
+                outputFileDirectory = Path.GetDirectoryName(outputFilePath)!;
                 Directory.CreateDirectory(outputFileDirectory);
 
                 using var fsDLC = new FileStream(outputFilePath, FileMode.Create, FileAccess.Write, FileShare.None);

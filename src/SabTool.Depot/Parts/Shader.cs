@@ -6,7 +6,7 @@ using SabTool.Serializers.Graphics.Shaders;
 public partial class ResourceDepot
 {
     private const string ShadersFileName = "France.shaders";
-    private ShaderContainer ShaderContainer { get; set; }
+    private ShaderContainer? ShaderContainer { get; set; }
 
     private bool LoadShaders()
     {
@@ -28,6 +28,19 @@ public partial class ResourceDepot
         return true;
     }
 
-    public IEnumerable<Shader> GetPixelShaders() => ShaderContainer.PixelShaders;
-    public IEnumerable<Shader> GetVertexShaders() => ShaderContainer.VertexShaders;
+    public IEnumerable<Shader> GetPixelShaders()
+    {
+        if (!IsResourceLoaded(Resource.Shaders))
+            Load(Resource.Shaders);
+
+        return ShaderContainer!.PixelShaders;
+    }
+
+    public IEnumerable<Shader> GetVertexShaders()
+    {
+        if (!IsResourceLoaded(Resource.Shaders))
+            Load(Resource.Shaders);
+
+        return ShaderContainer!.VertexShaders;
+    }
 }

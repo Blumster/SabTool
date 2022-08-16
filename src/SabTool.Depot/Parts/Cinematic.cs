@@ -138,38 +138,59 @@ namespace SabTool.Depot
 
         public IEnumerable<KeyValuePair<string, Dialog>> GetDialogs()
         {
+            if (!IsResourceLoaded(Resource.Cinematics))
+                Load(Resource.Cinematics);
+
             foreach (var dialog in Dialogs)
                 yield return dialog;
         }
 
-        public IEnumerable<ConversationStructure>? GetConversations()
+        public IEnumerable<ConversationStructure> GetConversations()
         {
-            return Conversations;
+            if (!IsResourceLoaded(Resource.Cinematics))
+                Load(Resource.Cinematics);
+
+            return Conversations!;
         }
 
-        public IEnumerable<ConversationStructure>? GetDLCConversations()
+        public IEnumerable<ConversationStructure> GetDLCConversations()
         {
-            return DLCConversations;
+            if (!IsResourceLoaded(Resource.Cinematics))
+                Load(Resource.Cinematics);
+
+            return DLCConversations!;
         }
 
-        public IEnumerable<ComplexAnimStructure>? GetComplexAnimStructures()
+        public IEnumerable<ComplexAnimStructure> GetComplexAnimStructures()
         {
-            return ComplexAnims;
+            if (!IsResourceLoaded(Resource.Cinematics))
+                Load(Resource.Cinematics);
+
+            return ComplexAnims!;
         }
 
-        public IEnumerable<Cinematic>? GetCinematics()
+        public IEnumerable<Cinematic> GetCinematics()
         {
-            return Cinematics;
+            if (!IsResourceLoaded(Resource.Cinematics))
+                Load(Resource.Cinematics);
+
+            return Cinematics!;
         }
 
-        public IEnumerable<Cinematic>? GetDLCCinematics()
+        public IEnumerable<Cinematic> GetDLCCinematics()
         {
-            return DLCCinematics;
+            if (!IsResourceLoaded(Resource.Cinematics))
+                Load(Resource.Cinematics);
+
+            return DLCCinematics!;
         }
 
-        public IEnumerable<RandomText>? GetRandomTexts()
+        public IEnumerable<RandomText> GetRandomTexts()
         {
-            return RandomTexts;
+            if (!IsResourceLoaded(Resource.Cinematics))
+                Load(Resource.Cinematics);
+
+            return RandomTexts!;
         }
     }
 }

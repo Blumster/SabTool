@@ -42,6 +42,12 @@ namespace SabTool.CLI.Commands.Cinematics
                 var outputFilePath = Path.Combine(outputDirectory, CinematicsRootPath, "cinematics.json");
 
                 var outputFileDirectory = Path.GetDirectoryName(outputFilePath);
+                if (outputFileDirectory == null)
+                {
+                    Console.WriteLine("ERROR: Output directory is invalid!");
+                    return false;
+                }
+
                 Directory.CreateDirectory(outputFileDirectory);
 
                 using var fs = new FileStream(outputFilePath, FileMode.Create, FileAccess.Write, FileShare.None);
@@ -52,6 +58,12 @@ namespace SabTool.CLI.Commands.Cinematics
                 outputFilePath = Path.Combine(outputDirectory, CienmaticsRootPathDLC, "cinematics.json");
 
                 outputFileDirectory = Path.GetDirectoryName(outputFilePath);
+                if (outputFileDirectory == null)
+                {
+                    Console.WriteLine("ERROR: Output directory is invalid!");
+                    return false;
+                }
+
                 Directory.CreateDirectory(outputFileDirectory);
 
                 using var fsDLC = new FileStream(outputFilePath, FileMode.Create, FileAccess.Write, FileShare.None);

@@ -74,5 +74,39 @@
 
             Console.WriteLine("  DLC France Map loaded!");
         }
+
+        public StreamBlock? GetDynamicBlock(Crc crc, bool canCheckDLC = true)
+        {
+            if (!IsResourceLoaded(Resource.Maps))
+                Load(Resource.Maps);
+
+            var block = GlobalMap!.GetDynamicBlock(crc);
+            if (block == null && canCheckDLC)
+                block = DLCGlobalMap!.GetDynamicBlock(crc);
+
+            return block;
+        }
+
+        public StreamBlock? GetStreamBlock(Crc crc)
+        {
+            if (!IsResourceLoaded(Resource.Maps))
+                Load(Resource.Maps);
+
+            var dynBlock = GlobalMap!.GetDynamicBlock(crc);
+            if (dynBlock != null)
+                return dynBlock;
+
+            dynBlock = DLCGlobalMap!.GetDynamicBlock(crc);
+            if (dynBlock != null)
+                return dynBlock;
+
+            if (FranceMap!.Interiors.TryGetValue(crc, out var interiorBlock))
+                return interiorBlock;
+
+            if (FranceMap!.CinematicBlocks.TryGetValue(crc, out var cinematicBlock))
+                return cinematicBlock;
+
+            return null;
+        }
     }
 }
