@@ -10,6 +10,7 @@ namespace SabTool.Data.Packs
         public uint NumStreamBlocks { get; set; }
         public StreamBlock[][] StreamBlockArray { get; set; } = new StreamBlock[2][];
         public Dictionary<Crc, StreamBlock> DynamicBlocks { get; } = new();
+        public Dictionary<Crc, StreamBlock> StaticBlocks { get; } = new();
 
         public StreamBlock GetDynamicBlock(Crc crc)
         {

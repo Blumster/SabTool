@@ -48,29 +48,23 @@ public class PackCategory : BaseCategory
 
             Directory.CreateDirectory(outputDir);
 
-            var dynPacks = Directory.GetFiles(packsBaseDir, "*.dynpack", SearchOption.AllDirectories);
-            if (dynPacks.Length == 0)
-            {
-                Console.WriteLine("ERROR: No files found in the input directory!");
-                return false;
-            }
-
-            foreach (var dynPack in dynPacks)
-            {
+            foreach (var dynPack in Directory.GetFiles(packsBaseDir, "*.dynpack", SearchOption.AllDirectories))
                 ProcessDynpack(dynPack, Path.Combine(outputDir, Path.GetDirectoryName(dynPack)![(packsBaseDir.Length + 1)..]));
-            }
 
-            /*var palettePacks = Directory.GetFiles(packsBaseDir, "*.palettepack", SearchOption.AllDirectories);
-            if (palettePacks.Length == 0)
-            {
-                Console.WriteLine("ERROR: No files found in the input directory!");
-                return false;
-            }
-
-            foreach (var palettePack in palettePacks)
-            {
+            foreach (var palettePack in Directory.GetFiles(packsBaseDir, "*.palettepack", SearchOption.AllDirectories))
                 ProcessPalettepack(palettePack, Path.Combine(outputDir, Path.GetDirectoryName(palettePack)![(packsBaseDir.Length + 1)..]));
-            }*/
+
+            foreach (var pack in Directory.GetFiles(packsBaseDir, "*.pack", SearchOption.AllDirectories))
+            {
+                var outputPath = Path.Combine(outputDir, Path.GetDirectoryName(pack)![(packsBaseDir.Length + 1)..]);
+                var packLower = pack.ToLowerInvariant();
+
+                // Hack for unnamed palettepack and dynpack entities
+                if (packLower.Contains("palettes"))
+                    ProcessPalettepack(pack, outputPath);
+                else if (packLower.Contains("dynamic"))
+                    ProcessDynpack(pack, outputPath);
+            }
 
             return true;
         }
@@ -106,7 +100,7 @@ public class PackCategory : BaseCategory
             {
                 using var reader = new BinaryReader(fs);
 
-                PackSerializer.DeserializeRaw(fs, streamBlock);
+                PackSerializer.DeserializeRaw(fs, streamBlock, true);
 
                 StreamBlockSerializer.Export(streamBlock, outputDir);
             }
@@ -128,7 +122,7 @@ public class PackCategory : BaseCategory
             else
                 crc = new Crc(Hash.StringToHash(fileName));
 
-            var streamBlock = ResourceDepot.Instance.GlobalMap!.GetDynamicBlock(crc);
+            var streamBlock = ResourceDepot.Instance.GetStreamBlock(crc);
             if (streamBlock == null)
             {
                 Console.WriteLine($"Dynamic StreamBlock {crc} was not found in global.map!");
@@ -140,14 +134,14 @@ public class PackCategory : BaseCategory
 
             Directory.CreateDirectory(outputDir);
 
-            /*using (var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+            using (var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
                 using var reader = new BinaryReader(fs);
 
-                PackSerializer.DeserializeRaw(fs, streamBlock);
+                PackSerializer.DeserializeRaw(fs, streamBlock, true);
 
                 StreamBlockSerializer.Export(streamBlock, outputDir);
-            }*/
+            }
 
             Console.WriteLine();
 

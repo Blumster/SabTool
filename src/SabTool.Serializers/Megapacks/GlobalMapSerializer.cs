@@ -60,6 +60,8 @@ public static class GlobalMapSerializer
                 streamBlock.Flags = (streamBlock.Flags & 0xFFFFFFF8) | 0x100;
 
                 globalMap.StreamBlockArray[streamBlockArrayIdx][i] = streamBlock;
+
+                globalMap.StaticBlocks.Add(streamBlock.Id, streamBlock);
             }
             while (++i < globalMap.NumStreamBlocks);
 

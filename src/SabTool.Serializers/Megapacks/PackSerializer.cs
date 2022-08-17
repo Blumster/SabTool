@@ -12,7 +12,7 @@ using SabTool.Utils.Extensions;
 
 public static class PackSerializer
 {
-    public static object? DeserializeRaw(Stream stream, StreamBlock streamBlock)
+    public static void DeserializeRaw(Stream stream, StreamBlock streamBlock, bool loadData = false)
     {
         using var reader = new BinaryReader(stream, Encoding.UTF8, true);
 
@@ -20,9 +20,9 @@ public static class PackSerializer
             throw new Exception("Invalid pack header found!");
 
         StreamBlockSerializer.DeserializeHeader(streamBlock, stream);
-        StreamBlockSerializer.ReadPayloads(streamBlock, stream); // TODO: is this good here?
 
-        return null;
+        if (loadData)
+            StreamBlockSerializer.ReadPayloads(streamBlock, stream); // TODO: is this good here? it loads everything into memory
     }
 
     public static void SerializeRaw(object value, Stream stream)
@@ -30,9 +30,8 @@ public static class PackSerializer
 
     }
 
-    public static object? DeserializeJSON(Stream stream)
+    public static void DeserializeJSON(Stream stream)
     {
-        return null;
     }
 
     public static void SerializeJSON(object value, Stream stream)

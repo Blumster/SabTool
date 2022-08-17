@@ -100,6 +100,10 @@
             if (dynBlock != null)
                 return dynBlock;
 
+            var staticBlock = GlobalMap.GetStaticBlock(crc);
+            if (staticBlock != null)
+                return staticBlock;
+
             if (FranceMap!.Interiors.TryGetValue(crc, out var interiorBlock))
                 return interiorBlock;
 
