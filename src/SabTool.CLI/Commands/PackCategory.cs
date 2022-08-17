@@ -60,9 +60,9 @@ public class PackCategory : BaseCategory
                 var packLower = pack.ToLowerInvariant();
 
                 // Hack for unnamed palettepack and dynpack entities
-                if (packLower.Contains("palettes"))
+                if (packLower.Contains("palettes0.megapack"))
                     ProcessPalettepack(pack, outputPath);
-                else if (packLower.Contains("dynamic"))
+                else if (packLower.Contains("dynamic0.megapack"))
                     ProcessDynpack(pack, outputPath);
             }
 
