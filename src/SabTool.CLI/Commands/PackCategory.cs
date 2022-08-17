@@ -82,8 +82,7 @@ public class PackCategory : BaseCategory
                 crc = new Crc(Hash.StringToHash(fileName));
 
             var streamBlock = ResourceDepot.Instance.GlobalMap!.GetDynamicBlock(crc);
-            if (streamBlock == null)
-                streamBlock = ResourceDepot.Instance.DLCGlobalMap!.GetDynamicBlock(crc);
+            streamBlock ??= ResourceDepot.Instance.DLCGlobalMap!.GetDynamicBlock(crc);
 
             if (streamBlock == null)
             {
@@ -104,8 +103,6 @@ public class PackCategory : BaseCategory
 
                 StreamBlockSerializer.Export(streamBlock, outputDir);
             }
-
-            Console.WriteLine();
 
             return true;
         }
@@ -142,8 +139,6 @@ public class PackCategory : BaseCategory
 
                 StreamBlockSerializer.Export(streamBlock, outputDir);
             }
-
-            Console.WriteLine();
 
             return true;
         }
