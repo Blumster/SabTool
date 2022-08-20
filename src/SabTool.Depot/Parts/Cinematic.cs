@@ -21,7 +21,7 @@ namespace SabTool.Depot
         private List<Cinematic>? DLCCinematics { get; set; }
         private List<RandomText>? RandomTexts { get; set; }
 
-        public bool LoadCinematics()
+        private bool LoadCinematics()
         {
             Console.WriteLine("Loading Cinematics...");
 

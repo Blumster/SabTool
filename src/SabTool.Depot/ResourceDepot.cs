@@ -15,8 +15,9 @@
         Cinematics = 0x0040,
         Sounds     = 0x0080,
         Lua        = 0x0100,
+        Misc       = 0x0200,
 
-        All        = Megapacks | Materials | Shaders | LooseFiles | Maps | Blueprints | Cinematics | Sounds | Lua,
+        All        = Megapacks | Materials | Shaders | LooseFiles | Maps | Blueprints | Cinematics | Sounds | Lua | Misc,
     }
 
     public partial class ResourceDepot
@@ -132,7 +133,7 @@
             return true;
         }
 
-        public string GetGamePath(string path)
+        private string GetGamePath(string path)
         {
             return Path.Combine(GamePath, path);
         }

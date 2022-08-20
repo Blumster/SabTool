@@ -4,21 +4,8 @@
     {
         private static readonly Lazy<ResourceDepot> _resourceDepotInstance = new(() => new ResourceDepot());
 
-        public static ResourceDepot Instance
-        {
-            get
-            {
-                return _resourceDepotInstance.Value;
-            }
-        }
-
-        public static bool IsInitialized
-        {
-            get
-            {
-                return _resourceDepotInstance.IsValueCreated && !string.IsNullOrWhiteSpace(_resourceDepotInstance.Value.GamePath);
-            }
-        }
+        public static ResourceDepot Instance => _resourceDepotInstance.Value;
+        public static bool IsInitialized => _resourceDepotInstance.IsValueCreated && !string.IsNullOrWhiteSpace(_resourceDepotInstance.Value.GamePath);
 
         private record ResourceLoadingInfo(Func<bool> LoaderFunction, HashSet<Resource> Dependencies);
         private static Dictionary<Resource, ResourceLoadingInfo> LoadingInfos { get; } = new()
@@ -32,6 +19,7 @@
             { Resource.Cinematics, new(() => Instance.LoadCinematics(), new() { Resource.LooseFiles }) },
             { Resource.Sounds,     new(() => Instance.LoadSounds(),     new() { Resource.None }) },
             { Resource.Lua,        new(() => Instance.LoadLua(),        new() { Resource.None }) },
+            { Resource.Misc,       new(() => Instance.LoadMisc(),       new() { Resource.None }) },
         };
 
         private static HashSet<Resource> CollectAllDependencies(Resource resource, HashSet<Resource>? container = null)

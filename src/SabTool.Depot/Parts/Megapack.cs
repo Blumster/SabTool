@@ -40,7 +40,7 @@
 
         private Dictionary<string, MegapackEntry> Megapacks { get; } = new();
 
-        public bool LoadMegapacks()
+        private bool LoadMegapacks()
         {
             Console.WriteLine("Loading Megapacks...");
 

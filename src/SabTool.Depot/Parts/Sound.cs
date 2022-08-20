@@ -8,7 +8,7 @@
         private List<SoundPack> SoundPacks { get; set; } = new();
         private List<SoundPack> DLCSoundPacks { get; set; } = new();
 
-        public bool LoadSounds()
+        private bool LoadSounds()
         {
             Console.WriteLine("Loading Sounds...");
 

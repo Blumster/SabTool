@@ -11,7 +11,7 @@
         public GlobalMap? DLCGlobalMap { get; set; }
         public FranceMap? FranceMap { get; set; }
 
-        public bool LoadMaps()
+        private bool LoadMaps()
         {
             Console.WriteLine("Loading Maps...");
 
@@ -73,18 +73,6 @@
             FranceMapSerializer.DeserializeRaw(DLCFranceMapStream, FranceMap);
 
             Console.WriteLine("  DLC France Map loaded!");
-        }
-
-        public StreamBlock? GetDynamicBlock(Crc crc, bool canCheckDLC = true)
-        {
-            if (!IsResourceLoaded(Resource.Maps))
-                Load(Resource.Maps);
-
-            var block = GlobalMap!.GetDynamicBlock(crc);
-            if (block == null && canCheckDLC)
-                block = DLCGlobalMap!.GetDynamicBlock(crc);
-
-            return block;
         }
 
         public StreamBlock? GetStreamBlock(Crc crc)

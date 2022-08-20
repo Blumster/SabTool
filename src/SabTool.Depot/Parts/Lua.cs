@@ -7,7 +7,7 @@ public partial class ResourceDepot
 {
     private LuaPackage? LuaScriptsPackage { get; set; }
 
-    public bool LoadLua()
+    private bool LoadLua()
     {
         Console.WriteLine("Loading Lua...");
 

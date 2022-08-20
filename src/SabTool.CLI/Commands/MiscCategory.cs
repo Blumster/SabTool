@@ -31,14 +31,15 @@ public class MiscCategory : BaseCategory
             }
 
             ResourceDepot.Instance.Initialize(arguments.ElementAt(0));
+            ResourceDepot.Instance.Load(Resource.Misc);
 
             var outputFolder = arguments.ElementAt(1);
 
             Directory.CreateDirectory(outputFolder);
 
-            using var fs = new FileStream(ResourceDepot.Instance.GetGamePath("France.hei"), FileMode.Open, FileAccess.Read, FileShare.Read);
+            using var outFile = new FileStream(Path.Combine(outputFolder, "hei5.json"), FileMode.Create, FileAccess.Write, FileShare.None);
 
-            var hei5Container = Hei5Serializer.DeserializeRaw(fs);
+            Hei5Serializer.SerializeJSON(ResourceDepot.Instance.Hei5Container!, outFile);
 
             return true;
         }
