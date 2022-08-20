@@ -132,7 +132,7 @@
             return true;
         }
 
-        private string GetGamePath(string path)
+        public string GetGamePath(string path)
         {
             return Path.Combine(GamePath, path);
         }
