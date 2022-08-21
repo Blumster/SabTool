@@ -7,10 +7,8 @@ using Newtonsoft.Json;
 namespace SabTool.Serializers.Packs.Assets;
 
 using SabTool.Data.Packs.Assets;
-using SabTool.Serializers.Graphics;
 using SabTool.Utils;
 using SabTool.Utils.Extensions;
-using System.Xml.Linq;
 
 public static class TextureAssetSerializer
 {
@@ -18,9 +16,10 @@ public static class TextureAssetSerializer
     {
         using var reader = new BinaryReader(stream, Encoding.UTF8, true);
 
-        var textureAsset = new TextureAsset(name);
-
-        textureAsset.Name = reader.ReadStringFromCharArray(reader.ReadInt32());
+        var textureAsset = new TextureAsset(name)
+        {
+            Name = reader.ReadStringFromCharArray(reader.ReadInt32())
+        };
 
         Hash.StringToHash(textureAsset.Name); // save to the lookup table
 
@@ -107,6 +106,8 @@ public static class TextureAssetSerializer
             }
             catch
             {
+                Console.WriteLine($"Unknown error while processing DDS in {textureAsset.Name}!");
+
                 textureAsset.DDSFiles[i] = null;
             }
         }
