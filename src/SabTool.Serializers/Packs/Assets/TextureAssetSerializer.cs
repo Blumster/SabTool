@@ -43,96 +43,100 @@ public static class TextureAssetSerializer
         if (numChunks == 0)
             numChunks = 1;
 
-        textureAsset.DDSFiles = new byte[numChunks][];
+        textureAsset.DDSFiles = new byte[1][];
+        var ddsData = new byte[dataSize];
 
-        for (var i = 0; i < numChunks; ++i)
+        if (numChunks > 1)
         {
-            try
+            byte[][] ddsChunksData = new byte[numChunks][];
+
+            for (var i = 0; i < numChunks; ++i)
             {
-                var ddsData = reader.ReadDecompressedBytes(reader.ReadInt32());
-
-                textureAsset.DDSFiles[i] = new byte[128 + ddsData.Length - numMipmaps * 24];
-
-                using var ddsStream = new MemoryStream(textureAsset.DDSFiles[i], true);
-                using var ddsWriter = new BinaryWriter(ddsStream);
-
-                var ddsFlags = 0x1007; // DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT
-                var ddsSurfaceFlags = 0x1000; // DDSCAPS_TEXTURE
-                if (numMipmaps > 0)
-                {
-                    ddsFlags |= 0x20000; // DDSD_MIPMAPCOUNT
-                    ddsSurfaceFlags |= 0x400008; // DDSCAPS_COMPLEX | DDSCAPS_MIPMAP
-                }
-
-                uint ddspfFlags = 0x4;
-                uint ddspfFourCC = fmt;
-                uint ddspfRGBBitCount = 0;
-                uint ddspfRBitMask = 0;
-                uint ddspfGBitMask = 0;
-                uint ddspfBBitMask = 0;
-                uint ddspfABitMask = 0;
-
-                if (fmt == 0x15)
-                {
-                    ddspfFlags = 0x41;
-                    ddspfFourCC = 0;
-                    ddspfRGBBitCount = 32;
-                    ddspfRBitMask = 0x00ff0000;
-                    ddspfGBitMask = 0x0000ff00;
-                    ddspfBBitMask = 0x000000ff;
-                    ddspfABitMask = 0xff000000;
-                }
-
-                // DDS_HEADER start
-
-                ddsWriter.Write(0x20534444); // dwMagic
-                ddsWriter.Write(124); // dwSize
-                ddsWriter.Write(ddsFlags); // dwFlags
-                ddsWriter.Write((int)height); // dwHeight
-                ddsWriter.Write((int)width); // dwWidth
-                ddsWriter.Write(0); // dwPitchOrLinearSize
-                ddsWriter.Write(0); // dwDepth
-                ddsWriter.Write((int)numMipmaps); // dwMipMapCount
-
-                for (var k = 0; k < 11; ++k)
-                    ddsWriter.Write(0); // dwReserved[11]
-
-                // DDS_PIXELFORMAT start
-                ddsWriter.Write(0x20); // dwSize
-                ddsWriter.Write(ddspfFlags); // dwFlags
-                ddsWriter.Write(ddspfFourCC); // dwFourCC
-                ddsWriter.Write(ddspfRGBBitCount); // dwRGBBitCount
-                ddsWriter.Write(ddspfRBitMask); // dwRBitMask
-                ddsWriter.Write(ddspfGBitMask); // dwGBitMask
-                ddsWriter.Write(ddspfBBitMask); // dwBBitMask
-                ddsWriter.Write(ddspfABitMask); // dwABitMask
-                                    // DDS_PIXELFORMAT end
-
-                ddsWriter.Write(ddsSurfaceFlags); // dwSurfaceFlags
-                ddsWriter.Write(0); // dwCubemapFlags
-                ddsWriter.Write(0); // dwCaps3
-                ddsWriter.Write(0); // dwCaps4
-                ddsWriter.Write(0); // dwReserved2
-
-                // DDS_HEADER end
-
-                var ddsDataOff = 0;
-
-                for (var j = 0; j < numMipmaps; ++j)
-                {
-                    var ddsDataLength = BitConverter.ToInt32(ddsData, ddsDataOff + 20);
-
-                    ddsWriter.Write(ddsData, ddsDataOff + 24, ddsDataLength);
-
-                    ddsDataOff += ddsDataLength + 24;
-                }
+                ddsChunksData[i] = reader.ReadDecompressedBytes(reader.ReadInt32());
             }
-            catch
+
+            var offset = 0;
+            for (var i = 0; i < numChunks; ++i)
             {
-                Console.WriteLine($"Unknown error while processing DDS in {textureAsset.Name}!");
-
-                textureAsset.DDSFiles[i] = null;
+                ddsChunksData[i].CopyTo(ddsData, offset);
+                offset += ddsChunksData[i].Length;
             }
+        }
+
+        textureAsset.DDSFiles[0] = new byte[128 + ddsData.Length - numMipmaps * 24];
+
+        using var ddsStream = new MemoryStream(textureAsset.DDSFiles[0], true);
+        using var ddsWriter = new BinaryWriter(ddsStream);
+
+        var ddsFlags = 0x1007; // DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT
+        var ddsSurfaceFlags = 0x1000; // DDSCAPS_TEXTURE
+        if (numMipmaps > 0)
+        {
+            ddsFlags |= 0x20000; // DDSD_MIPMAPCOUNT
+            ddsSurfaceFlags |= 0x400008; // DDSCAPS_COMPLEX | DDSCAPS_MIPMAP
+        }
+
+        uint ddspfFlags = 0x4;
+        uint ddspfFourCC = fmt;
+        uint ddspfRGBBitCount = 0;
+        uint ddspfRBitMask = 0;
+        uint ddspfGBitMask = 0;
+        uint ddspfBBitMask = 0;
+        uint ddspfABitMask = 0;
+
+        if (fmt == 0x15)
+        {
+            ddspfFlags = 0x41;
+            ddspfFourCC = 0;
+            ddspfRGBBitCount = 32;
+            ddspfRBitMask = 0x00ff0000;
+            ddspfGBitMask = 0x0000ff00;
+            ddspfBBitMask = 0x000000ff;
+            ddspfABitMask = 0xff000000;
+        }
+
+        // DDS_HEADER start
+
+        ddsWriter.Write(0x20534444); // dwMagic
+        ddsWriter.Write(124); // dwSize
+        ddsWriter.Write(ddsFlags); // dwFlags
+        ddsWriter.Write((int)height); // dwHeight
+        ddsWriter.Write((int)width); // dwWidth
+        ddsWriter.Write(0); // dwPitchOrLinearSize
+        ddsWriter.Write(0); // dwDepth
+        ddsWriter.Write((int)numMipmaps); // dwMipMapCount
+
+        for (var k = 0; k < 11; ++k)
+            ddsWriter.Write(0); // dwReserved[11]
+
+        // DDS_PIXELFORMAT start
+        ddsWriter.Write(0x20); // dwSize
+        ddsWriter.Write(ddspfFlags); // dwFlags
+        ddsWriter.Write(ddspfFourCC); // dwFourCC
+        ddsWriter.Write(ddspfRGBBitCount); // dwRGBBitCount
+        ddsWriter.Write(ddspfRBitMask); // dwRBitMask
+        ddsWriter.Write(ddspfGBitMask); // dwGBitMask
+        ddsWriter.Write(ddspfBBitMask); // dwBBitMask
+        ddsWriter.Write(ddspfABitMask); // dwABitMask
+                                        // DDS_PIXELFORMAT end
+
+        ddsWriter.Write(ddsSurfaceFlags); // dwSurfaceFlags
+        ddsWriter.Write(0); // dwCubemapFlags
+        ddsWriter.Write(0); // dwCaps3
+        ddsWriter.Write(0); // dwCaps4
+        ddsWriter.Write(0); // dwReserved2
+
+        // DDS_HEADER end
+
+        var ddsDataOff = 0;
+
+        for (var j = 0; j < numMipmaps; ++j)
+        {
+            var ddsDataLength = BitConverter.ToInt32(ddsData, ddsDataOff + 20);
+
+            ddsWriter.Write(ddsData, ddsDataOff + 24, ddsDataLength);
+
+            ddsDataOff += ddsDataLength + 24;
         }
 
         return textureAsset;
