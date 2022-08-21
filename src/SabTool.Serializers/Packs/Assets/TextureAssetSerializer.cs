@@ -27,7 +27,7 @@ public static class TextureAssetSerializer
             textureAsset.Name = textureAsset.Name[..textureAsset.Name.IndexOf('~')];
 
         var fmt = reader.ReadUInt32();
-        if (fmt != 0x31545844 && fmt != 0x33545844 && fmt != 0x35545844) // DXT1, DXT3, DXT5
+        if (fmt != 0x31545844 && fmt != 0x33545844 && fmt != 0x35545844 && fmt != 0x15) // DXT1, DXT3, DXT5, RGBA32
         {
             Console.WriteLine($"Texture ({textureAsset.Name}) has unsupported format: 0x{fmt:X8}");
             return null;
@@ -56,9 +56,32 @@ public static class TextureAssetSerializer
                 using var ddsStream = new MemoryStream(textureAsset.DDSFiles[i], true);
                 using var ddsWriter = new BinaryWriter(ddsStream);
 
-                var ddsFlags = 0x1007;
+                var ddsFlags = 0x1007; // DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT
+                var ddsSurfaceFlags = 0x1000; // DDSCAPS_TEXTURE
                 if (numMipmaps > 0)
-                    ddsFlags |= 0x20000;
+                {
+                    ddsFlags |= 0x20000; // DDSD_MIPMAPCOUNT
+                    ddsSurfaceFlags |= 0x400008; // DDSCAPS_COMPLEX | DDSCAPS_MIPMAP
+                }
+
+                uint ddspfFlags = 0x4;
+                uint ddspfFourCC = fmt;
+                uint ddspfRGBBitCount = 0;
+                uint ddspfRBitMask = 0;
+                uint ddspfGBitMask = 0;
+                uint ddspfBBitMask = 0;
+                uint ddspfABitMask = 0;
+
+                if (fmt == 0x15)
+                {
+                    ddspfFlags = 0x41;
+                    ddspfFourCC = 0;
+                    ddspfRGBBitCount = 32;
+                    ddspfRBitMask = 0x00ff0000;
+                    ddspfGBitMask = 0x0000ff00;
+                    ddspfBBitMask = 0x000000ff;
+                    ddspfABitMask = 0xff000000;
+                }
 
                 // DDS_HEADER start
 
@@ -76,17 +99,17 @@ public static class TextureAssetSerializer
 
                 // DDS_PIXELFORMAT start
                 ddsWriter.Write(0x20); // dwSize
-                ddsWriter.Write(0x4); // dwFlags
-                ddsWriter.Write(fmt); // dwFourCC
-                ddsWriter.Write(0); // dwRGBBitCount
-                ddsWriter.Write(0); // dwRBitMask
-                ddsWriter.Write(0); // dwGBitMask
-                ddsWriter.Write(0); // dwBBitMask
-                ddsWriter.Write(0); // dwABitMask
+                ddsWriter.Write(ddspfFlags); // dwFlags
+                ddsWriter.Write(ddspfFourCC); // dwFourCC
+                ddsWriter.Write(ddspfRGBBitCount); // dwRGBBitCount
+                ddsWriter.Write(ddspfRBitMask); // dwRBitMask
+                ddsWriter.Write(ddspfGBitMask); // dwGBitMask
+                ddsWriter.Write(ddspfBBitMask); // dwBBitMask
+                ddsWriter.Write(ddspfABitMask); // dwABitMask
                                     // DDS_PIXELFORMAT end
 
-                ddsWriter.Write(0x1000); // dwCaps
-                ddsWriter.Write(0); // dwCaps2
+                ddsWriter.Write(ddsSurfaceFlags); // dwSurfaceFlags
+                ddsWriter.Write(0); // dwCubemapFlags
                 ddsWriter.Write(0); // dwCaps3
                 ddsWriter.Write(0); // dwCaps4
                 ddsWriter.Write(0); // dwReserved2
