@@ -5,7 +5,7 @@ using SabTool.Serializers.Misc;
 
 public partial class ResourceDepot
 {
-    public Hei5Container? Hei5Container { get; private set; }
+    public Heightmap? Hei5Container { get; private set; }
 
     private bool LoadMisc()
     {
