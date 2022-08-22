@@ -2,29 +2,28 @@
 
 namespace SabTool.Data.Misc;
 
-public class Hei5Container
+public class Heightmap // HEI5
 {
-    public List<Hei1> Hei1s { get; } = new();
-    public int MaxGridX { get; set; }
-    public int MaxGridZ { get; set; }
-    public float GridSize { get; set; }
-    public float TopLeftX { get; set; }
-    public float TopLeftY { get; set; }
-    public float TopLeftZ { get; set; }
+    public List<HeightmapCell> Cells { get; } = new();
+    public int CellCountMaxX { get; set; }
+    public int CellCountMaxY { get; set; }
+    public float CellSize { get; set; } // Cells are rectangular
+    public float MinX { get; set; }
+    public float MinY { get; set; }
+    public float MinZ { get; set; }
 }
 
-public class Hei1 // Height map?? (find the y coordinate for a given x and z coordinate)
+public class HeightmapCell // HEI1
 {
-    public int Unk32 { get; set; }
-    public int Unk36 { get; set; }
-    public float Unk40 { get; set; }
-    public float Unk44 { get; set; }
-    public float Unk44Calc { get; set; }
-    public byte[] Unk48 { get; set; }
-    public float StartPosX { get; set; }
-    public float StartPosY { get; set; }
-    public float StartPosZ { get; set; }
-    public float EndPosX { get; set; }
-    public float EndPosY { get; set; }
-    public float EndPosZ { get; set; }
+    public int PointCountX { get; set; }
+    public int PointCountY { get; set; }
+    public float HeightRangeMax { get; set; }
+    public float HeightRangeMin { get; set; }
+    public byte[] PointData { get; set; }
+    public float MinX { get; set; }
+    public const float MinY = 0.0f; // MinY is always 0.0f
+    public float MinZ { get; set; }
+    public float MaxX { get; set; }
+    public const float MaxY = 0.0f; // MaxY is always 0.0f
+    public float MaxZ { get; set; }
 }
