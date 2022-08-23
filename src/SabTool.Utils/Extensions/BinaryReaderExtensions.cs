@@ -190,5 +190,21 @@ namespace SabTool.Utils.Extensions
 
             return result;
         }
+
+        public static T ReadWithPosition<T>(this BinaryReader reader, long position, Func<T> readerFunction)
+        {
+            var currentPosition = reader.BaseStream.Position;
+
+            try
+            {
+                reader.BaseStream.Position = position;
+
+                return readerFunction();
+            }
+            finally
+            {
+                reader.BaseStream.Position = currentPosition;
+            }
+        }
     }
 }
