@@ -1,53 +1,52 @@
-﻿namespace SabTool.Depot
+﻿namespace SabTool.Depot;
+
+using SabTool.Data.Graphics;
+using SabTool.Serializers.Graphics;
+using SabTool.Utils;
+
+public partial class ResourceDepot
 {
-    using Data.Graphics;
-    using Serializers.Graphics;
-    using Utils;
+    private const string MaterialsFileName = "France.materials";
+    private Dictionary<Crc, Material> Materials { get; } = new();
 
-    public partial class ResourceDepot
+    private bool LoadMaterials()
     {
-        private const string MaterialsFileName = "France.materials";
-        private Dictionary<Crc, Material> Materials { get; } = new();
-
-        private bool LoadMaterials()
+        try
         {
-            try
+            using var fs = new FileStream(GetGamePath(MaterialsFileName), FileMode.Open, FileAccess.Read, FileShare.Read);
+
+            Console.WriteLine($"Loading Materials from {MaterialsFileName}...");
+
+            var materials = MaterialSerializer.DeserializeRaw(fs);
+
+            foreach (var material in materials)
             {
-                using var fs = new FileStream(GetGamePath(MaterialsFileName), FileMode.Open, FileAccess.Read, FileShare.Read);
-
-                Console.WriteLine($"Loading Materials from {MaterialsFileName}...");
-
-                var materials = MaterialSerializer.DeserializeRaw(fs);
-
-                foreach (var material in materials)
+                for (var i = 0; i < material.Keys.Count; ++i)
                 {
-                    for (var i = 0; i < material.Keys.Count; ++i)
-                    {
-                        Materials.Add(material.Keys[i], material);
-                    }
+                    Materials.Add(material.Keys[i], material);
                 }
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Exception while loading materials: {ex}");
-                return false;
-            }
-
-            Console.WriteLine("Materials loaded!");
-            return true;
         }
-
-        public Material? GetMaterial(Crc key)
+        catch (Exception ex)
         {
-            return Materials.TryGetValue(key, out var value) ? value : null;
+            Console.WriteLine($"Exception while loading materials: {ex}");
+            return false;
         }
 
-        public IEnumerable<KeyValuePair<Crc, Material>> GetMaterials()
-        {
-            foreach (var material in Materials)
-                yield return material;
+        Console.WriteLine("Materials loaded!");
+        return true;
+    }
 
-            yield break;
-        }
+    public Material? GetMaterial(Crc key)
+    {
+        return Materials.TryGetValue(key, out var value) ? value : null;
+    }
+
+    public IEnumerable<KeyValuePair<Crc, Material>> GetMaterials()
+    {
+        foreach (var material in Materials)
+            yield return material;
+
+        yield break;
     }
 }

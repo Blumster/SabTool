@@ -1,83 +1,82 @@
-﻿namespace SabTool.Depot
+﻿namespace SabTool.Depot;
+
+using SabTool.Data.Sounds;
+using SabTool.Serializers.Sounds;
+
+public partial class ResourceDepot
 {
-    using Data.Sounds;
-    using Serializers.Sounds;
+    private List<SoundPack> SoundPacks { get; set; } = new();
+    private List<SoundPack> DLCSoundPacks { get; set; } = new();
 
-    public partial class ResourceDepot
+    private bool LoadSounds()
     {
-        private List<SoundPack> SoundPacks { get; set; } = new();
-        private List<SoundPack> DLCSoundPacks { get; set; } = new();
+        Console.WriteLine("Loading Sounds...");
 
-        private bool LoadSounds()
+        LoadSoundPacks();
+        LoadDLCSoundPacks();
+
+        Console.WriteLine("Sounds loaded!");
+
+        LoadedResources |= Resource.Sounds;
+
+        return true;
+    }
+
+    private void LoadSoundPacks()
+    {
+        Console.WriteLine("  Loading Sound packs...");
+
+        var inputFolder = GetGamePath(@"Sound");
+
+        foreach (var filePath in Directory.EnumerateFiles(inputFolder, "*.pck"))
         {
-            Console.WriteLine("Loading Sounds...");
+            var relativeFilePath = Path.GetRelativePath(inputFolder, filePath);
 
-            LoadSoundPacks();
-            LoadDLCSoundPacks();
+            Console.WriteLine($"    Loading {relativeFilePath}...");
 
-            Console.WriteLine("Sounds loaded!");
+            using var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
 
-            LoadedResources |= Resource.Sounds;
+            var soundPack = SoundPackSerializer.DeserializeRaw(fs);
 
-            return true;
+            soundPack.FilePath = relativeFilePath;
+
+            SoundPacks.Add(soundPack);
         }
 
-        private void LoadSoundPacks()
+        Console.WriteLine("  Sound packs loaded!");
+    }
+
+    private void LoadDLCSoundPacks()
+    {
+        Console.WriteLine("  Loading DLC Sound packs...");
+
+        var inputFolder = GetGamePath(@"DLC\01\sound");
+
+        foreach (var filePath in Directory.EnumerateFiles(inputFolder, "*.pck"))
         {
-            Console.WriteLine("  Loading Sound packs...");
+            var relativeFilePath = Path.GetRelativePath(inputFolder, filePath);
 
-            var inputFolder = GetGamePath(@"Sound");
+            Console.WriteLine($"    Loading {relativeFilePath}...");
 
-            foreach (var filePath in Directory.EnumerateFiles(inputFolder, "*.pck"))
-            {
-                var relativeFilePath = Path.GetRelativePath(inputFolder, filePath);
+            using var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
 
-                Console.WriteLine($"    Loading {relativeFilePath}...");
+            var soundPack = SoundPackSerializer.DeserializeRaw(fs);
 
-                using var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            soundPack.FilePath = relativeFilePath;
 
-                var soundPack = SoundPackSerializer.DeserializeRaw(fs);
-
-                soundPack.FilePath = relativeFilePath;
-
-                SoundPacks.Add(soundPack);
-            }
-
-            Console.WriteLine("  Sound packs loaded!");
+            DLCSoundPacks.Add(soundPack);
         }
 
-        private void LoadDLCSoundPacks()
-        {
-            Console.WriteLine("  Loading DLC Sound packs...");
+        Console.WriteLine("  DLC Sound packs loaded!");
+    }
 
-            var inputFolder = GetGamePath(@"DLC\01\sound");
+    public IEnumerable<SoundPack> GetSoundPacks()
+    {
+        return SoundPacks;
+    }
 
-            foreach (var filePath in Directory.EnumerateFiles(inputFolder, "*.pck"))
-            {
-                var relativeFilePath = Path.GetRelativePath(inputFolder, filePath);
-
-                Console.WriteLine($"    Loading {relativeFilePath}...");
-
-                using var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-
-                var soundPack = SoundPackSerializer.DeserializeRaw(fs);
-
-                soundPack.FilePath = relativeFilePath;
-
-                DLCSoundPacks.Add(soundPack);
-            }
-
-            Console.WriteLine("  DLC Sound packs loaded!");
-        }
-
-        public IEnumerable<SoundPack> GetSoundPacks()
-        {
-            return SoundPacks;
-        }
-
-        public IEnumerable<SoundPack> GetDLCSoundPacks()
-        {
-            return DLCSoundPacks;
-        }
+    public IEnumerable<SoundPack> GetDLCSoundPacks()
+    {
+        return DLCSoundPacks;
     }
 }

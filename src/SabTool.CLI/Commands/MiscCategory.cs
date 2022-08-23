@@ -62,10 +62,10 @@ public class MiscCategory : BaseCategory
 
             Directory.CreateDirectory(outputFolder);
 
-            using (FileStream outFile = new(Path.Combine(outputFolder, "hei.ply"), FileMode.Create, FileAccess.Write, FileShare.None))
-            {
-                Hei5Serializer.ExportPly(ResourceDepot.Instance.Hei5Container!, outFile);
-            }
+            using var outFile = new FileStream(Path.Combine(outputFolder, "hei.ply"), FileMode.Create, FileAccess.Write, FileShare.None);
+
+            Hei5Serializer.ExportPly(ResourceDepot.Instance.Hei5Container!, outFile);
+
             return true;
         }
     }

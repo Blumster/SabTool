@@ -1,104 +1,103 @@
-﻿namespace SabTool.Depot
+﻿namespace SabTool.Depot;
+
+using SabTool.Data.Packs;
+using SabTool.Serializers.Megapacks;
+using SabTool.Serializers.Packs;
+using SabTool.Utils;
+
+public partial class ResourceDepot
 {
-    using Data.Packs;
-    using SabTool.Serializers.Packs;
-    using Serializers.Megapacks;
-    using Utils;
+    public GlobalMap? GlobalMap { get; set; }
+    public GlobalMap? DLCGlobalMap { get; set; }
+    public FranceMap? FranceMap { get; set; }
 
-    public partial class ResourceDepot
+    private bool LoadMaps()
     {
-        public GlobalMap? GlobalMap { get; set; }
-        public GlobalMap? DLCGlobalMap { get; set; }
-        public FranceMap? FranceMap { get; set; }
+        Console.WriteLine("Loading Maps...");
 
-        private bool LoadMaps()
-        {
-            Console.WriteLine("Loading Maps...");
+        LoadGlobalMap();
+        LoadDLCGlobalMap();
+        LoadFranceMap();
+        LoadDLCFranceMap();
 
-            LoadGlobalMap();
-            LoadDLCGlobalMap();
-            LoadFranceMap();
-            LoadDLCFranceMap();
+        LoadedResources |= Resource.Maps;
 
-            LoadedResources |= Resource.Maps;
+        Console.WriteLine("Maps loaded!");
 
-            Console.WriteLine("Maps loaded!");
+        return true;
+    }
 
-            return true;
-        }
+    private void LoadGlobalMap()
+    {
+        Console.WriteLine("  Loading Global Map...");
 
-        private void LoadGlobalMap()
-        {
-            Console.WriteLine("  Loading Global Map...");
+        using var globalMapStream = GetLooseFile("global.map") ?? throw new Exception($"global.map is missing from {LooseFilesFileName}!");
 
-            using var globalMapStream = GetLooseFile("global.map") ?? throw new Exception($"global.map is missing from {LooseFilesFileName}!");
+        GlobalMap = GlobalMapSerializer.DeserializeRaw(globalMapStream);
 
-            GlobalMap = GlobalMapSerializer.DeserializeRaw(globalMapStream);
+        Console.WriteLine("  Global Map loaded!");
+    }
 
-            Console.WriteLine("  Global Map loaded!");
-        }
+    private void LoadDLCGlobalMap()
+    {
+        Console.WriteLine("  Loading DLC Global Map...");
 
-        private void LoadDLCGlobalMap()
-        {
-            Console.WriteLine("  Loading DLC Global Map...");
+        var DLCGlobalMapPath = GetGamePath(@"DLC\01\Global.map");
 
-            var DLCGlobalMapPath = GetGamePath(@"DLC\01\Global.map");
+        using var DLCGlobalMapStream = new FileStream(DLCGlobalMapPath, FileMode.Open, FileAccess.Read, FileShare.Read);
 
-            using var DLCGlobalMapStream = new FileStream(DLCGlobalMapPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+        DLCGlobalMap = GlobalMapSerializer.DeserializeRaw(DLCGlobalMapStream);
 
-            DLCGlobalMap = GlobalMapSerializer.DeserializeRaw(DLCGlobalMapStream);
+        Console.WriteLine("  DLC Global Map loaded!");
+    }
 
-            Console.WriteLine("  DLC Global Map loaded!");
-        }
+    private void LoadFranceMap()
+    {
+        Console.WriteLine("  Loading France Map...");
 
-        private void LoadFranceMap()
-        {
-            Console.WriteLine("  Loading France Map...");
+        using var franceMapStream = GetLooseFile("France.map") ?? throw new Exception($"france.map is missing from {LooseFilesFileName}!");
 
-            using var franceMapStream = GetLooseFile("France.map") ?? throw new Exception($"france.map is missing from {LooseFilesFileName}!");
+        FranceMap = FranceMapSerializer.DeserializeRaw(franceMapStream);
 
-            FranceMap = FranceMapSerializer.DeserializeRaw(franceMapStream);
+        Console.WriteLine("  France Map loaded!");
+    }
 
-            Console.WriteLine("  France Map loaded!");
-        }
+    private void LoadDLCFranceMap()
+    {
+        Console.WriteLine("Loading DLC France Map...");
 
-        private void LoadDLCFranceMap()
-        {
-            Console.WriteLine("Loading DLC France Map...");
+        var DLCFranceMapPath = GetGamePath(@"DLC\01\FRANCE.map");
 
-            var DLCFranceMapPath = GetGamePath(@"DLC\01\FRANCE.map");
+        using var DLCFranceMapStream = new FileStream(DLCFranceMapPath, FileMode.Open, FileAccess.Read, FileShare.Read);
 
-            using var DLCFranceMapStream = new FileStream(DLCFranceMapPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+        FranceMapSerializer.DeserializeRaw(DLCFranceMapStream, FranceMap);
 
-            FranceMapSerializer.DeserializeRaw(DLCFranceMapStream, FranceMap);
+        Console.WriteLine("  DLC France Map loaded!");
+    }
 
-            Console.WriteLine("  DLC France Map loaded!");
-        }
+    public StreamBlock? GetStreamBlock(Crc crc)
+    {
+        if (!IsResourceLoaded(Resource.Maps))
+            Load(Resource.Maps);
 
-        public StreamBlock? GetStreamBlock(Crc crc)
-        {
-            if (!IsResourceLoaded(Resource.Maps))
-                Load(Resource.Maps);
+        var dynBlock = GlobalMap!.GetDynamicBlock(crc);
+        if (dynBlock != null)
+            return dynBlock;
 
-            var dynBlock = GlobalMap!.GetDynamicBlock(crc);
-            if (dynBlock != null)
-                return dynBlock;
+        dynBlock = DLCGlobalMap!.GetDynamicBlock(crc);
+        if (dynBlock != null)
+            return dynBlock;
 
-            dynBlock = DLCGlobalMap!.GetDynamicBlock(crc);
-            if (dynBlock != null)
-                return dynBlock;
+        var staticBlock = GlobalMap.GetStaticBlock(crc);
+        if (staticBlock != null)
+            return staticBlock;
 
-            var staticBlock = GlobalMap.GetStaticBlock(crc);
-            if (staticBlock != null)
-                return staticBlock;
+        if (FranceMap!.Interiors.TryGetValue(crc, out var interiorBlock))
+            return interiorBlock;
 
-            if (FranceMap!.Interiors.TryGetValue(crc, out var interiorBlock))
-                return interiorBlock;
+        if (FranceMap!.CinematicBlocks.TryGetValue(crc, out var cinematicBlock))
+            return cinematicBlock;
 
-            if (FranceMap!.CinematicBlocks.TryGetValue(crc, out var cinematicBlock))
-                return cinematicBlock;
-
-            return null;
-        }
+        return null;
     }
 }

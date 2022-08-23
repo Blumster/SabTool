@@ -1,149 +1,155 @@
-﻿namespace SabTool.Depot
-{
-    using Data.Packs;
-    using Serializers.Megapacks;
-    using Utils;
+﻿namespace SabTool.Depot;
 
-    public enum MegapackType
+using SabTool.Data.Packs;
+using SabTool.Serializers.Megapacks;
+using SabTool.Utils;
+
+public enum MegapackType
+{
+    Global,
+    France,
+    GlobalDLC,
+    FranceDLC
+}
+
+public partial class ResourceDepot
+{
+    private static readonly List<string> PossibleMegapackFiles = new()
     {
-        Global,
-        France,
-        GlobalDLC,
-        FranceDLC
+        @"Global\Dynamic0.megapack",
+        @"Global\palettes0.megapack",
+        @"Global\patchdynamic0.megapack",
+        @"Global\patchpalettes0.megapack",
+        @"France\BelleStart0.kiloPack",
+        @"France\Mega.megapack",
+        @"France\Mega0.megapack",
+        @"France\Mega1.megapack",
+        @"France\Mega2.megapack",
+        @"France\Mega3.megapack",
+        @"France\Mega4.megapack",
+        @"France\Start_German0.kiloPack",
+        @"France\Start0.kiloPack",
+        @"France\patchmega.megapack",
+        @"France\patchmega0.megapack",
+        @"France\patchmega1.megapack",
+        @"France\patchmega2.megapack",
+        @"France\patchmega3.megapack",
+        @"DLC\01\dlc01mega0.megapack",
+        @"DLC\01\Dynamic0.megapack",
+    };
+
+    private Dictionary<string, MegapackEntry> Megapacks { get; } = new();
+
+    private bool LoadMegapacks()
+    {
+        Console.WriteLine("Loading Megapacks...");
+
+        foreach (var megapack in PossibleMegapackFiles)
+        {
+            var filePath = GetGamePath(megapack);
+
+            if (!File.Exists(filePath))
+                continue;
+
+            var entry = new MegapackEntry(filePath);
+
+            if (!LoadMegapack(entry))
+                continue;
+
+            Megapacks.Add(megapack, entry);
+        }
+
+        LoadEditNodes();
+
+        LoadedResources |= Resource.Megapacks;
+
+        Console.WriteLine($"Loaded {Megapacks.Count} Megapacks!");
+
+        return true;
     }
 
-    public partial class ResourceDepot
+    private static bool LoadMegapack(MegapackEntry entry)
     {
-        private static readonly List<string> PossibleMegapackFiles = new()
+        try
         {
-            @"Global\Dynamic0.megapack",
-            @"Global\palettes0.megapack",
-            @"Global\patchdynamic0.megapack",
-            @"Global\patchpalettes0.megapack",
-            @"France\BelleStart0.kiloPack",
-            @"France\Mega.megapack",
-            @"France\Mega0.megapack",
-            @"France\Mega1.megapack",
-            @"France\Mega2.megapack",
-            @"France\Mega3.megapack",
-            @"France\Mega4.megapack",
-            @"France\Start_German0.kiloPack",
-            @"France\Start0.kiloPack",
-            @"France\patchmega.megapack",
-            @"France\patchmega0.megapack",
-            @"France\patchmega1.megapack",
-            @"France\patchmega2.megapack",
-            @"France\patchmega3.megapack",
-            @"DLC\01\dlc01mega0.megapack",
-            @"DLC\01\Dynamic0.megapack",
-        };
-
-        private Dictionary<string, MegapackEntry> Megapacks { get; } = new();
-
-        private bool LoadMegapacks()
+            entry.Megapack = MegapackSerializer.DeserializeRaw(entry.Stream);
+        }
+        catch (Exception ex)
         {
-            Console.WriteLine("Loading Megapacks...");
+            Console.WriteLine($"Exception while loading Megapack {entry.FilePath}! Exception: {ex}");
 
-            foreach (var megapack in PossibleMegapackFiles)
-            {
-                var filePath = GetGamePath(megapack);
-
-                if (!File.Exists(filePath))
-                    continue;
-
-                var entry = new MegapackEntry(filePath);
-
-                if (!LoadMegapack(entry))
-                    continue;
-
-                Megapacks.Add(megapack, entry);
-            }
-
-            LoadedResources |= Resource.Megapacks;
-
-            Console.WriteLine($"Loaded {Megapacks.Count} Megapacks!");
-
-            return true;
+            return false;
         }
 
-        private static bool LoadMegapack(MegapackEntry entry)
+        Console.WriteLine($"Loaded Megapack: {entry.FilePath}");
+        
+        return true;
+    }
+
+    private static void LoadEditNodes()
+    {
+        Console.WriteLine($"Loaded EditNodes: ");
+    }
+
+    public MemoryStream? GetPackStream(Crc key)
+    {
+        foreach (var megapackPairs in Megapacks)
         {
-            try
+            var megapackEntry = megapackPairs.Value;
+            var megapack = megapackEntry.Megapack;
+            if (megapack == null)
+                continue;
+
+            if (megapack.FileEntries.TryGetValue(key, out var fileEntry))
             {
-                entry.Megapack = MegapackSerializer.DeserializeRaw(entry.Stream);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Exception while loading Megapack {entry.FilePath}! Exception: {ex}");
+                var memoryStream = new MemoryStream(fileEntry.Size);
+                memoryStream.SetLength(fileEntry.Size);
 
-                return false;
-            }
-
-            Console.WriteLine($"Loaded Megapack: {entry.FilePath}");
-            
-            return true;
-        }
-
-        public MemoryStream? GetPackStream(Crc key)
-        {
-            foreach (var megapackPairs in Megapacks)
-            {
-                var megapackEntry = megapackPairs.Value;
-                var megapack = megapackEntry.Megapack;
-                if (megapack == null)
-                    continue;
-
-                if (megapack.FileEntries.TryGetValue(key, out var fileEntry))
+                lock (megapackEntry.Stream)
                 {
-                    var memoryStream = new MemoryStream(fileEntry.Size);
-                    memoryStream.SetLength(fileEntry.Size);
+                    megapackEntry.Stream.Position = fileEntry.Offset;
 
-                    lock (megapackEntry.Stream)
-                    {
-                        megapackEntry.Stream.Position = fileEntry.Offset;
-
-                        if (megapackEntry.Stream.Read(memoryStream.GetBuffer(), 0, fileEntry.Size) != fileEntry.Size)
-                            return null;
-                    }
-
-                    return memoryStream;
+                    if (megapackEntry.Stream.Read(memoryStream.GetBuffer(), 0, fileEntry.Size) != fileEntry.Size)
+                        return null;
                 }
+
+                return memoryStream;
             }
-
-            return null;
         }
 
-        public IEnumerable<string> GetMegapacks()
-        {
-            foreach (var megapack in Megapacks)
-                yield return megapack.Key;
-        }
+        return null;
+    }
 
-        public IEnumerable<FileEntry> GetFileEntries(string key)
+    public IEnumerable<string> GetMegapacks()
+    {
+        foreach (var megapack in Megapacks)
+            yield return megapack.Key;
+    }
+
+    public IEnumerable<FileEntry> GetFileEntries(string key)
+    {
+        if (Megapacks.TryGetValue(key, out var entry))
         {
-            if (Megapacks.TryGetValue(key, out var entry))
+            if (entry.Megapack == null)
+                yield break;
+
+            foreach (var entryPair in entry.Megapack.FileEntries)
             {
-                if (entry.Megapack == null)
-                    yield break;
-
-                foreach (var entryPair in entry.Megapack.FileEntries)
-                {
-                    yield return entryPair.Value;
-                }
+                yield return entryPair.Value;
             }
         }
+    }
 
-        private class MegapackEntry
+    private class MegapackEntry
+    {
+        public string FilePath { get; set; }
+        public Megapack? Megapack { get; set; }
+        public FileStream Stream { get; set; }
+
+        public MegapackEntry(string filePath)
         {
-            public string FilePath { get; set; }
-            public Megapack? Megapack { get; set; }
-            public FileStream Stream { get; set; }
-
-            public MegapackEntry(string filePath)
-            {
-                FilePath = filePath;
-                Stream = new FileStream(FilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-            }
+            FilePath = filePath;
+            Stream = new FileStream(FilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
         }
     }
 }
