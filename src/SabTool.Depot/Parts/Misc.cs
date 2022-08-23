@@ -5,15 +5,15 @@ using SabTool.Serializers.Misc;
 
 public partial class ResourceDepot
 {
-    public Heightmap? Hei5Container { get; private set; }
+    public Heightmap? Heightmap { get; private set; }
 
     private bool LoadMisc()
     {
         Console.WriteLine("Loading Misc...");
 
-        using var hei5Stream = new FileStream(GetGamePath("France.hei"), FileMode.Open, FileAccess.Read, FileShare.Read);
+        using var heightmapStream = new FileStream(GetGamePath("France.hei"), FileMode.Open, FileAccess.Read, FileShare.Read);
 
-        Hei5Container = Hei5Serializer.DeserializeRaw(hei5Stream);
+        Heightmap = HeightmapSerializer.DeserializeRaw(heightmapStream);
 
         Console.WriteLine("Misc loaded!");
 

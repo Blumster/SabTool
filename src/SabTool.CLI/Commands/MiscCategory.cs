@@ -10,7 +10,7 @@ public class MiscCategory : BaseCategory
     public override string Shortcut => "mi";
     public override string Usage => "<sub command name>";
 
-    public class UnpackHei5Command : BaseCommand
+    public class UnpackHeightmapCommand : BaseCommand
     {
         public override string Key { get; } = "unpack-hei5";
         public override string Shortcut { get; } = "uh5";
@@ -31,9 +31,9 @@ public class MiscCategory : BaseCategory
 
             Directory.CreateDirectory(outputFolder);
 
-            using var outFile = new FileStream(Path.Combine(outputFolder, "hei5.json"), FileMode.Create, FileAccess.Write, FileShare.None);
+            using var outFile = new FileStream(Path.Combine(outputFolder, "heightmap.json"), FileMode.Create, FileAccess.Write, FileShare.None);
 
-            Hei5Serializer.SerializeJSON(ResourceDepot.Instance.Hei5Container!, outFile);
+            HeightmapSerializer.SerializeJSON(ResourceDepot.Instance.Heightmap!, outFile);
 
             return true;
         }
@@ -64,7 +64,7 @@ public class MiscCategory : BaseCategory
 
             using (FileStream outFile = new(Path.Combine(outputFolder, "hei.ply"), FileMode.Create, FileAccess.Write, FileShare.None))
             {
-                Hei5Serializer.ExportPly(ResourceDepot.Instance.Hei5Container!, outFile);
+                HeightmapSerializer.ExportPly(ResourceDepot.Instance.Heightmap!, outFile);
             }
             return true;
         }
