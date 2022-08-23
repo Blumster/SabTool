@@ -73,30 +73,23 @@ public static class MeshSerializer
             var vals = reader.ReadConstArray(2, reader.ReadInt32);
 
             for (var i = 0; i < mesh.NumUnk1; ++i)
-            {
                 mesh.Unk1s[i] = Unk1Serializer.DeserializeRaw(stream);
-            }
         }
 
         for (var i = 0; i < mesh.NumUnk3; ++i)
-        {
             mesh.Unk3s[i] = Unk3Serializer.DeserializeRaw(stream);
-        }
 
         for (var i = 0; i < mesh.NumVertexHolder; ++i)
-        {
             mesh.VertexHolders[i] = VertexHolderSerializer.DeserializeRaw(stream);
-        }
 
         for (var i = 0; i < mesh.NumPrimitives; ++i)
-        {
             mesh.Primitives[i] = PrimitiveSerializer.DeserializeRaw(stream, mesh);
-        }
 
         for (var i = 0; i < mesh.NumSegments; ++i)
-        {
             mesh.Segments[i] = SegmentSerializer.DeserializeRaw(stream, mesh);
-        }
+
+        if (stream.Length != stream.Position)
+            throw new Exception($"Under or over read of the mesh asset! Pos: {stream.Position} | Expected: {stream.Length}");
 
         return mesh;
     }

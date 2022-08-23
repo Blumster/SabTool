@@ -25,16 +25,12 @@ public static class TextureAssetSerializer
             Name = reader.ReadStringFromCharArray(nameLength)
         };
 
-        Hash.StringToHash(textureAsset.Name); // save to the lookup table
-
         if (textureAsset.Name.Contains('~'))
-        {
             textureAsset.Name = textureAsset.Name[..textureAsset.Name.IndexOf('~')];
 
-            Hash.StringToHash(textureAsset.Name); // save to the lookup table again
-        }
+        Hash.StringToHash(textureAsset.Name); // save to the lookup table
 
-        Hash.StringToHash($"{textureAsset.Name}_High"); // save to the lookup table the high version
+        //Hash.StringToHash($"{textureAsset.Name}_High"); // save to the lookup table the high version
 
         var fmt = reader.ReadUInt32();
         if (fmt != 0x31545844 && fmt != 0x33545844 && fmt != 0x35545844 && fmt != 0x15) // DXT1, DXT3, DXT5, RGBA32
