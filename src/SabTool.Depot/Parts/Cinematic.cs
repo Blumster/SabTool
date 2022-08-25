@@ -1,196 +1,189 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace SabTool.Depot;
 
-namespace SabTool.Depot
+using SabTool.Data.Cinematics;
+using SabTool.Serializers.Cinematics;
+
+public partial class ResourceDepot
 {
-    using Data.Cinematics;
-    using Serializers.Cinematics;
+    private const string DialogTextFileName = "GameText.dlg";
 
-    public partial class ResourceDepot
+    private Dictionary<string, Dialog> Dialogs { get; set; } = new();
+    private List<ConversationStructure>? Conversations { get; set; }
+    private List<ConversationStructure>? DLCConversations { get; set; }
+    private List<ComplexAnimStructure>? ComplexAnims { get; set; }
+    private List<Cinematic>? Cinematics { get; set; }
+    private List<Cinematic>? DLCCinematics { get; set; }
+    private List<RandomText>? RandomTexts { get; set; }
+
+    private bool LoadCinematics()
     {
-        private const string DialogTextFileName = "GameText.dlg";
+        Console.WriteLine("Loading Cinematics...");
 
-        private Dictionary<string, Dialog> Dialogs { get; set; } = new();
-        private List<ConversationStructure>? Conversations { get; set; }
-        private List<ConversationStructure>? DLCConversations { get; set; }
-        private List<ComplexAnimStructure>? ComplexAnims { get; set; }
-        private List<Cinematic>? Cinematics { get; set; }
-        private List<Cinematic>? DLCCinematics { get; set; }
-        private List<RandomText>? RandomTexts { get; set; }
+        LoadDialogs();
+        LoadConversations();
+        LoadDLCConversations();
+        LoadComplexAnims();
+        LoadCinematicsFile();
+        LoadDLCCinematicsFile();
+        LoadRandomTexts();
 
-        private bool LoadCinematics()
+        Console.WriteLine("Cinematics loaded!");
+
+        LoadedResources |= Resource.Cinematics;
+
+        return true;
+    }
+
+    private void LoadDialogs()
+    {
+        Console.WriteLine("  Loading Dialogs...");
+
+        var dialogPath = GetGamePath(@"Cinematics\Dialog");
+
+        foreach (var folder in Directory.GetDirectories(dialogPath))
         {
-            Console.WriteLine("Loading Cinematics...");
+            var dialogFilePath = Path.Combine(folder, DialogTextFileName);
+            if (!File.Exists(dialogFilePath))
+                continue;
 
-            LoadDialogs();
-            LoadConversations();
-            LoadDLCConversations();
-            LoadComplexAnims();
-            LoadCinematicsFile();
-            LoadDLCCinematicsFile();
-            LoadRandomTexts();
+            var language = new DirectoryInfo(folder).Name;
 
-            Console.WriteLine("Cinematics loaded!");
+            using var fs = new FileStream(dialogFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
 
-            LoadedResources |= Resource.Cinematics;
-
-            return true;
+            Dialogs.Add(language, DialogSerializer.DeserialzieRaw(fs));
         }
 
-        private void LoadDialogs()
-        {
-            Console.WriteLine("  Loading Dialogs...");
+        Console.WriteLine("  Dialogs loaded!");
+    }
 
-            var dialogPath = GetGamePath(@"Cinematics\Dialog");
+    private void LoadConversations()
+    {
+        Console.WriteLine("  Loading Conversations...");
 
-            foreach (var folder in Directory.GetDirectories(dialogPath))
-            {
-                var dialogFilePath = Path.Combine(folder, DialogTextFileName);
-                if (!File.Exists(dialogFilePath))
-                    continue;
+        using var conversationsStream = GetLooseFile(@"Cinematics\Conversations\Conversations.cnvpack") ?? throw new Exception("Conversations cnvpack is missing from the loosefiles!");
 
-                var language = new DirectoryInfo(folder).Name;
+        Conversations = ConversationsSerializer.DeserializeRaw(conversationsStream);
 
-                using var fs = new FileStream(dialogFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+        Console.WriteLine("  Conversations loaded!");
+    }
 
-                Dialogs.Add(language, DialogSerializer.DeserialzieRaw(fs));
-            }
+    private void LoadDLCConversations()
+    {
+        Console.WriteLine("  Loading DLC Conversations...");
 
-            Console.WriteLine("  Dialogs loaded!");
-        }
+        var conversationsFilePath = GetGamePath(@"DLC\01\Cinematics\Conversations\Conversations.cnvpack");
 
-        private void LoadConversations()
-        {
-            Console.WriteLine("  Loading Conversations...");
+        using var fs = new FileStream(conversationsFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
 
-            using var conversationsStream = GetLooseFile(@"Cinematics\Conversations\Conversations.cnvpack") ?? throw new Exception("Conversations cnvpack is missing from the loosefiles!");
+        DLCConversations = ConversationsSerializer.DeserializeRaw(fs);
 
-            Conversations = ConversationsSerializer.DeserializeRaw(conversationsStream);
+        Console.WriteLine("  DLC Conversations loaded!");
+    }
 
-            Console.WriteLine("  Conversations loaded!");
-        }
+    private void LoadComplexAnims()
+    {
+        Console.WriteLine("  Loading ComplexAnims...");
 
-        private void LoadDLCConversations()
-        {
-            Console.WriteLine("  Loading DLC Conversations...");
+        var complexAnimsFilePath = GetGamePath(@"Cinematics\ComplexAnimations\ComplexAnims.cxa");
 
-            var conversationsFilePath = GetGamePath(@"DLC\01\Cinematics\Conversations\Conversations.cnvpack");
+        using var fs = new FileStream(complexAnimsFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
 
-            using var fs = new FileStream(conversationsFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+        ComplexAnims = ComplexAnimsSerializer.DeserializeRaw(fs);
 
-            DLCConversations = ConversationsSerializer.DeserializeRaw(fs);
+        Console.WriteLine("  ComplexAnims loaded!");
+    }
 
-            Console.WriteLine("  DLC Conversations loaded!");
-        }
+    private void LoadCinematicsFile()
+    {
+        Console.WriteLine("  Loading Cinematics...");
 
-        private void LoadComplexAnims()
-        {
-            Console.WriteLine("  Loading ComplexAnims...");
+        using var cinematicsStream = GetLooseFile(@"Cinematics\Cinematics.cinpack") ?? throw new Exception("Cinematics cinpack is missing from the loose files!");
 
-            var complexAnimsFilePath = GetGamePath(@"Cinematics\ComplexAnimations\ComplexAnims.cxa");
+        Cinematics = CinematicsSerializer.DeserializeRaw(cinematicsStream);
 
-            using var fs = new FileStream(complexAnimsFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+        Console.WriteLine("  Cinematics loaded!");
+    }
 
-            ComplexAnims = ComplexAnimsSerializer.DeserializeRaw(fs);
+    private void LoadDLCCinematicsFile()
+    {
+        Console.WriteLine("  Loading DLC Cinematics...");
 
-            Console.WriteLine("  ComplexAnims loaded!");
-        }
+        var complexAnimsFilePath = GetGamePath(@"DLC\01\Cinematics\Cinematics.cinpack");
 
-        private void LoadCinematicsFile()
-        {
-            Console.WriteLine("  Loading Cinematics...");
+        using var fs = new FileStream(complexAnimsFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
 
-            using var cinematicsStream = GetLooseFile(@"Cinematics\Cinematics.cinpack") ?? throw new Exception("Cinematics cinpack is missing from the loose files!");
+        DLCCinematics = CinematicsSerializer.DeserializeRaw(fs);
 
-            Cinematics = CinematicsSerializer.DeserializeRaw(cinematicsStream);
+        Console.WriteLine("  DLC Cinematics loaded!");
+    }
 
-            Console.WriteLine("  Cinematics loaded!");
-        }
+    private void LoadRandomTexts()
+    {
+        Console.WriteLine("  Loading Random Texts...");
 
-        private void LoadDLCCinematicsFile()
-        {
-            Console.WriteLine("  Loading DLC Cinematics...");
+        var randomTextsFilePath = GetGamePath(@"Cinematics\Dialog\Random\RandomText.rnd");
 
-            var complexAnimsFilePath = GetGamePath(@"DLC\01\Cinematics\Cinematics.cinpack");
+        using var fs = new FileStream(randomTextsFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
 
-            using var fs = new FileStream(complexAnimsFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+        RandomTexts = RandomTextSerializer.DeserializeRaw(fs);
 
-            DLCCinematics = CinematicsSerializer.DeserializeRaw(fs);
+        Console.WriteLine("  Random Texts loaded!");
+    }
 
-            Console.WriteLine("  DLC Cinematics loaded!");
-        }
+    public IEnumerable<KeyValuePair<string, Dialog>> GetDialogs()
+    {
+        if (!IsResourceLoaded(Resource.Cinematics))
+            Load(Resource.Cinematics);
 
-        private void LoadRandomTexts()
-        {
-            Console.WriteLine("  Loading Random Texts...");
+        foreach (var dialog in Dialogs)
+            yield return dialog;
+    }
 
-            var randomTextsFilePath = GetGamePath(@"Cinematics\Dialog\Random\RandomText.rnd");
+    public IEnumerable<ConversationStructure> GetConversations()
+    {
+        if (!IsResourceLoaded(Resource.Cinematics))
+            Load(Resource.Cinematics);
 
-            using var fs = new FileStream(randomTextsFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+        return Conversations!;
+    }
 
-            RandomTexts = RandomTextSerializer.DeserializeRaw(fs);
+    public IEnumerable<ConversationStructure> GetDLCConversations()
+    {
+        if (!IsResourceLoaded(Resource.Cinematics))
+            Load(Resource.Cinematics);
 
-            Console.WriteLine("  Random Texts loaded!");
-        }
+        return DLCConversations!;
+    }
 
-        public IEnumerable<KeyValuePair<string, Dialog>> GetDialogs()
-        {
-            if (!IsResourceLoaded(Resource.Cinematics))
-                Load(Resource.Cinematics);
+    public IEnumerable<ComplexAnimStructure> GetComplexAnimStructures()
+    {
+        if (!IsResourceLoaded(Resource.Cinematics))
+            Load(Resource.Cinematics);
 
-            foreach (var dialog in Dialogs)
-                yield return dialog;
-        }
+        return ComplexAnims!;
+    }
 
-        public IEnumerable<ConversationStructure> GetConversations()
-        {
-            if (!IsResourceLoaded(Resource.Cinematics))
-                Load(Resource.Cinematics);
+    public IEnumerable<Cinematic> GetCinematics()
+    {
+        if (!IsResourceLoaded(Resource.Cinematics))
+            Load(Resource.Cinematics);
 
-            return Conversations!;
-        }
+        return Cinematics!;
+    }
 
-        public IEnumerable<ConversationStructure> GetDLCConversations()
-        {
-            if (!IsResourceLoaded(Resource.Cinematics))
-                Load(Resource.Cinematics);
+    public IEnumerable<Cinematic> GetDLCCinematics()
+    {
+        if (!IsResourceLoaded(Resource.Cinematics))
+            Load(Resource.Cinematics);
 
-            return DLCConversations!;
-        }
+        return DLCCinematics!;
+    }
 
-        public IEnumerable<ComplexAnimStructure> GetComplexAnimStructures()
-        {
-            if (!IsResourceLoaded(Resource.Cinematics))
-                Load(Resource.Cinematics);
+    public IEnumerable<RandomText> GetRandomTexts()
+    {
+        if (!IsResourceLoaded(Resource.Cinematics))
+            Load(Resource.Cinematics);
 
-            return ComplexAnims!;
-        }
-
-        public IEnumerable<Cinematic> GetCinematics()
-        {
-            if (!IsResourceLoaded(Resource.Cinematics))
-                Load(Resource.Cinematics);
-
-            return Cinematics!;
-        }
-
-        public IEnumerable<Cinematic> GetDLCCinematics()
-        {
-            if (!IsResourceLoaded(Resource.Cinematics))
-                Load(Resource.Cinematics);
-
-            return DLCCinematics!;
-        }
-
-        public IEnumerable<RandomText> GetRandomTexts()
-        {
-            if (!IsResourceLoaded(Resource.Cinematics))
-                Load(Resource.Cinematics);
-
-            return RandomTexts!;
-        }
+        return RandomTexts!;
     }
 }

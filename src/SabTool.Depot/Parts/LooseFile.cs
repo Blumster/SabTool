@@ -1,59 +1,58 @@
-﻿namespace SabTool.Depot
+﻿namespace SabTool.Depot;
+
+using SabTool.Data;
+using SabTool.Serializers;
+
+public partial class ResourceDepot
 {
-    using Data;
-    using Serializers;
+    private const string LooseFilesFileName = @"France\loosefiles_BinPC.pack";
+    private ICollection<LooseFile>? LooseFiles { get; set; }
+    private FileStream? LooseFilesFileStream { get; set; }
 
-    public partial class ResourceDepot
+    private bool LoadLooseFiles()
     {
-        private const string LooseFilesFileName = @"France\loosefiles_BinPC.pack";
-        private ICollection<LooseFile>? LooseFiles { get; set; }
-        private FileStream? LooseFilesFileStream { get; set; }
-
-        private bool LoadLooseFiles()
+        try
         {
-            try
-            {
-                Console.WriteLine($"Loading LooseFiles from {LooseFilesFileName}...");
+            Console.WriteLine($"Loading LooseFiles from {LooseFilesFileName}...");
 
-                LooseFilesFileStream = new FileStream(GetGamePath(LooseFilesFileName), FileMode.Open, FileAccess.Read, FileShare.Read);
+            LooseFilesFileStream = new FileStream(GetGamePath(LooseFilesFileName), FileMode.Open, FileAccess.Read, FileShare.Read);
 
-                LooseFiles = LooseFileSerializer.DeserializeRaw(LooseFilesFileStream);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Exception while loading LooseFiles: {ex}");
-                return false;
-            }
-
-            LoadedResources |= Resource.LooseFiles;
-
-            Console.WriteLine("LooseFiles loaded!");
-            return true;
+            LooseFiles = LooseFileSerializer.DeserializeRaw(LooseFilesFileStream);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Exception while loading LooseFiles: {ex}");
+            return false;
         }
 
-        public MemoryStream? GetLooseFile(string name)
+        LoadedResources |= Resource.LooseFiles;
+
+        Console.WriteLine("LooseFiles loaded!");
+        return true;
+    }
+
+    public MemoryStream? GetLooseFile(string name)
+    {
+        var entry = LooseFiles?.FirstOrDefault(file => file.Name == name);
+        if (entry == null || LooseFilesFileStream == null)
+            return null;
+
+        var memoryStream = new MemoryStream(entry.Size);
+        memoryStream.SetLength(entry.Size);
+
+        lock (LooseFilesFileStream)
         {
-            var entry = LooseFiles?.FirstOrDefault(file => file.Name == name);
-            if (entry == null || LooseFilesFileStream == null)
+            LooseFilesFileStream.Position = entry.DataOffset;
+
+            if (LooseFilesFileStream.Read(memoryStream.GetBuffer(), 0, entry.Size) != entry.Size)
                 return null;
-
-            var memoryStream = new MemoryStream(entry.Size);
-            memoryStream.SetLength(entry.Size);
-
-            lock (LooseFilesFileStream)
-            {
-                LooseFilesFileStream.Position = entry.DataOffset;
-
-                if (LooseFilesFileStream.Read(memoryStream.GetBuffer(), 0, entry.Size) != entry.Size)
-                    return null;
-            }
-
-            return memoryStream;
         }
 
-        public IEnumerable<LooseFile>? GetLooseFiles()
-        {
-            return LooseFiles;
-        }
+        return memoryStream;
+    }
+
+    public IEnumerable<LooseFile>? GetLooseFiles()
+    {
+        return LooseFiles;
     }
 }

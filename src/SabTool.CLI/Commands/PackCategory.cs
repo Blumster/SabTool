@@ -29,7 +29,7 @@ public class PackCategory : BaseCategory
             }
 
             ResourceDepot.Instance.Initialize(arguments.ElementAt(0));
-            ResourceDepot.Instance.Load(Resource.Megapacks);
+            ResourceDepot.Instance.Load(Resource.Maps);
 
             var packsBaseDir = arguments.ElementAt(1);
             var outputDir = Path.GetDirectoryName(packsBaseDir);

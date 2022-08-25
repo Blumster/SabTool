@@ -16,15 +16,21 @@ public static class TextureAssetSerializer
     {
         using var reader = new BinaryReader(stream, Encoding.UTF8, true);
 
+        var nameLength = reader.ReadInt32();
+        if (nameLength > 1024)
+            return null;
+
         var textureAsset = new TextureAsset(name)
         {
-            Name = reader.ReadStringFromCharArray(reader.ReadInt32())
+            Name = reader.ReadStringFromCharArray(nameLength)
         };
-
-        Hash.StringToHash(textureAsset.Name); // save to the lookup table
 
         if (textureAsset.Name.Contains('~'))
             textureAsset.Name = textureAsset.Name[..textureAsset.Name.IndexOf('~')];
+
+        Hash.StringToHash(textureAsset.Name); // save to the lookup table
+
+        //Hash.StringToHash($"{textureAsset.Name}_High"); // save to the lookup table the high version
 
         var fmt = reader.ReadUInt32();
         if (fmt != 0x31545844 && fmt != 0x33545844 && fmt != 0x35545844 && fmt != 0x15) // DXT1, DXT3, DXT5, RGBA32
@@ -43,56 +49,57 @@ public static class TextureAssetSerializer
         if (numChunks == 0)
             numChunks = 1;
 
-        textureAsset.DDSFiles = new byte[1][];
-        var ddsData = new byte[dataSize];
+        byte[] ddsData;
 
-        if (numChunks > 1)
+        if (numChunks == 1)
         {
-            byte[][] ddsChunksData = new byte[numChunks][];
+            ddsData = reader.ReadDecompressedBytes(reader.ReadInt32());
+        }
+        else
+        {
+            ddsData = new byte[dataSize];
+            var off = 0;
 
             for (var i = 0; i < numChunks; ++i)
             {
-                ddsChunksData[i] = reader.ReadDecompressedBytes(reader.ReadInt32());
-            }
+                var chunk = reader.ReadDecompressedBytes(reader.ReadInt32());
 
-            var offset = 0;
-            for (var i = 0; i < numChunks; ++i)
-            {
-                ddsChunksData[i].CopyTo(ddsData, offset);
-                offset += ddsChunksData[i].Length;
+                Array.Copy(chunk, 0, ddsData, off, chunk.Length);
+
+                off += chunk.Length;
             }
         }
 
-        textureAsset.DDSFiles[0] = new byte[128 + ddsData.Length - numMipmaps * 24];
+        textureAsset.DDSFile = new byte[128 + ddsData.Length - numMipmaps * 24];
 
-        using var ddsStream = new MemoryStream(textureAsset.DDSFiles[0], true);
+        using var ddsStream = new MemoryStream(textureAsset.DDSFile, true);
         using var ddsWriter = new BinaryWriter(ddsStream);
 
-        var ddsFlags = 0x1007; // DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT
-        var ddsSurfaceFlags = 0x1000; // DDSCAPS_TEXTURE
+        var ddsFlags = 0x1007u; // DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT
+        var ddsSurfaceFlags = 0x1000u; // DDSCAPS_TEXTURE
         if (numMipmaps > 0)
         {
-            ddsFlags |= 0x20000; // DDSD_MIPMAPCOUNT
-            ddsSurfaceFlags |= 0x400008; // DDSCAPS_COMPLEX | DDSCAPS_MIPMAP
+            ddsFlags |= 0x20000u; // DDSD_MIPMAPCOUNT
+            ddsSurfaceFlags |= 0x400008u; // DDSCAPS_COMPLEX | DDSCAPS_MIPMAP
         }
 
-        uint ddspfFlags = 0x4;
-        uint ddspfFourCC = fmt;
-        uint ddspfRGBBitCount = 0;
-        uint ddspfRBitMask = 0;
-        uint ddspfGBitMask = 0;
-        uint ddspfBBitMask = 0;
-        uint ddspfABitMask = 0;
+        var ddspfFlags = 0x4u;
+        var ddspfFourCC = fmt;
+        var ddspfRGBBitCount = 0u;
+        var ddspfRBitMask = 0u;
+        var ddspfGBitMask = 0u;
+        var ddspfBBitMask = 0u;
+        var ddspfABitMask = 0u;
 
         if (fmt == 0x15)
         {
-            ddspfFlags = 0x41;
-            ddspfFourCC = 0;
-            ddspfRGBBitCount = 32;
-            ddspfRBitMask = 0x00ff0000;
-            ddspfGBitMask = 0x0000ff00;
-            ddspfBBitMask = 0x000000ff;
-            ddspfABitMask = 0xff000000;
+            ddspfFlags = 0x41u;
+            ddspfFourCC = 0u;
+            ddspfRGBBitCount = 32u;
+            ddspfRBitMask = 0x00ff0000u;
+            ddspfGBitMask = 0x0000ff00u;
+            ddspfBBitMask = 0x000000ffu;
+            ddspfABitMask = 0xff000000u;
         }
 
         // DDS_HEADER start
