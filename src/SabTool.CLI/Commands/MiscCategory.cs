@@ -65,7 +65,7 @@ public class MiscCategory : BaseCategory
         }
     }
 
-    public class ExportGltfFronFreeplayCommand : BaseCommand
+    public class ExportGltfFromFreeplayCommand : BaseCommand
     {
         public override string Key => "export-freeplay-to-gltf";
         public override string Shortcut => "efreeplaygltf";
