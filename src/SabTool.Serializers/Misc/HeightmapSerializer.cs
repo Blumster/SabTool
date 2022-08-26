@@ -1,16 +1,18 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text;
+
+using Newtonsoft.Json;
 
 namespace SabTool.Serializers.Misc;
 
-using Newtonsoft.Json;
 using SabTool.Data.Misc;
 using SabTool.Utils.Extensions;
-using System.Globalization;
-using System.Linq;
 
-public static class Hei5Serializer
+
+public static class HeightmapSerializer
 {
     public static Heightmap DeserializeRaw(Stream stream)
     {
@@ -21,7 +23,7 @@ public static class Hei5Serializer
 
         int cellCount = reader.ReadInt32();
 
-        Heightmap hei5Container = new()
+        Heightmap heightmap = new()
         {
             CellCountMaxX = reader.ReadInt32(),
             CellCountMaxY = reader.ReadInt32(),
@@ -31,7 +33,7 @@ public static class Hei5Serializer
             MinZ = reader.ReadSingle()
         };
         // Reserve capacity for entries
-        hei5Container.Cells.Capacity = cellCount;
+        heightmap.Cells.Capacity = cellCount;
 
         foreach (int cellIndex in Enumerable.Range(0, cellCount))
         {
@@ -61,14 +63,14 @@ public static class Hei5Serializer
             }
             hei1.MaxZ = reader.ReadSingle();
 
-            hei5Container.Cells.Add(hei1);
+            heightmap.Cells.Add(hei1);
         }
 
         if (stream.Position != stream.Length)
         {
             throw new Exception("Under reading HEI5 file!");
         }
-        return hei5Container;
+        return heightmap;
     }
 
     public static void SerializeRaw(Heightmap heightmap, Stream stream)

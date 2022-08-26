@@ -15,7 +15,7 @@
 
   <ItemGroup>
     <PackageReference Include="DotNetZip" Version="1.15.0" />
-    <PackageReference Include="SharpGLTF.Core" Version="1.0.0-alpha0023" />
+    <PackageReference Include="SharpGLTF.Core" Version="1.0.0-alpha0026" />
   </ItemGroup>
 
   <ItemGroup>
