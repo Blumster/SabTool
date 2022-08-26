@@ -7,6 +7,7 @@ public partial class ResourceDepot
 {
     public Heightmap? Heightmap { get; private set; }
     public Waterflow? Waterflow { get; private set; }
+    public Freeplay? Freeplay { get; private set; }
 
     private bool LoadMisc()
     {
@@ -20,7 +21,10 @@ public partial class ResourceDepot
         {
             Waterflow = WaterflowSerializer.DeserializeRaw(waterflowStream);
         }
-
+        using (FileStream freeplayStream = new(GetGamePath("France.freeplay"), FileMode.Open, FileAccess.Read, FileShare.None))
+        {
+            Freeplay = FreeplaySerializer.DeserializeRaw(freeplayStream);
+        }
         Console.WriteLine("Misc loaded!");
 
         LoadedResources |= Resource.Misc;

@@ -50,8 +50,7 @@ public static class WaterflowSerializer
     {
         SceneBuilder scene = new();
 
-        MaterialBuilder material = new MaterialBuilder()
-            .WithDoubleSide(false);
+        MaterialBuilder material = new();
 
         int modelCounter = 0;
         foreach (WaterflowPoint point in waterflow.Points)

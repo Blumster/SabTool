@@ -12,8 +12,8 @@ public class MiscCategory : BaseCategory
 
     public class UnpackHeightmapCommand : BaseCommand
     {
-        public override string Key { get; } = "unpack-hei5";
-        public override string Shortcut { get; } = "uh5";
+        public override string Key { get; } = "unpack-heightmap";
+        public override string Shortcut { get; } = "uheightmap";
         public override string Usage { get; } = "<game base path> <output directory path>";
 
         public override bool Execute(IEnumerable<string> arguments)
@@ -39,10 +39,10 @@ public class MiscCategory : BaseCategory
         }
     }
 
-    public class ExportGlbFromWaterflowCommand : BaseCommand
+    public class ExportGltfFromWaterflowCommand : BaseCommand
     {
-        public override string Key => "export-waterflow-to-glb";
-        public override string Shortcut => "ewaterflowglb";
+        public override string Key => "export-waterflow-to-gltf";
+        public override string Shortcut => "ewaterflowgltf";
         public override string Usage => "<game base path> <output directory path>";
         public override bool Execute(IEnumerable<string> arguments)
         {
@@ -65,10 +65,36 @@ public class MiscCategory : BaseCategory
         }
     }
 
+    public class ExportGltfFronFreeplayCommand : BaseCommand
+    {
+        public override string Key => "export-freeplay-to-gltf";
+        public override string Shortcut => "efreeplaygltf";
+        public override string Usage => "<game base path> <output directory path>";
+        public override bool Execute(IEnumerable<string> arguments)
+        {
+            if (arguments.Count() < 2)
+            {
+                Console.WriteLine("ERROR: Not enough arguments given!");
+                return false;
+            }
+
+            ResourceDepot.Instance.Initialize(arguments.ElementAt(0));
+            ResourceDepot.Instance.Load(Resource.Misc);
+
+            var outputFolder = arguments.ElementAt(1);
+
+            Directory.CreateDirectory(outputFolder);
+
+            FreeplaySerializer.ExportGltf(ResourceDepot.Instance.Freeplay!, outputFolder);
+
+            return true;
+        }
+    }
+
     public class ExportPlyFromHeiCommand : BaseCommand
     {
-        public override string Key => "export-hei5-to-ply";
-        public override string Shortcut => "eh5ply";
+        public override string Key => "export-heightmap-to-ply";
+        public override string Shortcut => "eheightmapply";
         public override string Usage => "<game base path> <output directory path>";
         public override bool Execute(IEnumerable<string> arguments)
         {
