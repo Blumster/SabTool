@@ -55,7 +55,6 @@ public static class FreeplaySerializer
                 uint unknown4 = reader.ReadUInt32();
                 point.Unknown4.Add(unknown4);
             }
-            System.Console.WriteLine();
             freeplay.Points.Add(point);
         }
         return freeplay;
