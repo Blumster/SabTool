@@ -65,6 +65,32 @@ public class MiscCategory : BaseCategory
         }
     }
 
+    public class ExportGltfFromWatercontrolCommand : BaseCommand
+    {
+        public override string Key => "export-watercontrol-to-gltf";
+        public override string Shortcut => "ewatercontrolgltf";
+        public override string Usage => "<game base path> <output directory path>";
+        public override bool Execute(IEnumerable<string> arguments)
+        {
+            if (arguments.Count() < 2)
+            {
+                Console.WriteLine("ERROR: Not enough arguments given!");
+                return false;
+            }
+
+            ResourceDepot.Instance.Initialize(arguments.ElementAt(0));
+            ResourceDepot.Instance.Load(Resource.Misc);
+
+            var outputFolder = arguments.ElementAt(1);
+
+            Directory.CreateDirectory(outputFolder);
+
+            WatercontrolSerializer.ExportGltf(ResourceDepot.Instance.Watercontrol!, outputFolder);
+
+            return true;
+        }
+    }
+
     public class ExportGltfFromFreeplayCommand : BaseCommand
     {
         public override string Key => "export-freeplay-to-gltf";
