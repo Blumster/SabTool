@@ -144,4 +144,54 @@ public class MiscCategory : BaseCategory
             return true;
         }
     }
+
+    public class ExportGltfMeshFromHeightmapCommand : BaseCommand
+    {
+        public override string Key => "export-heightmap-to-gltfl";
+        public override string Shortcut => "eheightmapgltf";
+        public override string Usage => "<game base path> <output directory path>";
+        public override bool Execute(IEnumerable<string> arguments)
+        {
+            if (arguments.Count() < 2)
+            {
+                Console.WriteLine("ERROR: Not enough arguments given!");
+                return false;
+            }
+
+            ResourceDepot.Instance.Initialize(arguments.ElementAt(0));
+            ResourceDepot.Instance.Load(Resource.Misc);
+
+            var outputFolder = arguments.ElementAt(1);
+
+            Directory.CreateDirectory(outputFolder);
+
+            HeightmapSerializer.ExportGltf(ResourceDepot.Instance.Heightmap!, outputFolder, false);
+            return true;
+        }
+    }
+
+    public class ExportGltfMeshMergedFromHeightmapCommand : BaseCommand
+    {
+        public override string Key => "export-heightmap-merged-to-gltfl";
+        public override string Shortcut => "eheightmapmergedgltf";
+        public override string Usage => "<game base path> <output directory path>";
+        public override bool Execute(IEnumerable<string> arguments)
+        {
+            if (arguments.Count() < 2)
+            {
+                Console.WriteLine("ERROR: Not enough arguments given!");
+                return false;
+            }
+
+            ResourceDepot.Instance.Initialize(arguments.ElementAt(0));
+            ResourceDepot.Instance.Load(Resource.Misc);
+
+            var outputFolder = arguments.ElementAt(1);
+
+            Directory.CreateDirectory(outputFolder);
+
+            HeightmapSerializer.ExportGltf(ResourceDepot.Instance.Heightmap!, outputFolder, true);
+            return true;
+        }
+    }
 }

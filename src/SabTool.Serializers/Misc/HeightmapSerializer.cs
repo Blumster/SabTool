@@ -1,16 +1,19 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 
 using Newtonsoft.Json;
+using SharpGLTF.Schema2;
 
 namespace SabTool.Serializers.Misc;
 
 using SabTool.Data.Misc;
+using SabTool.Utils;
 using SabTool.Utils.Extensions;
-
 
 public static class HeightmapSerializer
 {
@@ -131,8 +134,139 @@ public static class HeightmapSerializer
         }
     }
 
+    public static void ExportGltf(Heightmap heightmap, string outputPath, bool singleMesh)
+    {
+        ModelRoot model = ModelRoot.CreateModel();
+        Scene scene = model.UseScene("Heightmap");
+
+        var material = model.CreateMaterial("Default");
+
+        var node = scene.CreateNode("Heightmap");
+
+        // Gltf doesn't support quads, the meshes are triangulated
+        string filename;
+        if (singleMesh)
+        {
+            filename = "heightmap_merged.gltf";
+            CreateGltfSingleMesh(heightmap, node, model, material);
+        }
+        else
+        {
+            filename = "heightmap.gltf";
+            CreateGltfIndividualCells(heightmap, node, model, material);
+        }
+
+        model.SaveGLTF(Path.Combine(outputPath, filename), new WriteSettings
+        {
+            Validation = SharpGLTF.Validation.ValidationMode.Skip
+        });
+    }
+
     private static float Lerp(float begin, float end, float factor)
     {
         return (1.0f - factor) * begin + factor * end;
+    }
+
+    private static void CreateGltfSingleMesh(Heightmap heightmap, Node node, ModelRoot model, SharpGLTF.Schema2.Material material)
+    {
+        List<Vector3> coordinates = new()
+        {
+            Capacity = heightmap.Cells.Count * 10 * 10 // Always contains 10 * 10 coordinates
+        };
+        List<int> triangleIndices = new()
+        {
+            Capacity = heightmap.Cells.Count * 81 * 2 // 9*9 for each quad * 2 for triangles
+        };
+        var primNode = node.CreateNode("HeightmapMerged");
+        var mesh = primNode.Mesh = model.CreateMesh();
+
+        foreach (HeightmapCell cell in heightmap.Cells)
+        {
+            // Get coordinates           
+            foreach (int y_entry in Enumerable.Range(0, cell.PointCountY))
+            {
+                foreach (int x_entry in Enumerable.Range(0, cell.PointCountX))
+                {
+                    float x = cell.MinX + (x_entry * (heightmap.CellSize / 9));
+                    float y = Lerp(cell.HeightRangeMin, cell.HeightRangeMax, cell.PointData[y_entry * cell.PointCountY + x_entry] / 255.0f);
+                    float z = cell.MinZ + (y_entry * (heightmap.CellSize / 9));
+                    coordinates.Add(MatrixMath.ConvertDxToOpenGl(new Vector3(x, y, z)));
+                }
+            }
+        }
+        // Get indices        
+        int verticesPerCell = 10 * 10;
+        foreach (int cellIndex in Enumerable.Range(0, heightmap.Cells.Count))
+        {
+            foreach (int y in Enumerable.Range(0, 9))
+            {
+                foreach (int x in Enumerable.Range(0, 9))
+                {
+                    int firstVertexInFace = (cellIndex * verticesPerCell) + (10 * y) + x;                    
+                    // First triangle of quad
+                    triangleIndices.Add(firstVertexInFace + 1);
+                    triangleIndices.Add(firstVertexInFace);
+                    triangleIndices.Add(firstVertexInFace + 10);
+                    // Second triangle of quad
+                    triangleIndices.Add(firstVertexInFace + 10);
+                    triangleIndices.Add(firstVertexInFace + 11);
+                    triangleIndices.Add(firstVertexInFace + 1);
+                }
+            }
+        }
+
+        var primitive = mesh.CreatePrimitive()
+            .WithVertexAccessor("POSITION", coordinates);
+        primitive.WithIndicesAccessor(PrimitiveType.TRIANGLES, triangleIndices)
+            .WithMaterial(material);
+    }
+
+    private static void CreateGltfIndividualCells(Heightmap heightmap, Node node, ModelRoot model, SharpGLTF.Schema2.Material material)
+    {
+        int modelCounter = 0;
+        foreach (HeightmapCell cell in heightmap.Cells)
+        {
+            string cellName = $"HCell_{modelCounter}";
+            var primNode = node.CreateNode(cellName);
+
+            var mesh = primNode.Mesh = model.CreateMesh();
+
+            // Get coordinates
+            List<Vector3> coordinates = new();
+            coordinates.Capacity = 10 * 10; // Always contains 10*10 coordinates
+            foreach (int y_entry in Enumerable.Range(0, cell.PointCountY))
+            {
+                foreach (int x_entry in Enumerable.Range(0, cell.PointCountX))
+                {
+                    float x = cell.MinX + (x_entry * (heightmap.CellSize / 9));
+                    float y = Lerp(cell.HeightRangeMin, cell.HeightRangeMax, cell.PointData[y_entry * cell.PointCountY + x_entry] / 255.0f);
+                    float z = cell.MinZ + (y_entry * (heightmap.CellSize / 9));
+                    coordinates.Add(MatrixMath.ConvertDxToOpenGl(new Vector3(x, y, z)));
+                }
+            }
+            // Get indices
+            List<int> triangleIndices = new();
+            triangleIndices.Capacity = 81 * 2; // 9*9 for each quad * 2 for triangles
+            foreach (int y in Enumerable.Range(0, 9))
+            {
+                foreach (int x in Enumerable.Range(0, 9))
+                {
+                    int firstVertexInFace = (10 * y) + x;
+                    // First triangle of quad
+                    triangleIndices.Add(firstVertexInFace + 1);
+                    triangleIndices.Add(firstVertexInFace);
+                    triangleIndices.Add(firstVertexInFace + 10);
+                    // Second triangle of quad
+                    triangleIndices.Add(firstVertexInFace + 10);
+                    triangleIndices.Add(firstVertexInFace + 11);
+                    triangleIndices.Add(firstVertexInFace + 1);
+                }
+            }
+            var primitive = mesh.CreatePrimitive()
+                .WithVertexAccessor("POSITION", coordinates);
+            primitive.WithIndicesAccessor(PrimitiveType.TRIANGLES, triangleIndices)
+                .WithMaterial(material);
+            modelCounter += 1;
+        }
     }
 }
