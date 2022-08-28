@@ -47,6 +47,12 @@ namespace SabTool.CLI.Commands
                         writer.WriteLine(fileEntry.ToPrettyString());
 
                     writer.WriteLine();
+                    writer.WriteLine($"Mappings:");
+
+                    foreach (var (crc1, crc2) in ResourceDepot.Instance.GetBlockPathToNameCrcs(megapackFile))
+                        writer.WriteLine($"{crc1} -> {crc2}");
+
+                    writer.WriteLine();
                 }
                 
                 writer.Flush();

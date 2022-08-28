@@ -134,9 +134,19 @@ public partial class ResourceDepot
                 yield break;
 
             foreach (var entryPair in entry.Megapack.FileEntries)
-            {
                 yield return entryPair.Value;
-            }
+        }
+    }
+
+    public IEnumerable<(Crc, Crc)> GetBlockPathToNameCrcs(string key)
+    {
+        if (Megapacks.TryGetValue(key, out var entry))
+        {
+            if (entry.Megapack == null)
+                yield break;
+
+            foreach (var entryPair in entry.Megapack.BlockPathToNameCrcs)
+                yield return entryPair.ToValueTuple();
         }
     }
 
