@@ -30,7 +30,7 @@ namespace SabTool.Data.Packs
         public TextureInfo[] TextureInfoArray2 { get; set; }
         public uint[] EntryCounts { get; } = new uint[9];
         public Entry[][] Entries { get; } = new Entry[9][];
-        public Dictionary<Crc, uint[]> FenceTree { get; } = new();
+        public Dictionary<Crc, Crc[]> FenceTree { get; } = new();
         public uint Count1ACFor1B0And1B4_1AC { get; set; }
         public Crc[] Array1B0 { get; set; }
         public byte[] Array1B4 { get; set; }

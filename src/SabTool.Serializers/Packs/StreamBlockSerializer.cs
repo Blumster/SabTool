@@ -208,7 +208,14 @@ public static class StreamBlockSerializer
             var crc = new Crc(reader.ReadUInt32());
             var subCnt = reader.ReadInt32();
 
-            streamBlock.FenceTree.Add(crc, reader.ReadConstArray(subCnt, reader.ReadUInt32));
+            try
+            {
+                streamBlock.FenceTree.Add(crc, reader.ReadConstArray(subCnt, () => new Crc(reader.ReadUInt32())));
+            }
+            catch
+            {
+                Console.WriteLine("Trying to add multiple fence tree by the same id!");
+            }
         }
     }
 
