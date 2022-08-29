@@ -50,7 +50,7 @@ public static class StreamBlockSerializer
         streamBlock.Extents[1] = new(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
 
         streamBlock.UnkShort = reader.ReadInt16();
-        streamBlock.Index = reader.ReadInt16();
+        streamBlock.Index = reader.ReadUInt16();
 
         return streamBlock;
     }
@@ -123,22 +123,18 @@ public static class StreamBlockSerializer
 
     public static void ReadHeaderData(StreamBlock streamBlock, BinaryReader reader)
     {
-        streamBlock.Float100 = 1.0f;
+        streamBlock.HeightRangeMax = 1.0f;
 
         if ((streamBlock.Flags & 0x1C00) == 0x400)
         {
             if (!reader.CheckHeaderString("HEI1", reversed: true))
                 throw new Exception("Invalid StreamBlock header found!");
 
-            streamBlock.CountF4 = reader.ReadInt32();
-            streamBlock.CountF8 = reader.ReadInt32();
-
-            var floatUnk = reader.ReadSingle();
-
-            streamBlock.FloatFC = reader.ReadSingle();
-            streamBlock.Float100 = (floatUnk - streamBlock.FloatFC) / 255.0f;
-
-            streamBlock.Array104 = reader.ReadBytes(streamBlock.CountF4 * streamBlock.CountF8); // TODO: check if this is right
+            streamBlock.PointCountX = reader.ReadInt32();
+            streamBlock.PointCountY = reader.ReadInt32();
+            streamBlock.HeightRangeMin = reader.ReadSingle();
+            streamBlock.HeightRangeMax = reader.ReadSingle();
+            streamBlock.HeightMapData = reader.ReadBytes(streamBlock.PointCountX * streamBlock.PointCountY);
         }
 
         ReadTextureInfo(streamBlock, reader);
@@ -258,12 +254,16 @@ public static class StreamBlockSerializer
                     switch (off)
                     {
                         case 0:
+                            extension = "mesh-bin";
+
                             var meshAsset = MeshAssetSerializer.DeserializeRaw(new MemoryStream(entry.Payload, false));
 
                             meshAsset.Export(outputPath);
                             continue;
 
                         case 1:
+                            extension = "texture-bin";
+
                             var textureAsset = TextureAssetSerializer.DeserializeRaw(new MemoryStream(entry.Payload, false), entry.Crc);
 
                             textureAsset?.Export(outputPath);

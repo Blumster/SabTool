@@ -84,7 +84,7 @@ namespace SabTool.Data.Graphics
                         VDType.UShort2N => new Vector3(BitConverter.ToUInt16(arr, off) / 65535.0f, BitConverter.ToUInt16(arr, off + 2) / 65535.0f, 0.0f),
                         VDType.Float16_2 => new Vector3((float)BitConverter.ToHalf(arr, off), (float)BitConverter.ToHalf(arr, off + 2), 0.0f),
                         VDType.Float16_4 => new Vector3((float)BitConverter.ToHalf(arr, off), (float)BitConverter.ToHalf(arr, off + 2), (float)BitConverter.ToHalf(arr, off + 4)),
-                        _ => throw new NotSupportedException("This Vertex Declaration type is not supported for vertexes!")
+                        _ => throw new NotSupportedException($"This Vertex Declaration type ({vDecl.Type}) is not supported for vertexes!")
                     };
 
                     vertices.Add(vertex);
