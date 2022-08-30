@@ -34,10 +34,7 @@ public static class TextureAssetSerializer
 
         var fmt = reader.ReadUInt32();
         if (fmt != 0x31545844 && fmt != 0x33545844 && fmt != 0x35545844 && fmt != 0x15) // DXT1, DXT3, DXT5, RGBA32
-        {
-            Console.WriteLine($"Texture ({textureAsset.Name}) has unsupported format: 0x{fmt:X8}");
-            return null;
-        }
+            throw new Exception($"Texture ({textureAsset.Name}) has unsupported format: 0x{fmt:X8}");
 
         var flags = reader.ReadInt32();
         var width = reader.ReadInt16();

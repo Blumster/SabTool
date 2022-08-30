@@ -46,6 +46,18 @@ namespace SabTool.Data.Packs
             return $"StreamBlock({Id})";
         }
 
+        public void FreePayloads()
+        {
+            foreach (var entryArray in Entries)
+            {
+                if (entryArray == null)
+                    continue;
+
+                foreach (var entry in entryArray)
+                    entry.Payload = null;
+            }
+        }
+
         public class TextureInfo
         {
             public Crc Crc { get; set; }

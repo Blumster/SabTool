@@ -13,6 +13,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="ShellProgressBar" Version="5.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\lib\HlslDecompiler\HlslDecompiler.csproj" />
     <ProjectReference Include="..\SabTool.Data\SabTool.Data.csproj" />
     <ProjectReference Include="..\SabTool.Depot\SabTool.Depot.csproj" />

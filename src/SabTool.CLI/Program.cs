@@ -9,7 +9,7 @@ public class Program
     {
         Console.WriteLine("Loading Hashes...");
 
-        Hash.FNV32string("dummy, to statically init the Hash class");
+        Hash.FNV32string("dummy, to statically init the Hash class", addToLookup: false);
 
         Console.WriteLine("Loaded hashes!");
 

@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
+using System.Numerics;
 using System.Text;
 
 namespace SabTool.Data.Graphics
@@ -23,7 +26,7 @@ namespace SabTool.Data.Graphics
         public int ArrayCount { get; set; }
         public int IndexCount { get; set; }
 
-        /*public string DumpVertices(int indentCount = 0)
+        public string DumpVertices(int indentCount = 0)
         {
             var sb = new StringBuilder();
 
@@ -127,6 +130,63 @@ namespace SabTool.Data.Graphics
             }
 
             return sb.ToString();
-        }*/
+        }
+
+        public string DumpString(int indentCount = 0)
+        {
+            var sb = new StringBuilder();
+
+            sb.Append(' ', indentCount).AppendLine($"{nameof(VertexHolder)}()");
+            sb.Append(' ', indentCount).AppendLine("{");
+
+            indentCount += 2;
+
+            for (var i = 0; i < ArrayCount; ++i)
+                sb.Append(' ', indentCount).AppendLine($"{nameof(Counts)}[{i}] = {Counts[i]}");
+
+            for (var i = 0; i < ArrayCount; ++i)
+                sb.Append(' ', indentCount).AppendLine($"{nameof(Formats)}[{i}] = 0x{Formats[i]:X8}");
+
+            for (var i = 0; i < ArrayCount; ++i)
+                sb.Append(' ', indentCount).AppendLine($"{nameof(UVFormats)}[{i}] = 0x{UVFormats[i]:X8}");
+
+            for (var i = 0; i < ArrayCount; ++i)
+                sb.Append(' ', indentCount).AppendLine($"{nameof(ArrayOffsets)}[{i}] = {ArrayOffsets[i]}");
+
+            for (var i = 0; i < ArrayCount; ++i)
+                sb.Append(' ', indentCount).AppendLine($"{nameof(ArraySizes)}[{i}] = {ArraySizes[i]}");
+
+            for (var i = 0; i < ArrayCount; ++i)
+                sb.Append(' ', indentCount).AppendLine($"{nameof(Sizes)}[{i}] = {Sizes[i]}");
+
+            sb.Append(' ', indentCount).AppendLine($"{nameof(IndexArrayOffset)} = {IndexArrayOffset}");
+            sb.Append(' ', indentCount).AppendLine($"{nameof(IndexArraySize)} = {IndexArraySize}");
+            sb.Append(' ', indentCount).AppendLine($"{nameof(SomeFlags)} = 0x{SomeFlags:X8}");
+            sb.Append(' ', indentCount).AppendLine($"{nameof(ArrayCount)} = {ArrayCount}");
+            sb.Append(' ', indentCount).AppendLine($"{nameof(IndexCount)} = {IndexCount}");
+
+            for (var i = 0; i < Decl1.Count; ++i)
+            {
+                sb.Append(' ', indentCount).AppendLine($"{nameof(Decl1)}[{i}] = {Decl1[i]}");
+            }
+
+            for (var i = 0; i < Decl2.Count; ++i)
+            {
+                sb.Append(' ', indentCount).AppendLine($"{nameof(Decl2)}[{i}] = {Decl2[i]}");
+            }
+
+            sb.Append(' ', indentCount).AppendLine("Vertexes =");
+            sb.Append(' ', indentCount).AppendLine("[");
+
+            sb.Append(DumpVertices(indentCount + 2));
+
+            sb.Append(' ', indentCount).AppendLine("]");
+
+            indentCount -= 2;
+
+            sb.Append(' ', indentCount).AppendLine("}");
+
+            return sb.ToString();
+        }
     }
 }

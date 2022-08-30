@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 namespace SabTool.Serializers.Packs;
 
 using SabTool.Data.Packs;
+using SabTool.Data.Packs.Assets;
 using SabTool.Serializers.Json.Converters;
 using SabTool.Serializers.Packs.Assets;
 using SabTool.Utils;
@@ -236,7 +237,7 @@ public static class StreamBlockSerializer
         writer.Write(JsonConvert.SerializeObject(streamBlock, Formatting.Indented, new CrcConverter()));
     }
 
-    public static void Export(StreamBlock streamBlock, string outputPath)
+    public static void Export(StreamBlock streamBlock, string outputPath, IProgress<string> progress)
     {
         var offInd = 0;
 
@@ -266,6 +267,8 @@ public static class StreamBlockSerializer
                             var meshAsset = MeshAssetSerializer.DeserializeRaw(new MemoryStream(entry.Payload, false));
 
                             meshAsset.Export(outputPath);
+
+                            progress.Report(meshAsset.ModelName);
                             continue;
 
                         case 1:
@@ -274,6 +277,8 @@ public static class StreamBlockSerializer
                             var textureAsset = TextureAssetSerializer.DeserializeRaw(new MemoryStream(entry.Payload, false), entry.Crc);
 
                             textureAsset?.Export(outputPath);
+
+                            progress.Report(textureAsset?.Name ?? "");
                             continue;
 
                         case 2:
@@ -282,22 +287,23 @@ public static class StreamBlockSerializer
 
                         case 3:
                             extension = "pathgraph";
-                            Console.WriteLine("PATHGRAPH! {0}", string.IsNullOrWhiteSpace(entry.Crc.GetString()) ? $"0x{entry.Crc.Value:X8}.{extension}" : $"{entry.Crc.GetString()}.{extension}");
+
+                            Console.Error.WriteLine("PATHGRAPH! {0}", string.IsNullOrWhiteSpace(entry.Crc.GetString()) ? $"0x{entry.Crc.Value:X8}.{extension}" : $"{entry.Crc.GetString()}.{extension}");
                             break;
 
                         case 4:
                             extension = "aifence";
-                            Console.WriteLine("AIFENCE! {0}", string.IsNullOrWhiteSpace(entry.Crc.GetString()) ? $"0x{entry.Crc.Value:X8}.{extension}" : $"{entry.Crc.GetString()}.{extension}");
+                            Console.Error.WriteLine("AIFENCE! {0}", string.IsNullOrWhiteSpace(entry.Crc.GetString()) ? $"0x{entry.Crc.Value:X8}.{extension}" : $"{entry.Crc.GetString()}.{extension}");
                             break;
 
                         case 5:
                             extension = "unknown";
-                            Console.WriteLine("UNK! {0}", string.IsNullOrWhiteSpace(entry.Crc.GetString()) ? $"0x{entry.Crc.Value:X8}.{extension}" : $"{entry.Crc.GetString()}.{extension}");
+                            Console.Error.WriteLine("UNK! {0}", string.IsNullOrWhiteSpace(entry.Crc.GetString()) ? $"0x{entry.Crc.Value:X8}.{extension}" : $"{entry.Crc.GetString()}.{extension}");
                             break;
 
                         case 6:
                             extension = "soundbank";
-                            Console.WriteLine("SOUNDBANK! {0}", string.IsNullOrWhiteSpace(entry.Crc.GetString()) ? $"0x{entry.Crc.Value:X8}.{extension}" : $"{entry.Crc.GetString()}.{extension}");
+                            Console.Error.WriteLine("SOUNDBANK! {0}", string.IsNullOrWhiteSpace(entry.Crc.GetString()) ? $"0x{entry.Crc.Value:X8}.{extension}" : $"{entry.Crc.GetString()}.{extension}");
                             break;
 
                         case 7:
@@ -306,21 +312,24 @@ public static class StreamBlockSerializer
 
                         case 8:
                             extension = "wsd";
-                            Console.WriteLine("WSD! {0}", string.IsNullOrWhiteSpace(entry.Crc.GetString()) ? $"0x{entry.Crc.Value:X8}.{extension}" : $"{entry.Crc.GetString()}.{extension}");
+                            Console.Error.WriteLine("WSD! {0}", string.IsNullOrWhiteSpace(entry.Crc.GetString()) ? $"0x{entry.Crc.Value:X8}.{extension}" : $"{entry.Crc.GetString()}.{extension}");
                             break;
                     }
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Unable to export {entry.Crc.GetStringOrHexString()}! Exporting as raw! Exception:");
-                    Console.WriteLine(ex.ToString());
+                    Console.Error.WriteLine($"Unable to export {entry.Crc.GetStringOrHexString()}! Exporting as raw! Exception:");
+                    Console.Error.WriteLine(ex.ToString());
                 }
 
-                var outputFilePath = Path.Combine(outputPath, $"{entry.Crc.GetStringOrHexString()}.{extension}");
+                var outputFileName = $"{entry.Crc.GetStringOrHexString()}.{extension}";
+                var outputFilePath = Path.Combine(outputPath, outputFileName);
 
                 Directory.CreateDirectory(Path.GetDirectoryName(outputFilePath)!);
 
                 File.WriteAllBytes(outputFilePath, entry.Payload);
+
+                progress.Report(outputFileName);
             }
 
             ++offInd;

@@ -118,47 +118,54 @@ public partial class ResourceDepot
             var zOff = (short)zOffu;
 
             var blockKey = (xOff, zOff, resolution);
+
             if (MapBlocks.ContainsKey(blockKey))
                 return MapBlocks[blockKey];
 
-            var x = xOff * FranceMap.GridLimits[resolution];
-            var z = zOff * FranceMap.GridLimits[resolution];
-
-            var grid = FranceMap.CalculateGrid(x, z, resolution);
-
-            var block = new StreamBlock
+            lock (MapBlocks)
             {
-                Id = crc.Value,
-                FileName = crc.Value <= 9 ? $"France\\{crc.Value}" : $"France\\{crc.Value.ToString()[..2]}\\{crc.Value}"
-            };
+                if (MapBlocks.ContainsKey(blockKey))
+                    return MapBlocks[blockKey];
 
-            block.Extents[0] = new Vector3(
-                grid.X * FranceMap.GridLimits[resolution] + FranceMap.Extents[resolution][0].X,
-                FranceMap.Extents[resolution][0].Y,
-                grid.Z * FranceMap.GridLimits[resolution] + FranceMap.Extents[resolution][0].Z);
+                var x = xOff * FranceMap.GridLimits[resolution];
+                var z = zOff * FranceMap.GridLimits[resolution];
 
-            block.Extents[1] = new Vector3(
-                block.Extents[0].X + FranceMap.GridLimits[resolution],
-                0.0f,
-                block.Extents[0].Z * FranceMap.GridLimits[resolution]);
+                var grid = FranceMap.CalculateGrid(x, z, resolution);
 
-            block.Midpoint = new Vector3(
-                (block.Extents[1].X - block.Extents[0].X) * 0.5f + block.Extents[0].X,
-                (block.Extents[1].Y - block.Extents[0].Y) * 0.5f + block.Extents[0].Y,
-                (block.Extents[1].Z - block.Extents[0].Z) * 0.5f + block.Extents[0].Z);
+                var block = new StreamBlock
+                {
+                    Id = crc.Value,
+                    FileName = crc.Value <= 9 ? $"France\\{crc.Value}" : $"France\\{crc.Value.ToString()[..2]}\\{crc.Value}"
+                };
 
-            block.Flags ^= (block.Flags ^ (uint)(resolution << 10)) & 0x1C00u;
-            block.Flags &= 0xFFFFFF7F; // ~0x80
-            block.Flags &= 0xFFFFFFBF; // ~0x40
-            block.Flags &= 0xFFFFFFFE; // ~0x01
-            block.Flags &= 0xFFFFFFFD; // ~0x02
-            block.Flags &= 0xFFFFFFFB; // ~0x04
-            block.Flags &= 0xFFFFFEFF; // ~0x100
-            block.Flags &= 0xFFFFFFDF; // ~0x20
+                block.Extents[0] = new Vector3(
+                    grid.X * FranceMap.GridLimits[resolution] + FranceMap.Extents[resolution][0].X,
+                    FranceMap.Extents[resolution][0].Y,
+                    grid.Z * FranceMap.GridLimits[resolution] + FranceMap.Extents[resolution][0].Z);
 
-            MapBlocks[blockKey] = block;
+                block.Extents[1] = new Vector3(
+                    block.Extents[0].X + FranceMap.GridLimits[resolution],
+                    0.0f,
+                    block.Extents[0].Z * FranceMap.GridLimits[resolution]);
 
-            return block;
+                block.Midpoint = new Vector3(
+                    (block.Extents[1].X - block.Extents[0].X) * 0.5f + block.Extents[0].X,
+                    (block.Extents[1].Y - block.Extents[0].Y) * 0.5f + block.Extents[0].Y,
+                    (block.Extents[1].Z - block.Extents[0].Z) * 0.5f + block.Extents[0].Z);
+
+                block.Flags ^= (block.Flags ^ (uint)(resolution << 10)) & 0x1C00u;
+                block.Flags &= 0xFFFFFF7F; // ~0x80
+                block.Flags &= 0xFFFFFFBF; // ~0x40
+                block.Flags &= 0xFFFFFFFE; // ~0x01
+                block.Flags &= 0xFFFFFFFD; // ~0x02
+                block.Flags &= 0xFFFFFFFB; // ~0x04
+                block.Flags &= 0xFFFFFEFF; // ~0x100
+                block.Flags &= 0xFFFFFFDF; // ~0x20
+
+                MapBlocks[blockKey] = block;
+
+                return block;
+            }
         }
 
         return null;
