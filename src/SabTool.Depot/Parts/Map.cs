@@ -160,7 +160,7 @@ public partial class ResourceDepot
                 block.Flags &= 0xFFFFFFFD; // ~0x02
                 block.Flags &= 0xFFFFFFFB; // ~0x04
                 block.Flags &= 0xFFFFFEFF; // ~0x100
-                block.Flags &= 0xFFFFFFDF; // ~0x20
+                block.Flags |= 0x20;
 
                 MapBlocks[blockKey] = block;
 

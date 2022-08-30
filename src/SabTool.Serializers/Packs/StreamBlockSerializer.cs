@@ -112,7 +112,8 @@ public static class StreamBlockSerializer
             {
                 var entry = streamBlock.Entries[off][i];
 
-                reader.BaseStream.Position = streamBlock.HeaderEnd + entry.Offset;
+                // TODO: should be align up after each other, but who knows...
+                //reader.BaseStream.Position = streamBlock.HeaderEnd + entry.Offset;
 
                 entry.Payload = reader.ReadBytes(entry.CompressedSize);
             }

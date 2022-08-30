@@ -110,16 +110,26 @@ public static class FranceMapSerializer
         for (var i = 0; i < interiorCount; ++i)
         {
             var block = StreamBlockSerializer.DeserializeFromMapRaw(stream);
+
+            block.Flags = (block.Flags & 0xFFFFE33F) | ((uint)(block.Index & 7) << 10);
+            block.Flags = (block.Flags & 0xFFFFFFF9) | 1;
+            // TODO: conditionally adding flag 4
+            block.Flags &= 0xFFFFFEFF;
+
             franceMap.Interiors.Add(block.Id, block);
         }
 
-        var count3 = reader.ReadInt32();
+        var cinematicsCount = reader.ReadInt32();
 
-        franceMap.CinematicBlocks ??= new(count3);
+        franceMap.CinematicBlocks ??= new(cinematicsCount);
 
-        for (var i = 0; i < count3; ++i)
+        for (var i = 0; i < cinematicsCount; ++i)
         {
             var block = StreamBlockSerializer.DeserializeFromMapRaw(stream);
+
+            block.Flags = (block.Flags & 0xFFFFE33F) | ((uint)(block.Index & 7) << 10);
+            block.Flags = (block.Flags & 0xFFFFFEFA) | 2;
+
             franceMap.CinematicBlocks.Add(block.Id, block);
         }
 

@@ -107,7 +107,6 @@ public class PackCategory : BaseCategory
             Directory.CreateDirectory(outputDir);
 
             using var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-            using var reader = new BinaryReader(fs);
 
             using var child = progressBar.Spawn(streamBlock.EntryCounts.Select(c => (int)c).Sum(), filePath, childOptions);
 
