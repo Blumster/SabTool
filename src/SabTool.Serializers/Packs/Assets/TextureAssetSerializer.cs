@@ -12,6 +12,14 @@ using SabTool.Utils.Extensions;
 
 public static class TextureAssetSerializer
 {
+    public const int DDSMagic = 0x20534444;
+    public const int DDSMagicSize = 4;
+    public const int DDSHeaderSize = 128;
+    public const int DDSPixelFormatSize = 32;
+
+    public const int MipMapHeaderLengthOffset = 20;
+    public const int MipMapHeaderSize = 24;
+
     public static TextureAsset? DeserializeRaw(Stream stream, Crc name)
     {
         using var reader = new BinaryReader(stream, Encoding.UTF8, true);
@@ -37,37 +45,34 @@ public static class TextureAssetSerializer
             throw new Exception($"Texture ({textureAsset.Name}) has unsupported format: 0x{fmt:X8}");
 
         var flags = reader.ReadInt32();
-        var width = reader.ReadInt16();
-        var height = reader.ReadInt16();
-        var numMipmaps = reader.ReadInt16();
+        var width = (int)reader.ReadInt16();
+        var height = (int)reader.ReadInt16();
+        var numMipmaps = (int)reader.ReadInt16();
         var dataSize = reader.ReadInt32();
         var numChunks = reader.ReadInt32();
 
         if (numChunks == 0)
             numChunks = 1;
 
-        byte[] ddsData;
+        byte[] ddsMipMapData = numChunks == 1
+            ? reader.ReadDecompressedBytes(reader.ReadInt32())
+            : new byte[dataSize];
 
-        if (numChunks == 1)
+        if (numChunks > 1)
         {
-            ddsData = reader.ReadDecompressedBytes(reader.ReadInt32());
-        }
-        else
-        {
-            ddsData = new byte[dataSize];
             var off = 0;
 
             for (var i = 0; i < numChunks; ++i)
             {
                 var chunk = reader.ReadDecompressedBytes(reader.ReadInt32());
 
-                Array.Copy(chunk, 0, ddsData, off, chunk.Length);
+                Array.Copy(chunk, 0, ddsMipMapData, off, chunk.Length);
 
                 off += chunk.Length;
             }
         }
 
-        textureAsset.DDSFile = new byte[128 + ddsData.Length - numMipmaps * 24];
+        textureAsset.DDSFile = new byte[DDSHeaderSize + ddsMipMapData.Length - numMipmaps * MipMapHeaderSize];
 
         using var ddsStream = new MemoryStream(textureAsset.DDSFile, true);
         using var ddsWriter = new BinaryWriter(ddsStream);
@@ -97,8 +102,8 @@ public static class TextureAssetSerializer
             ddspfGBitMask = 0x0000ff00u;
             ddspfBBitMask = 0x000000ffu;
             ddspfABitMask = 0xff000000u;
-        } else
-        if (fmt == 0x1A)
+        }
+        else if (fmt == 0x1A)
         {
             ddspfFlags = 0x41u;
             ddspfFourCC = 0u;
@@ -111,20 +116,20 @@ public static class TextureAssetSerializer
 
         // DDS_HEADER start
 
-        ddsWriter.Write(0x20534444); // dwMagic
-        ddsWriter.Write(124); // dwSize
+        ddsWriter.Write(DDSMagic); // dwMagic
+        ddsWriter.Write(DDSHeaderSize - DDSMagicSize); // dwSize
         ddsWriter.Write(ddsFlags); // dwFlags
-        ddsWriter.Write((int)height); // dwHeight
-        ddsWriter.Write((int)width); // dwWidth
+        ddsWriter.Write(height); // dwHeight
+        ddsWriter.Write(width); // dwWidth
         ddsWriter.Write(0); // dwPitchOrLinearSize
         ddsWriter.Write(0); // dwDepth
-        ddsWriter.Write((int)numMipmaps); // dwMipMapCount
+        ddsWriter.Write(numMipmaps); // dwMipMapCount
 
         for (var k = 0; k < 11; ++k)
             ddsWriter.Write(0); // dwReserved[11]
 
         // DDS_PIXELFORMAT start
-        ddsWriter.Write(0x20); // dwSize
+        ddsWriter.Write(DDSPixelFormatSize); // dwSize
         ddsWriter.Write(ddspfFlags); // dwFlags
         ddsWriter.Write(ddspfFourCC); // dwFourCC
         ddsWriter.Write(ddspfRGBBitCount); // dwRGBBitCount
@@ -132,7 +137,7 @@ public static class TextureAssetSerializer
         ddsWriter.Write(ddspfGBitMask); // dwGBitMask
         ddsWriter.Write(ddspfBBitMask); // dwBBitMask
         ddsWriter.Write(ddspfABitMask); // dwABitMask
-                                        // DDS_PIXELFORMAT end
+        // DDS_PIXELFORMAT end
 
         ddsWriter.Write(ddsSurfaceFlags); // dwSurfaceFlags
         ddsWriter.Write(0); // dwCubemapFlags
@@ -146,11 +151,11 @@ public static class TextureAssetSerializer
 
         for (var j = 0; j < numMipmaps; ++j)
         {
-            var ddsDataLength = BitConverter.ToInt32(ddsData, ddsDataOff + 20);
+            var ddsDataLength = BitConverter.ToInt32(ddsMipMapData, ddsDataOff + MipMapHeaderLengthOffset);
 
-            ddsWriter.Write(ddsData, ddsDataOff + 24, ddsDataLength);
+            ddsWriter.Write(ddsMipMapData, ddsDataOff + MipMapHeaderSize, ddsDataLength);
 
-            ddsDataOff += ddsDataLength + 24;
+            ddsDataOff += ddsDataLength + MipMapHeaderSize;
         }
 
         return textureAsset;
