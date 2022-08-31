@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using System.Numerics;
 using System.Text;
 
@@ -127,6 +126,7 @@ public static class FranceMapSerializer
         {
             var block = StreamBlockSerializer.DeserializeFromMapRaw(stream);
 
+            block.FileName = $"France\\{block.FileName}";
             block.Flags = (block.Flags & 0xFFFFE33F) | ((uint)(block.Index & 7) << 10);
             block.Flags = (block.Flags & 0xFFFFFEFA) | 2;
 

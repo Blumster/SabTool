@@ -10,7 +10,6 @@ using SabTool.Depot;
 using SabTool.Serializers.Megapacks;
 using SabTool.Serializers.Packs;
 using SabTool.Utils;
-using System.Linq;
 
 public class PackCategory : BaseCategory
 {
