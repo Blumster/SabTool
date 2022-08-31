@@ -33,7 +33,7 @@ public static class TextureAssetSerializer
         //Hash.StringToHash($"{textureAsset.Name}_High"); // save to the lookup table the high version
 
         var fmt = reader.ReadUInt32();
-        if (fmt != 0x31545844 && fmt != 0x33545844 && fmt != 0x35545844 && fmt != 0x15) // DXT1, DXT3, DXT5, RGBA32
+        if (fmt != 0x31545844 && fmt != 0x33545844 && fmt != 0x35545844 && fmt != 0x15 && fmt != 0x1A) // DXT1, DXT3, DXT5, RGBA32, RGBA16
             throw new Exception($"Texture ({textureAsset.Name}) has unsupported format: 0x{fmt:X8}");
 
         var flags = reader.ReadInt32();
@@ -97,6 +97,16 @@ public static class TextureAssetSerializer
             ddspfGBitMask = 0x0000ff00u;
             ddspfBBitMask = 0x000000ffu;
             ddspfABitMask = 0xff000000u;
+        } else
+        if (fmt == 0x1A)
+        {
+            ddspfFlags = 0x41u;
+            ddspfFourCC = 0u;
+            ddspfRGBBitCount = 16u;
+            ddspfRBitMask = 0x00000f00u;
+            ddspfGBitMask = 0x000000f0u;
+            ddspfBBitMask = 0x0000000fu;
+            ddspfABitMask = 0x0000f000u;
         }
 
         // DDS_HEADER start
