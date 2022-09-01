@@ -7,8 +7,8 @@ using Newtonsoft.Json;
 namespace SabTool.Serializers.Packs;
 
 using SabTool.Data.Packs;
-using SabTool.Data.Packs.Assets;
 using SabTool.Serializers.Json.Converters;
+using SabTool.Serializers.Misc;
 using SabTool.Serializers.Packs.Assets;
 using SabTool.Utils;
 using SabTool.Utils.Extensions;
@@ -240,6 +240,8 @@ public static class StreamBlockSerializer
 
     public static void Export(StreamBlock streamBlock, string outputPath, IProgress<string> progress)
     {
+        Directory.CreateDirectory(outputPath);
+
         var offInd = 0;
 
         do
@@ -312,9 +314,16 @@ public static class StreamBlockSerializer
                             break;
 
                         case 8:
-                            extension = "wsd";
-                            Console.Error.WriteLine("WSD! {0}", string.IsNullOrWhiteSpace(entry.Crc.GetString()) ? $"0x{entry.Crc.Value:X8}.{extension}" : $"{entry.Crc.GetString()}.{extension}");
-                            break;
+                            extension = "wsd-bin";
+
+                            var dictOutPath = Path.Combine(outputPath, entry.UnkCrc.Value == 0 ? "objects.wsd.json" : $"{entry.UnkCrc.GetStringOrHexString()}.wsd.json");
+
+                            var dict = DictionarySerializer.DeserializeRaw(new MemoryStream(entry.Payload, false));
+
+                            using (var fs = new FileStream(dictOutPath, FileMode.Create, FileAccess.Write, FileShare.Read))
+                                DictionarySerializer.SerializeJSON(dict, fs);
+
+                            continue;
                     }
                 }
                 catch (Exception ex)

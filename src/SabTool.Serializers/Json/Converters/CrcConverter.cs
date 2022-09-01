@@ -8,16 +8,18 @@ namespace SabTool.Serializers.Json.Converters;
 
 using SabTool.Utils;
 
-internal class CrcConverter : JsonConverter
+internal class CrcConverter : JsonConverter<Crc>
 {
     private static readonly Regex CrcMatchRegex = new(@"^0x([0-9A-F]{8})\s*\([^)]*\)$", RegexOptions.Compiled);
 
-    public override bool CanConvert(Type objectType)
+    public bool PreferString { get; }
+
+    public CrcConverter(bool preferString = false)
     {
-        return objectType == typeof(Crc);
+        PreferString = preferString;
     }
 
-    public override object ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
+    public override Crc? ReadJson(JsonReader reader, Type objectType, Crc? existingValue, bool hasExistingValue, JsonSerializer serializer)
     {
         var value = reader.ReadAsString()!;
         var match = CrcMatchRegex.Match(value);
@@ -32,9 +34,9 @@ internal class CrcConverter : JsonConverter
         throw new Exception($"CrcConverter can't parse stringified Crc value: {value}!");
     }
 
-    public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
+    public override void WriteJson(JsonWriter writer, Crc? value, JsonSerializer serializer)
     {
         if (value is Crc crc)
-            writer.WriteValue(crc.ToString());
+            writer.WriteValue(PreferString ? crc.GetStringOrHexString() : crc.ToString());
     }
 }

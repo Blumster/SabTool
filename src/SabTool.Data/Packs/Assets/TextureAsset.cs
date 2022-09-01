@@ -25,12 +25,6 @@ public class TextureAsset
     public void Export(string outputPath)
     {
         if (DDSFile != null)
-        {
-            var outputFilePath = Path.Combine(outputPath, $"{Name}.dds");
-
-            Directory.CreateDirectory(Path.GetDirectoryName(outputFilePath));
-
-            File.WriteAllBytes(outputFilePath, DDSFile);
-        }
+            File.WriteAllBytes(Path.Combine(outputPath, $"{Name}.dds"), DDSFile);
     }
 }
