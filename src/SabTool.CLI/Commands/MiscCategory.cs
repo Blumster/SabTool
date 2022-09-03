@@ -137,10 +137,10 @@ public class MiscCategory : BaseCategory
 
             Directory.CreateDirectory(outputFolder);
 
-            using (FileStream outFile = new(Path.Combine(outputFolder, "heightmap.ply"), FileMode.Create, FileAccess.Write, FileShare.None))
-            {
-                HeightmapSerializer.ExportPly(ResourceDepot.Instance.Heightmap!, outFile);
-            }
+            using var outFile = new FileStream(Path.Combine(outputFolder, "heightmap.ply"), FileMode.Create, FileAccess.Write, FileShare.None);
+
+            HeightmapSerializer.ExportPly(ResourceDepot.Instance.Heightmap!, outFile);
+
             return true;
         }
     }

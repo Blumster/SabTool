@@ -50,6 +50,8 @@ public static class GlobalMapSerializer
                 var streamBlock = StreamBlockSerializer.DeserializeBaseBlock(reader.BaseStream);
 
                 streamBlock.Midpoint = new(0.0f, 0.0f, 0.0f);
+                streamBlock.Extents[0] = new(-10000.0f, -10000.0f, -10000.0f);
+                streamBlock.Extents[1] = new(10000.0f, 10000.0f, 10000.0f);
                 streamBlock.FieldC0 = BitConverter.ToSingle(BitConverter.GetBytes(0xFFFFFFFF), 0);
                 streamBlock.FileName = $"{mapFileNameWithoutExtension}\\{streamBlock.FileName}{itrCount}";
                 streamBlock.Flags = (unkFlagStuff | streamBlock.Flags & 0xFFFFE3FF) & 0xFFFFFF3F;
@@ -104,7 +106,7 @@ public static class GlobalMapSerializer
                 GetMiddlePoint(streamBlock.Extents[0].X, streamBlock.Extents[1].X),
                 GetMiddlePoint(streamBlock.Extents[0].Y, streamBlock.Extents[1].Y),
                 GetMiddlePoint(streamBlock.Extents[0].Z, streamBlock.Extents[1].Z));
-            streamBlock.Flags = (streamBlock.Flags & 0xFFFFE33F) | (uint)((streamBlock.Index & 7) << 10);
+            streamBlock.Flags = (streamBlock.Flags & 0xFFFFE33F) | ((uint)(streamBlock.Index & 7) << 10);
             streamBlock.Flags &= 0xFFFFFEF8;
 
             StreamBlockSerializer.ReadTextureInfo(streamBlock, reader);

@@ -24,9 +24,9 @@ public static class HeightmapSerializer
         if (!reader.CheckHeaderString("HEI5", reversed: true))
             throw new Exception("Invalid HEI5 header found!");
 
-        int cellCount = reader.ReadInt32();
+        var cellCount = reader.ReadInt32();
 
-        Heightmap heightmap = new()
+        var heightmap = new Heightmap()
         {
             CellCountMaxX = reader.ReadInt32(),
             CellCountMaxY = reader.ReadInt32(),
@@ -35,10 +35,11 @@ public static class HeightmapSerializer
             MinY = reader.ReadSingle(),
             MinZ = reader.ReadSingle()
         };
+
         // Reserve capacity for entries
         heightmap.Cells.Capacity = cellCount;
 
-        foreach (int cellIndex in Enumerable.Range(0, cellCount))
+        foreach (var cellIndex in Enumerable.Range(0, cellCount))
         {
             heightmap.Cells.Add(ReadHeightmapCell(reader));
         }
@@ -183,15 +184,17 @@ public static class HeightmapSerializer
     public static void ExportPly(Heightmap heightmap, Stream stream)
     {
         CultureInfo enCi = CultureInfo.GetCultureInfo("en-US");
-        using StreamWriter writer = new(stream, Encoding.ASCII);
+        using var writer = new StreamWriter(stream, Encoding.ASCII);
+
         // Write ply header
         writer.Write("ply\nformat ascii 1.0\nelement vertex ");
         writer.Write($"{(heightmap.Cells.Count * 10 * 10).ToString(enCi)}\n");  // each Cell is always 10 * 10
         writer.Write("property float x\nproperty float y\nproperty float z\nelement face ");
         writer.Write($"{(heightmap.Cells.Count * 9 * 9).ToString(enCi)}\n");
         writer.Write("property list uchar int vertex_index\nend_header\n");
+
         // Write vertex data
-        foreach (HeightmapCell cell in heightmap.Cells)
+        foreach (var cell in heightmap.Cells)
         {
             foreach (int y_entry in Enumerable.Range(0, cell.Data.PointCountY))
             {
@@ -206,15 +209,16 @@ public static class HeightmapSerializer
                 }
             }
         }
+
         // Write face data
-        int verticesPerCell = 10 * 10;
-        foreach (int cellIndex in Enumerable.Range(0, heightmap.Cells.Count))
+        var verticesPerCell = 10 * 10;
+        foreach (var cellIndex in Enumerable.Range(0, heightmap.Cells.Count))
         {
-            foreach (int y in Enumerable.Range(0, 9))
+            foreach (var y in Enumerable.Range(0, 9))
             {
-                foreach (int x in Enumerable.Range(0, 9))
+                foreach (var x in Enumerable.Range(0, 9))
                 {
-                    int firstVertexInFace = (cellIndex * verticesPerCell) + (10 * y) + x;
+                    var firstVertexInFace = (cellIndex * verticesPerCell) + (10 * y) + x;
                     writer.Write($"4 {firstVertexInFace + 1} {firstVertexInFace} {firstVertexInFace + 10} {firstVertexInFace + 11}\n");
                 }
             }

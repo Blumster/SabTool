@@ -10,35 +10,6 @@ namespace SabTool.Data.Packs
         public Dictionary<Crc, FileEntry> FileEntries { get; set; } = new();
         public uint FileCount { get; set; }
         public Tuple<Crc, Crc>[] BlockPathToNameCrcs { get; set; }
-
-        /*public void Export(Stream stream, string outputPath)
-        {
-            using var reader = new BinaryReader(stream, Encoding.UTF8, true);
-
-            foreach (var entry in FileEntries)
-            {
-                // hack, use Streamblocks to determine
-                var ext = "dynpack";
-
-                if (outputPath.Contains("palette"))
-                    ext = "palettepack";
-
-                var stringVal = entry.Key.GetString();
-                var fileName = string.IsNullOrWhiteSpace(stringVal) ? $"global\\0x{entry.Key.Value:X8}.{ext}" : stringVal;
-                var outputFilePath = Path.Combine(outputPath, fileName);
-                Directory.CreateDirectory(Path.GetDirectoryName(outputFilePath));
-
-                var startOff = reader.BaseStream.Position;
-
-                reader.BaseStream.Position = entry.Value.Offset;
-
-                var data = reader.ReadBytes(entry.Value.Size);
-
-                File.WriteAllBytes(outputFilePath, data);
-
-                reader.BaseStream.Position = startOff;
-            }
-        }*/
     }
 
     public enum FileEntryType

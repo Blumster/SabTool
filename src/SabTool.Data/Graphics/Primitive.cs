@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
+using System.Text;
 
 namespace SabTool.Data.Graphics
 {
@@ -80,11 +81,13 @@ namespace SabTool.Data.Graphics
                         VDType.Float2 => new Vector3(BitConverter.ToSingle(arr, off), BitConverter.ToSingle(arr, off + 4), 0.0f),
                         VDType.Float3 => new Vector3(BitConverter.ToSingle(arr, off), BitConverter.ToSingle(arr, off + 4), BitConverter.ToSingle(arr, off + 8)),
                         VDType.Short2 => new Vector3(BitConverter.ToInt16(arr, off), BitConverter.ToInt16(arr, off + 2), 0.0f),
+                        VDType.Short4 => new Vector3(BitConverter.ToInt16(arr, off), BitConverter.ToInt16(arr, off + 2), BitConverter.ToInt16(arr, off + 4)),
                         VDType.Short2N => new Vector3(BitConverter.ToInt16(arr, off) / 32767.0f, BitConverter.ToInt16(arr, off + 2) / 32767.0f, 0.0f),
+                        VDType.Short4N => new Vector3(BitConverter.ToInt16(arr, off) / 32767.0f, BitConverter.ToInt16(arr, off + 2) / 32767.0f, BitConverter.ToInt16(arr, off + 4) / 32767.0f),
                         VDType.UShort2N => new Vector3(BitConverter.ToUInt16(arr, off) / 65535.0f, BitConverter.ToUInt16(arr, off + 2) / 65535.0f, 0.0f),
                         VDType.Float16_2 => new Vector3((float)BitConverter.ToHalf(arr, off), (float)BitConverter.ToHalf(arr, off + 2), 0.0f),
                         VDType.Float16_4 => new Vector3((float)BitConverter.ToHalf(arr, off), (float)BitConverter.ToHalf(arr, off + 2), (float)BitConverter.ToHalf(arr, off + 4)),
-                        _ => throw new NotSupportedException("This Vertex Declaration type is not supported for vertexes!")
+                        _ => throw new NotSupportedException($"This Vertex Declaration type ({vDecl.Type}) is not supported for vertexes!")
                     };
 
                     vertices.Add(vertex);
@@ -165,6 +168,31 @@ namespace SabTool.Data.Graphics
             }
 
             return indices;
+        }
+
+        public string DumpString(int indentCount = 0)
+        {
+            var sb = new StringBuilder();
+
+            sb.Append(' ', indentCount).AppendLine($"{nameof(Primitive)}()");
+            sb.Append(' ', indentCount).AppendLine("{");
+            sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Unk3Index)} = {Unk3Index}");
+            sb.Append(' ', indentCount + 2).AppendLine($"{nameof(VertexHolderIndex)} = {VertexHolderIndex}");
+            sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Float30)} = {Float30}");
+            sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Float34)} = {Float34}");
+            sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Float38)} = {Float38}");
+            sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Int3C)} = {Int3C}");
+            sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Float40)} = {Float40}");
+            sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Float44)} = {Float44}");
+            sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Float48)} = {Float48}");
+            sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Int4C)} = {Int4C}");
+            sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Int54)} = {Int54}");
+            sb.Append(' ', indentCount + 2).AppendLine($"{nameof(IndexStartOffset)} = {IndexStartOffset}");
+            sb.Append(' ', indentCount + 2).AppendLine($"{nameof(NumVertex)} = {NumVertex}");
+            sb.Append(' ', indentCount + 2).AppendLine($"{nameof(NumIndices)} = {NumIndices}");
+            sb.Append(' ', indentCount).AppendLine("}");
+
+            return sb.ToString();
         }
     }
 }

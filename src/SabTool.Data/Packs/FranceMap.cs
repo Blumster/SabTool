@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Numerics;
 
 namespace SabTool.Data.Packs;
@@ -25,19 +26,19 @@ public class FranceMap
         return Palettes.TryGetValue((x, y), out var paletteBlock) ? paletteBlock : null;
     }
 
-    public (int X, int Y) CalculateGrid(PaletteBlock paletteBlock)
+    public (int X, int Z) CalculateGrid(PaletteBlock paletteBlock)
     {
         return CalculateGrid(paletteBlock.X, paletteBlock.Z, paletteBlock.Index);
     }
 
-    public (int X, int Y) CalculateGrid(float x, float z, short index)
+    public (int X, int Z) CalculateGrid(float x, float z, ushort resolution)
     {
-        if (index <= 3)
+        if (resolution <= 3)
         {
-            var xVal = (x - Extents[index][0].X) / GridLimits[index];
-            var zVal = (z - Extents[index][0].Z) / GridLimits[index];
+            var xVal = (x - Extents[resolution][0].X) / GridLimits[resolution];
+            var zVal = (z - Extents[resolution][0].Z) / GridLimits[resolution];
 
-            return ((int)xVal, (int)zVal);
+            return ((int)Math.Floor(xVal), (int)Math.Floor(zVal));
         }
 
         return (0, 0);

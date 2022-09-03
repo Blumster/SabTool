@@ -28,27 +28,27 @@ public static class MeshAssetSerializer
         var vertexCompressedSize = reader.ReadInt32();
         meshAsset.ModelName = reader.ReadStringFromCharArray(256);
 
-        var hash = Hash.StringToHash(meshAsset.ModelName);
-
-        Console.WriteLine($"Reading mesh {meshAsset.ModelName}...");
+        // Save it to the lookup table
+        Hash.StringToHash(meshAsset.ModelName);
 
         using var modelStream = headerRealSize == headerCompressedSize
             ? new MemoryStream(reader.ReadBytes(headerRealSize))
             : new MemoryStream(reader.ReadDecompressedBytes(headerCompressedSize), false);
-        
+
+        using var vertexStream = vertexRealSize == vertexCompressedSize
+            ? new MemoryStream(reader.ReadBytes(vertexRealSize))
+            : new MemoryStream(reader.ReadDecompressedBytes(vertexCompressedSize), false);
+
         meshAsset.Model = ModelSerializer.DeserializeRaw(modelStream);
         meshAsset.Model.Mesh = MeshSerializer.DeserializeRaw(modelStream);
 
         if (modelStream.Position != modelStream.Length)
             throw new Exception($"Under read of the header data of the mesh asset! Pos: {modelStream.Position} | Expected: {modelStream.Length}");
 
-        using (var vertexStream = new MemoryStream(reader.ReadDecompressedBytes(vertexCompressedSize), false))
-        {
-            MeshSerializer.DeserializeVerticesRaw(meshAsset.Model.Mesh, vertexStream);
+        MeshSerializer.DeserializeVerticesRaw(meshAsset.Model.Mesh, vertexStream);
 
-            if (vertexStream.Position != vertexStream.Length)
-                throw new Exception($"Under read of the vertex data of the mesh asset! Pos: {vertexStream.Position} | Expected: {vertexStream.Length}");
-        }
+        if (vertexStream.Position != vertexStream.Length)
+            throw new Exception($"Under read of the vertex data of the mesh asset! Pos: {vertexStream.Position} | Expected: {vertexStream.Length}");
 
         return meshAsset;
     }

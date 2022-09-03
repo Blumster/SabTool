@@ -8,7 +8,6 @@ using SharpGLTF.Geometry;
 using SharpGLTF.Geometry.VertexTypes;
 using SharpGLTF.Materials;
 using SharpGLTF.Scenes;
-using SharpGLTF.Schema2;
 
 namespace SabTool.Serializers.Misc;
 
@@ -20,60 +19,61 @@ public static class WaterflowSerializer
 {
     public static Waterflow DeserializeRaw(Stream stream)
     {
-        using BinaryReader reader = new(stream, Encoding.ASCII, true);
+        using var reader = new BinaryReader(stream, Encoding.ASCII, true);
 
         if (!reader.CheckHeaderString("WF07", reversed: true))
-        {
             throw new Exception("Invalid WF07 header found!");
-        }
 
-        int pointCount = reader.ReadInt32();
+        var pointCount = reader.ReadInt32();
 
-        Waterflow waterflow = new();
+        var waterflow = new Waterflow();
         waterflow.Points.Capacity = pointCount;
 
-        foreach (int pointIndex in Enumerable.Range(0, pointCount))
+        foreach (var pointIndex in Enumerable.Range(0, pointCount))
         {
-            WaterflowPoint point = new()
+            waterflow.Points.Add(new()
             {
-                Name = new Crc(reader.ReadUInt32()),
+                Name = new(reader.ReadUInt32()),
                 Position = reader.ReadVector3(),
                 Rotation = reader.ReadQuaternion(),
                 Unknown = reader.ReadInt32()
-            };
-            waterflow.Points.Add(point);
+            });
         }
+
         return waterflow;
     }
 
     public static void ExportGltf(Waterflow waterflow, string outputPath)
     {
-        SceneBuilder scene = new();
+        var scene = new SceneBuilder();
+        var material = new MaterialBuilder();
 
-        MaterialBuilder material = new();
-
-        int modelCounter = 0;
-        foreach (WaterflowPoint point in waterflow.Points)
+        var modelCounter = 0;
+        foreach (var point in waterflow.Points)
         {
             // Get name of point
-            string waterflowPointName = point.Name.GetString();
-            string waterflowPointFullName = $"{waterflowPointName}_{modelCounter}";
+            var waterflowPointName = point.Name.GetString();
+            var waterflowPointFullName = $"{waterflowPointName}_{modelCounter}";
+
             // Create mesh and add arrow
-            MeshBuilder<VertexPosition> mesh = new(waterflowPointFullName);
+            var mesh = new MeshBuilder<VertexPosition>(waterflowPointFullName);
             var primitive = mesh.UsePrimitive(material, 2);
+
             // Point arrow towards x+
-            Vector3 pointTowardsPositiveXVector = MatrixMath.ConvertDxToOpenGl(new Vector3(20, 0, 0));
+            var pointTowardsPositiveXVector = MatrixMath.ConvertDxToOpenGl(new Vector3(20, 0, 0));
             primitive.AddLine(new VertexPosition(0, 0, 0), new VertexPosition(pointTowardsPositiveXVector.X, pointTowardsPositiveXVector.Y, pointTowardsPositiveXVector.Z));
+
             // Set matrix for point
-            Matrix4x4 dxTransform = Matrix4x4.CreateFromQuaternion(point.Rotation);
+            var dxTransform = Matrix4x4.CreateFromQuaternion(point.Rotation);
             dxTransform.Translation = new Vector3(point.Position.X, point.Position.Y, point.Position.Z);
+
             // Add mesh to scene
             scene.AddRigidMesh(mesh, MatrixMath.ConvertDxToOpenGl(dxTransform));
             modelCounter += 1;
         }
 
-        ModelRoot model = scene.ToGltf2();
-        model.SaveGLTF(Path.Combine(outputPath, "waterflow.gltf"), new WriteSettings
+        var model = scene.ToGltf2();
+        model.SaveGLTF(Path.Combine(outputPath, "waterflow.gltf"), new()
         {
             Validation = SharpGLTF.Validation.ValidationMode.Strict
         });

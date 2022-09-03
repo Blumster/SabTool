@@ -8,6 +8,7 @@ namespace SabTool.Serializers.Packs;
 
 using SabTool.Data.Packs;
 using SabTool.Serializers.Json.Converters;
+using SabTool.Serializers.Misc;
 using SabTool.Serializers.Packs.Assets;
 using SabTool.Utils;
 using SabTool.Utils.Extensions;
@@ -50,7 +51,7 @@ public static class StreamBlockSerializer
         streamBlock.Extents[1] = new(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
 
         streamBlock.UnkShort = reader.ReadInt16();
-        streamBlock.Index = reader.ReadInt16();
+        streamBlock.Index = reader.ReadUInt16();
 
         return streamBlock;
     }
@@ -111,7 +112,8 @@ public static class StreamBlockSerializer
             {
                 var entry = streamBlock.Entries[off][i];
 
-                reader.BaseStream.Position = streamBlock.HeaderEnd + entry.Offset;
+                // TODO: should be align up after each other, but who knows...
+                //reader.BaseStream.Position = streamBlock.HeaderEnd + entry.Offset;
 
                 entry.Payload = reader.ReadBytes(entry.CompressedSize);
             }
@@ -123,22 +125,18 @@ public static class StreamBlockSerializer
 
     public static void ReadHeaderData(StreamBlock streamBlock, BinaryReader reader)
     {
-        streamBlock.Float100 = 1.0f;
+        streamBlock.HeightRangeMax = 1.0f;
 
         if ((streamBlock.Flags & 0x1C00) == 0x400)
         {
             if (!reader.CheckHeaderString("HEI1", reversed: true))
                 throw new Exception("Invalid StreamBlock header found!");
 
-            streamBlock.CountF4 = reader.ReadInt32();
-            streamBlock.CountF8 = reader.ReadInt32();
-
-            var floatUnk = reader.ReadSingle();
-
-            streamBlock.FloatFC = reader.ReadSingle();
-            streamBlock.Float100 = (floatUnk - streamBlock.FloatFC) / 255.0f;
-
-            streamBlock.Array104 = reader.ReadBytes(streamBlock.CountF4 * streamBlock.CountF8); // TODO: check if this is right
+            streamBlock.PointCountX = reader.ReadInt32();
+            streamBlock.PointCountY = reader.ReadInt32();
+            streamBlock.HeightRangeMin = reader.ReadSingle();
+            streamBlock.HeightRangeMax = reader.ReadSingle();
+            streamBlock.HeightMapData = reader.ReadBytes(streamBlock.PointCountX * streamBlock.PointCountY);
         }
 
         ReadTextureInfo(streamBlock, reader);
@@ -212,7 +210,14 @@ public static class StreamBlockSerializer
             var crc = new Crc(reader.ReadUInt32());
             var subCnt = reader.ReadInt32();
 
-            streamBlock.FenceTree.Add(crc, reader.ReadConstArray(subCnt, reader.ReadUInt32));
+            try
+            {
+                streamBlock.FenceTree.Add(crc, reader.ReadConstArray(subCnt, () => new Crc(reader.ReadUInt32())));
+            }
+            catch
+            {
+                Console.WriteLine("Trying to add multiple fence tree by the same id!");
+            }
         }
     }
 
@@ -233,8 +238,10 @@ public static class StreamBlockSerializer
         writer.Write(JsonConvert.SerializeObject(streamBlock, Formatting.Indented, new CrcConverter()));
     }
 
-    public static void Export(StreamBlock streamBlock, string outputPath)
+    public static void Export(StreamBlock streamBlock, string outputPath, IProgress<string> progress)
     {
+        Directory.CreateDirectory(outputPath);
+
         var offInd = 0;
 
         do
@@ -258,15 +265,23 @@ public static class StreamBlockSerializer
                     switch (off)
                     {
                         case 0:
+                            extension = "mesh-bin";
+
                             var meshAsset = MeshAssetSerializer.DeserializeRaw(new MemoryStream(entry.Payload, false));
 
                             meshAsset.Export(outputPath);
+
+                            progress.Report(meshAsset.ModelName);
                             continue;
 
                         case 1:
+                            extension = "texture-bin";
+
                             var textureAsset = TextureAssetSerializer.DeserializeRaw(new MemoryStream(entry.Payload, false), entry.Crc);
 
                             textureAsset?.Export(outputPath);
+
+                            progress.Report(textureAsset?.Name ?? "");
                             continue;
 
                         case 2:
@@ -275,22 +290,23 @@ public static class StreamBlockSerializer
 
                         case 3:
                             extension = "pathgraph";
-                            Console.WriteLine("PATHGRAPH! {0}", string.IsNullOrWhiteSpace(entry.Crc.GetString()) ? $"0x{entry.Crc.Value:X8}.{extension}" : $"{entry.Crc.GetString()}.{extension}");
+
+                            Console.Error.WriteLine("PATHGRAPH! {0}", string.IsNullOrWhiteSpace(entry.Crc.GetString()) ? $"0x{entry.Crc.Value:X8}.{extension}" : $"{entry.Crc.GetString()}.{extension}");
                             break;
 
                         case 4:
                             extension = "aifence";
-                            Console.WriteLine("AIFENCE! {0}", string.IsNullOrWhiteSpace(entry.Crc.GetString()) ? $"0x{entry.Crc.Value:X8}.{extension}" : $"{entry.Crc.GetString()}.{extension}");
+                            Console.Error.WriteLine("AIFENCE! {0}", string.IsNullOrWhiteSpace(entry.Crc.GetString()) ? $"0x{entry.Crc.Value:X8}.{extension}" : $"{entry.Crc.GetString()}.{extension}");
                             break;
 
                         case 5:
                             extension = "unknown";
-                            Console.WriteLine("UNK! {0}", string.IsNullOrWhiteSpace(entry.Crc.GetString()) ? $"0x{entry.Crc.Value:X8}.{extension}" : $"{entry.Crc.GetString()}.{extension}");
+                            Console.Error.WriteLine("UNK! {0}", string.IsNullOrWhiteSpace(entry.Crc.GetString()) ? $"0x{entry.Crc.Value:X8}.{extension}" : $"{entry.Crc.GetString()}.{extension}");
                             break;
 
                         case 6:
                             extension = "soundbank";
-                            Console.WriteLine("SOUNDBANK! {0}", string.IsNullOrWhiteSpace(entry.Crc.GetString()) ? $"0x{entry.Crc.Value:X8}.{extension}" : $"{entry.Crc.GetString()}.{extension}");
+                            Console.Error.WriteLine("SOUNDBANK! {0}", string.IsNullOrWhiteSpace(entry.Crc.GetString()) ? $"0x{entry.Crc.Value:X8}.{extension}" : $"{entry.Crc.GetString()}.{extension}");
                             break;
 
                         case 7:
@@ -298,22 +314,32 @@ public static class StreamBlockSerializer
                             break;
 
                         case 8:
-                            extension = "wsd";
-                            Console.WriteLine("WSD! {0}", string.IsNullOrWhiteSpace(entry.Crc.GetString()) ? $"0x{entry.Crc.Value:X8}.{extension}" : $"{entry.Crc.GetString()}.{extension}");
-                            break;
+                            extension = "wsd-bin";
+
+                            var dictOutPath = Path.Combine(outputPath, entry.UnkCrc.Value == 0 ? "objects.wsd.json" : $"{entry.UnkCrc.GetStringOrHexString()}.wsd.json");
+
+                            var dict = DictionarySerializer.DeserializeRaw(new MemoryStream(entry.Payload, false));
+
+                            using (var fs = new FileStream(dictOutPath, FileMode.Create, FileAccess.Write, FileShare.Read))
+                                DictionarySerializer.SerializeJSON(dict, fs);
+
+                            continue;
                     }
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Unable to export {entry.Crc.GetStringOrHexString()}! Exporting as raw! Exception:");
-                    Console.WriteLine(ex.ToString());
+                    Console.Error.WriteLine($"Unable to export {entry.Crc.GetStringOrHexString()}! Exporting as raw! Exception:");
+                    Console.Error.WriteLine(ex.ToString());
                 }
 
-                var outputFilePath = Path.Combine(outputPath, $"{entry.Crc.GetStringOrHexString()}.{extension}");
+                var outputFileName = $"{entry.Crc.GetStringOrHexString()}.{extension}";
+                var outputFilePath = Path.Combine(outputPath, outputFileName);
 
                 Directory.CreateDirectory(Path.GetDirectoryName(outputFilePath)!);
 
                 File.WriteAllBytes(outputFilePath, entry.Payload);
+
+                progress.Report(outputFileName);
             }
 
             ++offInd;

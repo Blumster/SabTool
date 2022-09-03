@@ -9,7 +9,7 @@ namespace SabTool.Data.Packs
         public Crc Crc { get; set; }
         public float X { get; set; }
         public float Z { get; set; }
-        public short Index { get; set; }
+        public ushort Index { get; set; }
         public List<Crc> Palettes { get; set; }
     }
 }
