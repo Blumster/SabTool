@@ -194,4 +194,26 @@ public class MiscCategory : BaseCategory
             return true;
         }
     }
+
+    public class ExportGltfMeshFromPacksCommand : BaseCommand
+    {
+        public override string Key => "export-heightmap-packs-to-gltfl";
+        public override string Shortcut => "eheightmappacksgltf";
+        public override string Usage => "<path to extracted megapack1 and 2> <output directory path>";
+        public override bool Execute(IEnumerable<string> arguments)
+        {
+            if (arguments.Count() < 2)
+            {
+                Console.WriteLine("ERROR: Not enough arguments given!");
+                return false;
+            }
+
+            var outputFolder = arguments.ElementAt(1);
+
+            Directory.CreateDirectory(outputFolder);
+
+            HeightmapSerializer.ExportAllCellsInPacks(arguments.ElementAt(0), outputFolder);
+            return true;
+        }
+    }
 }
