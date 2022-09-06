@@ -43,7 +43,7 @@ public static class HeightmapSerializer
         {
             heightmap.Cells.Add(ReadHeightmapCell(reader));
         }
-
+        
         if (stream.Position != stream.Length)
         {
             throw new Exception("Under reading HEI5 file!");
@@ -69,10 +69,6 @@ public static class HeightmapSerializer
 
     public static HeightmapCell ReadHeightmapCell(BinaryReader reader)
     {
-        if (!reader.CheckHeaderString("HEI1", reversed: true))
-        {
-            throw new Exception("Invalid HEI1 header found!");
-        }
         HeightmapCell cell = new()
         {
             Data = ReadHeightmapCellData(reader)
