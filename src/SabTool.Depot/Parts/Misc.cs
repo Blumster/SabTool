@@ -1,5 +1,6 @@
 ﻿namespace SabTool.Depot;
 
+using SabTool.Data.Lua;
 using SabTool.Data.Misc;
 using SabTool.Serializers.Misc;
 
@@ -9,6 +10,7 @@ public partial class ResourceDepot
     public Waterflow? Waterflow { get; private set; }
     public Freeplay? Freeplay { get; private set; }
     public Watercontrol? Watercontrol { get; private set; }
+    public List<WaterQuad> WaterQuads { get; private set; }
 
     private bool LoadMisc()
     {
@@ -26,6 +28,8 @@ public partial class ResourceDepot
         using var watercontrolStream = new FileStream(GetGamePath("France.waterctrl"), FileMode.Open, FileAccess.Read, FileShare.None);
         Watercontrol = WatercontrolSerializer.DeserializeRaw(watercontrolStream);
         
+        WaterQuads = WaterplanesSerializer.DeserializeRaw(File.ReadAllLines(GetGamePath("water_planes.ini")).ToList());
+
         Console.WriteLine("Misc loaded!");
 
         LoadedResources |= Resource.Misc;
