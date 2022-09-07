@@ -100,10 +100,7 @@ namespace SabTool.Serializers.Misc
                 primitive.AddTriangle(new VertexPosition(quad.VerticesXZ[0].X, quad.VertexY, quad.VerticesXZ[0].Y),
                                       new VertexPosition(quad.VerticesXZ[2].X, quad.VertexY, quad.VerticesXZ[2].Y),
                                       new VertexPosition(quad.VerticesXZ[3].X, quad.VertexY, quad.VerticesXZ[3].Y));
-                // Rotating this results in the correct data, no idea why it doesn't behave the same for the models
-                float rotationYInRadians = 180 * (MathF.PI / 180);
-                Matrix4x4 rotationMatrix = new(MathF.Cos(rotationYInRadians), 0, -MathF.Sin(rotationYInRadians), 0, 0, 1, 0, 0, MathF.Sin(rotationYInRadians), 0, MathF.Cos(rotationYInRadians), 0, 0, 0, 0, 1);
-                scene.AddRigidMesh(mesh, Matrix4x4.Identity * rotationMatrix);
+                scene.AddRigidMesh(mesh, Matrix4x4.Identity);
             }
 
             ModelRoot model = scene.ToGltf2();
