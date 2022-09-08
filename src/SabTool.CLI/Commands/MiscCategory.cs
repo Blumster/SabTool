@@ -145,6 +145,31 @@ public class MiscCategory : BaseCategory
         }
     }
 
+    public class ExportGltfFromWaterplanesCommand : BaseCommand
+    {
+        public override string Key => "export-waterplanes-to-gltf";
+        public override string Shortcut => "ewaterplanesgltf";
+        public override string Usage => "<game base path> <output directory path>";
+        public override bool Execute(IEnumerable<string> arguments)
+        {
+            if (arguments.Count() < 2)
+            {
+                Console.WriteLine("ERROR: Not enough arguments given!");
+                return false;
+            }
+
+            ResourceDepot.Instance.Initialize(arguments.ElementAt(0));
+            ResourceDepot.Instance.Load(Resource.Misc);
+
+            var outputFolder = arguments.ElementAt(1);
+
+            Directory.CreateDirectory(outputFolder);
+
+            WaterplanesSerializer.ExportGltf(ResourceDepot.Instance.WaterQuads!, outputFolder);
+            return true;
+        }
+    }
+
     public class ExportGltfMeshFromHeightmapCommand : BaseCommand
     {
         public override string Key => "export-heightmap-to-gltfl";
