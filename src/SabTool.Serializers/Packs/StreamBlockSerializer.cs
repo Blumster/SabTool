@@ -278,14 +278,28 @@ public static class StreamBlockSerializer
                             extension = "texture-bin";
 
                             var textureAsset = TextureAssetSerializer.DeserializeRaw(new MemoryStream(entry.Payload, false), entry.Crc);
+                            if (textureAsset is not null)
+                            {
+                                textureAsset.Export(outputPath);
 
-                            textureAsset?.Export(outputPath);
+                                progress.Report(textureAsset.Name ?? "");
 
-                            progress.Report(textureAsset?.Name ?? "");
-                            continue;
+                                continue;
+                            }
+                            
+                            break;
 
                         case 2:
-                            extension = "physics";
+                            extension = "physics-bin";
+
+                            var physicsAsset = PhysicsAssetSerializer.DeserializeRaw(entry);
+                            if (physicsAsset is not null)
+                            {
+                                physicsAsset.Export(outputPath);
+
+                                continue;
+                            }
+                            
                             break;
 
                         case 3:

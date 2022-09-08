@@ -3,7 +3,7 @@ using System.IO;
 
 namespace SabTool.Data.Packs.Assets;
 
-using Utils;
+using SabTool.Utils;
 
 public class TextureAsset
 {
