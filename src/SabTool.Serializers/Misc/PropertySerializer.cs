@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace SabTool.Serializers.Misc;
@@ -23,6 +24,16 @@ public static class PropertySerializer
         };
     }
 
+    public static List<Property> DeserializeMultipleRaw(BinaryReader reader, int propertyCount)
+    {
+        var properties = new List<Property>();
+
+        for (var i = 0; i < propertyCount; ++i)
+            properties.Add(DeserializeRaw(reader));
+
+        return properties;
+    }
+
     public static void SerializeRaw(Property prop, Stream stream)
     {
         using var writer = new BinaryWriter(stream, Encoding.UTF8, true);
@@ -35,5 +46,11 @@ public static class PropertySerializer
         writer.Write(prop.Name.Value);
         writer.Write(prop.Data.Length);
         writer.Write(prop.Data);
+    }
+
+    public static void SerializeMultipleRaw(List<Property> properties, BinaryWriter writer)
+    {
+        foreach (var prop in properties)
+            SerializeRaw(prop, writer);
     }
 }

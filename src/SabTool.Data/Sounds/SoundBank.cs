@@ -1,10 +1,9 @@
-﻿namespace SabTool.Data.Sounds
-{
-    using Utils;
+﻿namespace SabTool.Data.Sounds;
 
-    public class SoundBank
-    {
-        public Crc Id { get; set; }
-        public byte[] Data { get; set; }
-    }
+using SabTool.Utils;
+
+public class SoundBank
+{
+    public Crc Id { get; set; }
+    public byte[] Data { get; set; }
 }

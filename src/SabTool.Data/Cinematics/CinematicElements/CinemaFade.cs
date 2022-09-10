@@ -1,8 +1,7 @@
-﻿namespace SabTool.Data.Cinematics.CinematicElements
+﻿namespace SabTool.Data.Cinematics.CinematicElements;
+
+public class CinemaFade : CinemaElement
 {
-    public class CinemaFade : CinemaElement
-    {
-        public float EndTime { get; set; }
-        public uint UnkInt { get; set; }
-    }
+    public float EndTime { get; set; }
+    public uint UnkInt { get; set; }
 }

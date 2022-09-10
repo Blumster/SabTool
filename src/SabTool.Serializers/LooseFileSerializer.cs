@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SabTool.Serializers;
 
-using SabTool.Data;
+using SabTool.Data.Misc;
 using SabTool.Utils;
 using SabTool.Utils.Extensions;
 

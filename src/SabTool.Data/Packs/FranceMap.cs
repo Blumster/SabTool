@@ -21,7 +21,7 @@ public class FranceMap
     public Dictionary<Crc, StreamBlock> Interiors { get; set; }
     public Dictionary<Crc, StreamBlock> CinematicBlocks { get; set; }
 
-    public PaletteBlock GetPaletteBlock(int x, int y)
+    public PaletteBlock? GetPaletteBlock(int x, int y)
     {
         return Palettes.TryGetValue((x, y), out var paletteBlock) ? paletteBlock : null;
     }

@@ -1,6 +1,6 @@
 ﻿namespace SabTool.Depot;
 
-using SabTool.Data;
+using SabTool.Data.Misc;
 using SabTool.Serializers;
 
 public partial class ResourceDepot

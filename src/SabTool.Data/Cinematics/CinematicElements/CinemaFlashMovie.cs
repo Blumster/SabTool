@@ -1,8 +1,7 @@
-﻿namespace SabTool.Data.Cinematics.CinematicElements
+﻿namespace SabTool.Data.Cinematics.CinematicElements;
+
+public class CinemaFlashMovie : CinemaElement
 {
-    public class CinemaFlashMovie : CinemaElement
-    {
-        public float EndTime { get; set; }
-        public string Name { get; set; }
-    }
+    public float EndTime { get; set; }
+    public string Name { get; set; }
 }
