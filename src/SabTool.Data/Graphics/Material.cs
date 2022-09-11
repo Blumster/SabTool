@@ -4,7 +4,7 @@ using System.Numerics;
 
 namespace SabTool.Data.Graphics;
 
-using Utils;
+using SabTool.Utils;
 
 public class Material
 {

@@ -1,8 +1,7 @@
-﻿namespace SabTool.Data.Cinematics.CinematicElements
+﻿namespace SabTool.Data.Cinematics.CinematicElements;
+
+public class CinemaMotionBlur : CinemaElement
 {
-    public class CinemaMotionBlur : CinemaElement
-    {
-        public float EndTime { get; set; }
-        public float Strength { get; set; }
-    }
+    public float EndTime { get; set; }
+    public float Strength { get; set; }
 }

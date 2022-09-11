@@ -1,12 +1,11 @@
-﻿namespace SabTool.Data.Cinematics.ComplexAnimationElements
-{
-    public class SoundElement : ComplexAnimElement
-    {
-        public bool UnkBool { get; set; }
+﻿namespace SabTool.Data.Cinematics.ComplexAnimationElements;
 
-        public SoundElement()
-            : base(ElementType.Sound)
-        {
-        }
+public class SoundElement : ComplexAnimElement
+{
+    public bool UnkBool { get; set; }
+
+    public SoundElement()
+        : base(ElementType.Sound)
+    {
     }
 }

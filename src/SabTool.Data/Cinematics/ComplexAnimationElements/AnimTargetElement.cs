@@ -1,12 +1,11 @@
-﻿namespace SabTool.Data.Cinematics.ComplexAnimationElements
-{
-    public class AnimTargetElement : AnimElement
-    {
-        public int UnkInt2 { get; set; }
+﻿namespace SabTool.Data.Cinematics.ComplexAnimationElements;
 
-        public AnimTargetElement()
-            : base(ElementType.AnimTarget)
-        {
-        }
+public class AnimTargetElement : AnimElement
+{
+    public int UnkInt2 { get; set; }
+
+    public AnimTargetElement()
+        : base(ElementType.AnimTarget)
+    {
     }
 }

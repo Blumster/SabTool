@@ -1,9 +1,8 @@
-﻿namespace SabTool.Data.Cinematics.CinematicElements
+﻿namespace SabTool.Data.Cinematics.CinematicElements;
+
+public class CinemaBinkMovie : CinemaElement
 {
-    public class CinemaBinkMovie : CinemaElement
-    {
-        public float EndTime { get; set; }
-        public string Name { get; set; }
-        public bool IsPaused { get; set; }
-    }
+    public float EndTime { get; set; }
+    public string Name { get; set; }
+    public bool IsPaused { get; set; }
 }

@@ -1,9 +1,8 @@
-﻿namespace SabTool.Data.Cinematics.CinematicElements
+﻿namespace SabTool.Data.Cinematics.CinematicElements;
+
+public class CinemaConvLine : CinemaElement
 {
-    public class CinemaConvLine : CinemaElement
-    {
-        public float EndTime { get; set; }
-        public int UnkInt1 { get; set; }
-        public int UnkInt2 { get; set; }
-    }
+    public float EndTime { get; set; }
+    public int UnkInt1 { get; set; }
+    public int UnkInt2 { get; set; }
 }

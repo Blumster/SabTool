@@ -1,39 +1,38 @@
 ﻿using System.Collections.Generic;
 
-namespace SabTool.Data.Packs
+namespace SabTool.Data.Packs;
+
+using SabTool.Utils;
+
+public class GlobalMap
 {
-    using Utils;
+    public uint NumTotalBlocks { get; set; }
+    public uint NumStreamBlocks { get; set; }
+    public StreamBlock[][] StreamBlockArray { get; set; } = new StreamBlock[2][];
+    public Dictionary<Crc, StreamBlock> DynamicBlocks { get; } = new();
+    public Dictionary<Crc, StreamBlock> StaticBlocks { get; } = new();
 
-    public class GlobalMap
+    public StreamBlock? GetDynamicBlock(Crc crc)
     {
-        public uint NumTotalBlocks { get; set; }
-        public uint NumStreamBlocks { get; set; }
-        public StreamBlock[][] StreamBlockArray { get; set; } = new StreamBlock[2][];
-        public Dictionary<Crc, StreamBlock> DynamicBlocks { get; } = new();
-        public Dictionary<Crc, StreamBlock> StaticBlocks { get; } = new();
+        if (DynamicBlocks.TryGetValue(crc, out StreamBlock res))
+            return res;
 
-        public StreamBlock GetDynamicBlock(Crc crc)
+        return null;
+    }
+
+    public StreamBlock? GetStaticBlock(Crc crc)
+    {
+        for (var i = 0; i < StreamBlockArray.Length; ++i)
         {
-            if (DynamicBlocks.TryGetValue(crc, out StreamBlock res))
-                return res;
-
-            return null;
-        }
-
-        public StreamBlock GetStaticBlock(Crc crc)
-        {
-            for (var i = 0; i < StreamBlockArray.Length; ++i)
+            for (var j = 0; j < StreamBlockArray[i].Length; ++j)
             {
-                for (var j = 0; j < StreamBlockArray[i].Length; ++j)
+                if (StreamBlockArray[i][j].Id == crc)
                 {
-                    if (StreamBlockArray[i][j].Id == crc)
-                    {
-                        return StreamBlockArray[i][j];
-                    }
+                    return StreamBlockArray[i][j];
                 }
             }
-
-            return null;
         }
+
+        return null;
     }
 }

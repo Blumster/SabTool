@@ -1,8 +1,7 @@
-﻿namespace SabTool.Data.Cinematics.CinematicElements
+﻿namespace SabTool.Data.Cinematics.CinematicElements;
+
+public class CinemaMusicState : CinemaElement
 {
-    public class CinemaMusicState : CinemaElement
-    {
-        public float EndTime { get; set; }
-        public bool Unk { get; set; }
-    }
+    public float EndTime { get; set; }
+    public bool Unk { get; set; }
 }
