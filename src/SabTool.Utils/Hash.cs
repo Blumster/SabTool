@@ -159,7 +159,7 @@ namespace SabTool.Utils
             return hash;
         }
 
-        private static uint InternalFNV32string(string source, int maxLen = -1)
+        public static uint InternalFNV32string(string source, int maxLen = -1)
         {
             if (string.IsNullOrEmpty(source))
                 return 0;

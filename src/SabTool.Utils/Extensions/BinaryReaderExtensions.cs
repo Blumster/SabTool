@@ -86,6 +86,33 @@ namespace SabTool.Utils.Extensions
             return sb.ToString();
         }
 
+        public static string ReadPrefixedString(this BinaryReader reader)
+        {
+            // Didn't find a type yet that has less than a 4 byte prefix
+            // String is always null terminated with ASCII 7-bit encoding
+            uint length = reader.ReadUInt32();
+            if (length == 0)
+            {
+                throw new Exception("String has to be at least one character long (null terminator)");
+            }
+            // ReadBytes(...) only takes int and no string in the game should be longer than 256 characters, so it just gets checked and cast down to int
+            if (length >= int.MaxValue)
+            {
+                throw new Exception("Exceeding expected string length");
+            }
+            int correctedLength = (int)length;
+            // Get string, invalid bytes will cause an exception because of encoding settings
+            Encoding errorThrowingEncoding = Encoding.GetEncoding("us-ascii", new EncoderExceptionFallback(), new DecoderExceptionFallback());
+            byte[] data = reader.ReadBytes(correctedLength - 1);
+            string result = errorThrowingEncoding.GetString(data);
+            // Check termination
+            if (reader.ReadByte() != 0)
+            {
+                throw new Exception("String is not correctly terminated");
+            }
+            return result;
+        }
+
         public static string ReadUTF8StringOn(this BinaryReader reader, int length)
         {
             var bytes = reader.ReadBytes(length);
