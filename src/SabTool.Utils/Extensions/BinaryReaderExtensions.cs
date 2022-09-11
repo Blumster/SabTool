@@ -100,11 +100,8 @@ namespace SabTool.Utils.Extensions
             {
                 throw new Exception("Exceeding expected string length");
             }
-            int correctedLength = (int)length;
-            // Get string, invalid bytes will cause an exception because of encoding settings
-            Encoding errorThrowingEncoding = Encoding.GetEncoding("us-ascii", new EncoderExceptionFallback(), new DecoderExceptionFallback());
-            byte[] data = reader.ReadBytes(correctedLength - 1);
-            string result = errorThrowingEncoding.GetString(data);
+            int correctedLength = (int)length;            
+            string result = Encoding.UTF8.GetString(reader.ReadBytes(correctedLength - 1));
             // Check termination
             if (reader.ReadByte() != 0)
             {
