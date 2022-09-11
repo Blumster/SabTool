@@ -245,7 +245,7 @@ public class MiscCategory : BaseCategory
 
     public class ExportGltfSplinePointsFromRailways : BaseCommand
     {
-        public override string Key => "export-railway-splinepoints-to-gltfl";
+        public override string Key => "export-railway-splinepoints-to-gltf";
         public override string Shortcut => "erailwaysplinepointsgltf";
         public override string Usage => "<game base path> <output directory path>";
         public override bool Execute(IEnumerable<string> arguments)
@@ -266,23 +266,5 @@ public class MiscCategory : BaseCategory
             RailwaySerializer.ExportGltfSplinePoints(ResourceDepot.Instance.Railway!, outputFolder);
             return true;
         }
-    }
-
-    public class HashString : BaseCommand
-    {
-        // For manually testing values
-        public override string Key => "hash-string";
-        public override string Shortcut => "hash";
-        public override string Usage => "<string to hash>";
-        public override bool Execute(IEnumerable<string> arguments)
-        {
-            if (arguments.Count() < 1)
-            {
-                Console.WriteLine("ERROR: Not enough arguments given!");
-                return false;
-            }
-            Console.WriteLine($"0x{Hash.InternalFNV32string(arguments.ElementAt(0)):X8}");
-            return true;
-        }
-    } 
+    }   
 }
