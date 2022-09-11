@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Numerics;
 
-namespace SabTool.Data.Lua;
+namespace SabTool.Data.Misc;
 
 public class WaterQuad
 {
