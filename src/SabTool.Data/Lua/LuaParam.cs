@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-
-namespace SabTool.Data.Lua;
+﻿namespace SabTool.Data.Lua;
 
 using SabTool.Utils;
 using SabTool.Utils.Extensions;

@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace SabTool.Data.Cinematics;
+﻿namespace SabTool.Data.Cinematics;
 
 using SabTool.Data.Cinematics.CinematicElements;
 using SabTool.Utils;

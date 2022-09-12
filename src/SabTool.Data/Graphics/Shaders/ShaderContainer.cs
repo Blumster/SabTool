@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace SabTool.Data.Graphics.Shaders;
+﻿namespace SabTool.Data.Graphics.Shaders;
 
 public class ShaderContainer
 {

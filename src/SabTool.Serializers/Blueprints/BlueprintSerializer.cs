@@ -6,7 +6,7 @@ using System.Text;
 
 using Newtonsoft.Json;
 
-namespace SabTool.Serializers;
+namespace SabTool.Serializers.Blueprints;
 
 using SabTool.Data.Blueprints;
 using SabTool.Serializers.Misc;
@@ -34,8 +34,6 @@ public static class BlueprintSerializer
 
             var unknown = reader.ReadInt32();
             var innerCount = reader.ReadInt32();
-            if (innerCount > 1)
-                throw new Exception("asd");
 
             for (var j = 0; j < innerCount; ++j)
             {

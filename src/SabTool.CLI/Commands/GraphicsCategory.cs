@@ -1,19 +1,18 @@
-﻿namespace SabTool.CLI.Commands
+﻿namespace SabTool.CLI.Commands;
+
+using SabTool.CLI.Base;
+using SabTool.CLI.Commands.Graphics;
+
+public class GraphicsCategory : BaseCategory
 {
-    using Base;
-    using Graphics;
+    public override string Key => "graphics";
 
-    public class GraphicsCategory : BaseCategory
+    public override string Shortcut => "gr";
+
+    public override string Usage => "<sub command>";
+
+    public override void Setup()
     {
-        public override string Key => "graphics";
-
-        public override string Shortcut => "gr";
-
-        public override string Usage => "<sub command>";
-
-        public override void Setup()
-        {
-            SetupWithTypes(typeof(MaterialCategory), typeof(ShaderCategory), typeof(ShaderMappingCategory));
-        }
+        SetupWithTypes(typeof(MaterialCategory), typeof(ShaderCategory), typeof(ShaderMappingCategory));
     }
 }

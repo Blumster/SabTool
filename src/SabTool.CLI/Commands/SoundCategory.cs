@@ -1,19 +1,18 @@
-﻿namespace SabTool.CLI.Commands
+﻿namespace SabTool.CLI.Commands;
+
+using SabTool.CLI.Base;
+using SabTool.CLI.Commands.Sounds;
+
+public class SoundCategory : BaseCategory
 {
-    using Base;
-    using Sounds;
+    public override string Key => "sound";
 
-    public class SoundCategory : BaseCategory
+    public override string Shortcut => "s";
+
+    public override string Usage => "<sub command>";
+
+    public override void Setup()
     {
-        public override string Key => "sound";
-
-        public override string Shortcut => "s";
-
-        public override string Usage => "<sub command>";
-
-        public override void Setup()
-        {
-            SetupWithTypes(typeof(SoundPackCategory));
-        }
+        SetupWithTypes(typeof(SoundPackCategory));
     }
 }

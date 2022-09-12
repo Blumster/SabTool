@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
-
-namespace SabTool.Data.Graphics;
+﻿namespace SabTool.Data.Graphics;
 
 public class VertexDeclaration
 {

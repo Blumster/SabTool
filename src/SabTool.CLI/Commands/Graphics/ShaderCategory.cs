@@ -3,8 +3,8 @@ using HlslDecompiler.DirectXShaderModel;
 
 namespace SabTool.CLI.Commands.Graphics;
 
-using Base;
-using Depot;
+using SabTool.CLI.Base;
+using SabTool.Depot;
 
 public class ShaderCategory : BaseCategory
 {

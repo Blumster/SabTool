@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-
-using SharpGLTF.Schema2;
+﻿using SharpGLTF.Schema2;
 
 namespace SabTool.Data.Packs.Assets;
 

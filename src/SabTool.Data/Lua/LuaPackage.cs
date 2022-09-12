@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace SabTool.Data.Lua;
+﻿namespace SabTool.Data.Lua;
 
 using SabTool.Utils;
 

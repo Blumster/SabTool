@@ -9,8 +9,8 @@ public partial class ResourceDepot
     public Waterflow? Waterflow { get; private set; }
     public Freeplay? Freeplay { get; private set; }
     public Watercontrol? Watercontrol { get; private set; }
-    public List<WaterQuad> WaterQuads { get; private set; }
-    public List<RailwaySpline> Railway { get; private set; }
+    public List<WaterQuad>? WaterQuads { get; private set; }
+    public List<RailwaySpline>? Railway { get; private set; }
 
     private bool LoadMisc()
     {

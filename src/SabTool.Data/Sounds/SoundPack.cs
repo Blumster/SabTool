@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace SabTool.Data.Sounds;
+﻿namespace SabTool.Data.Sounds;
 
 using SabTool.Utils;
 

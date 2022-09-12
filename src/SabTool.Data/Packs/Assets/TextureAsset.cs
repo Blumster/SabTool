@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-
-namespace SabTool.Data.Packs.Assets;
+﻿namespace SabTool.Data.Packs.Assets;
 
 using SabTool.Utils;
 

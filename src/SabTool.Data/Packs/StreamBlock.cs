@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Numerics;
+﻿using System.Numerics;
 
 namespace SabTool.Data.Packs;
 

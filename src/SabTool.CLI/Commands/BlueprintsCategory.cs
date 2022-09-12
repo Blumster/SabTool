@@ -2,7 +2,7 @@
 
 using SabTool.CLI.Base;
 using SabTool.Depot;
-using SabTool.Serializers;
+using SabTool.Serializers.Blueprints;
 
 public class BlueprintsCategory : BaseCategory
 {
@@ -27,20 +27,13 @@ public class BlueprintsCategory : BaseCategory
             }
 
             ResourceDepot.Instance.Initialize(arguments.ElementAt(0));
-            ResourceDepot.Instance.Load(Resource.All);
-
-            var gameTemplatesStream = ResourceDepot.Instance.GetLooseFile("GameTemplates.wsd");
-            if (gameTemplatesStream == null)
-            {
-                Console.WriteLine("ERROR: Could not read GameTemplates.wsd from LooseFiles!");
-                return false;
-            }
+            ResourceDepot.Instance.Load(Resource.Blueprints);
 
             var outputDir = arguments.ElementAt(1);
 
             Directory.CreateDirectory(outputDir);
 
-            var blueprints = BlueprintSerializer.DeserializeRaw(gameTemplatesStream);
+            var blueprints = ResourceDepot.Instance.GetAllBlueprints().ToList();
 
             using var outFileStream = new FileStream(Path.Combine(outputDir, "blueprints.json"), FileMode.Create, FileAccess.Write, FileShare.None);
 
@@ -77,14 +70,7 @@ public class BlueprintsCategory : BaseCategory
             }
 
             ResourceDepot.Instance.Initialize(arguments.ElementAt(0));
-            ResourceDepot.Instance.Load(Resource.LooseFiles);
-
-            var gameTemplatesStream = ResourceDepot.Instance.GetLooseFile("GameTemplates.wsd");
-            if (gameTemplatesStream == null)
-            {
-                Console.WriteLine("ERROR: Could not read GameTemplates.wsd from LooseFiles!");
-                return false;
-            }
+            ResourceDepot.Instance.Load(Resource.Blueprints);
 
             var outputFilePath = arguments.Count() > 1 ? arguments.ElementAt(1) : null;
 
@@ -97,7 +83,7 @@ public class BlueprintsCategory : BaseCategory
                 outputToFile = true;
             }
 
-            var blueprints = BlueprintSerializer.DeserializeRaw(gameTemplatesStream);
+            var blueprints = ResourceDepot.Instance.GetAllBlueprints();
 
             foreach (var blueprint in blueprints)
                 writer.WriteLine(blueprint.Dump());

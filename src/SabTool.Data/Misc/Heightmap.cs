@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace SabTool.Data.Misc;
+﻿namespace SabTool.Data.Misc;
 
 public class Heightmap // HEI5
 {

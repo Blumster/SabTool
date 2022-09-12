@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Text;
 
 namespace SabTool.Data.Blueprints;
 
 using SabTool.Data.Misc;
 using SabTool.Utils;
-using System.IO;
 
 public class Blueprint
 {
@@ -33,8 +30,7 @@ public class Blueprint
         var sb = new StringBuilder();
         sb.AppendLine($"Blueprint({Type}, {Name}):");
 
-        HashSet<BlueprintType>? allTypes = BlueprintFieldTypes.GetAllTypes(Type);
-
+        var allTypes = BlueprintFieldTypes.GetAllTypes(Type);
         if (allTypes == null)
             sb.AppendLine("Unknown blueprint type!");
 
@@ -69,8 +65,8 @@ public class Blueprint
     private static string FormatEmptyType(byte[] bytes)
     {
         var bytesStr = BitConverter.ToString(bytes).Replace('-', ' ');
+        var guessStr = "";
 
-        string guessStr = "";
         if (bytes.Length >= 4)
         {
             var intStr = bytes.Length >= 4 ? BitConverter.ToInt32(bytes, 0).ToString() : "";
@@ -85,7 +81,7 @@ public class Blueprint
                     break;
 
                 // Check every character to be valid
-                if (bytes[i] < 0x20 || bytes[i] > 0x7E)
+                if (bytes[i] is < 0x20 or > 0x7E)
                 {
                     stringVal = null;
                     break;

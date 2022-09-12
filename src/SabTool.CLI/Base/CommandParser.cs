@@ -4,7 +4,7 @@ using System.Text;
 
 namespace SabTool.CLI.Base;
 
-using Utils.Extensions;
+using SabTool.Utils.Extensions;
 
 public static class CommandParser
 {
