@@ -1,7 +1,5 @@
 ﻿namespace SabTool.Data.Cinematics.CinematicElements;
 
-using SabTool.Utils;
-
 public sealed class CinemaSound3D : CinemaElement
 {
     public float EndTime { get; set; }

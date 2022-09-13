@@ -1,7 +1,5 @@
 ﻿namespace SabTool.Data.Cinematics;
 
-using SabTool.Utils;
-
 public sealed class DialogText
 {
     public Crc Id { get; set; }

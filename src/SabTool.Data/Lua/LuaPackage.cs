@@ -1,7 +1,5 @@
 ﻿namespace SabTool.Data.Lua;
 
-using SabTool.Utils;
-
 public sealed class LuaPackage
 {
     public List<Entry> Entries { get; } = new();

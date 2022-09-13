@@ -1,7 +1,5 @@
 ﻿namespace SabTool.Data.Packs;
 
-using SabTool.Utils;
-
 public sealed class Megapack
 {
     public Dictionary<Crc, FileEntry> FileEntries { get; set; } = new();

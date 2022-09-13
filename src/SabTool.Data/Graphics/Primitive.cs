@@ -1,7 +1,4 @@
-﻿using System.Numerics;
-using System.Text;
-
-namespace SabTool.Data.Graphics;
+﻿namespace SabTool.Data.Graphics;
 
 public sealed class Primitive
 {

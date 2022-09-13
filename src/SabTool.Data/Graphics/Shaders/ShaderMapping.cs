@@ -1,7 +1,5 @@
 ﻿namespace SabTool.Data.Graphics.Shaders;
 
-using SabTool.Utils;
-
 public sealed class ShaderMapping
 {
     public List<ShaderMappingData> Mappings { get; } = new();

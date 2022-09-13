@@ -1,7 +1,5 @@
 ﻿namespace SabTool.Data.Misc;
 
-using SabTool.Utils;
-
 public sealed class LooseFile
 {
     public Crc Crc { get; set; }

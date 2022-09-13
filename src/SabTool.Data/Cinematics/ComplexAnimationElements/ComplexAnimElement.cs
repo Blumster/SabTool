@@ -1,7 +1,5 @@
 ﻿namespace SabTool.Data.Cinematics.ComplexAnimationElements;
 
-using SabTool.Utils;
-
 public enum ElementType
 {
     Anim = 0,

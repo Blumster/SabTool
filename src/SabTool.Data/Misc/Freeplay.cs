@@ -1,7 +1,5 @@
 ﻿namespace SabTool.Data.Misc;
 
-using SabTool.Utils;
-
 public sealed class Freeplay
 {    
     public int Unknown4TotalCount { get; set; }

@@ -1,7 +1,4 @@
-﻿using System.Numerics;
-using System.Text;
-
-using SharpGLTF.Transforms;
+﻿using SharpGLTF.Transforms;
 
 namespace SabTool.Data.Graphics;
 

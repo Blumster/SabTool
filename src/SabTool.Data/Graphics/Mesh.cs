@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace SabTool.Data.Graphics;
+﻿namespace SabTool.Data.Graphics;
 
 public sealed class Mesh
 {

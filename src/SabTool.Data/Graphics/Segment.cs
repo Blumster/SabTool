@@ -1,8 +1,4 @@
-﻿using System.Text;
-
-namespace SabTool.Data.Graphics;
-
-using SabTool.Utils;
+﻿namespace SabTool.Data.Graphics;
 
 public sealed class Segment
 {

@@ -3,7 +3,6 @@
 namespace SabTool.Data.Packs.Assets;
 
 using SabTool.Data.Graphics;
-using SabTool.Utils;
 
 public sealed class MeshAsset
 {

@@ -1,7 +1,5 @@
 ﻿namespace SabTool.Data.Sounds;
 
-using SabTool.Utils;
-
 public sealed class SoundPack
 {
     public record Entry(Crc Id, int Size, int Offset);

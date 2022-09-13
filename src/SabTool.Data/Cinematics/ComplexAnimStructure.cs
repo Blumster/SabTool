@@ -1,7 +1,6 @@
 ﻿namespace SabTool.Data.Cinematics;
 
 using SabTool.Data.Cinematics.ComplexAnimationElements;
-using SabTool.Utils;
 
 public sealed class ComplexAnimStructure
 {

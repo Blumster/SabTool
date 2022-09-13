@@ -1,7 +1,6 @@
 ﻿namespace SabTool.Data.Cinematics;
 
 using SabTool.Data.Cinematics.CinematicElements;
-using SabTool.Utils;
 
 public sealed class Cinematic
 {

@@ -1,8 +1,4 @@
-﻿using System.Numerics;
-
-namespace SabTool.Data.Packs;
-
-using SabTool.Utils;
+﻿namespace SabTool.Data.Packs;
 
 public sealed class FranceMap
 {

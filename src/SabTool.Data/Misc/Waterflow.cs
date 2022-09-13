@@ -1,8 +1,4 @@
-﻿using System.Numerics;
-
-namespace SabTool.Data.Misc;
-
-using SabTool.Utils;
+﻿namespace SabTool.Data.Misc;
 
 public sealed class Waterflow
 {

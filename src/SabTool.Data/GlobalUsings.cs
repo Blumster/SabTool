@@ -1,7 +1,8 @@
-﻿global using global::System;
-global using global::System.Collections.Generic;
-global using global::System.IO;
-global using global::System.Linq;
-global using global::System.Text;
+﻿global using System;
+global using System.Collections.Generic;
+global using System.IO;
+global using System.Linq;
+global using System.Numerics;
+global using System.Text;
 
 global using SabTool.Utils;

@@ -1,7 +1,5 @@
 ﻿namespace SabTool.Data.Packs.Assets;
 
-using SabTool.Utils;
-
 public sealed class TextureAsset
 {
     public Crc NameCrc { get; }

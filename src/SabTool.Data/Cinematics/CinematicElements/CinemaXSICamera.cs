@@ -1,6 +1,4 @@
-﻿using System.Numerics;
-
-namespace SabTool.Data.Cinematics.CinematicElements;
+﻿namespace SabTool.Data.Cinematics.CinematicElements;
 
 public sealed class CinemaXSICamera : CinemaElement
 {

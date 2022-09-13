@@ -1,6 +1,5 @@
 ﻿namespace SabTool.Data.Lua;
 
-using SabTool.Utils;
 using SabTool.Utils.Extensions;
 
 public sealed class LuaParam

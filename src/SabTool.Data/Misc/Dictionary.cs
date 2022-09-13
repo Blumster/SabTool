@@ -1,9 +1,4 @@
-﻿using System.Numerics;
-using System.Text;
-
-namespace SabTool.Data.Misc;
-
-using SabTool.Utils;
+﻿namespace SabTool.Data.Misc;
 
 public sealed class Dictionary
 {

@@ -1,6 +1,4 @@
 ﻿using System.Drawing;
-using System.Numerics;
-using System.Text;
 
 namespace SabTool.Data.Blueprints;
 

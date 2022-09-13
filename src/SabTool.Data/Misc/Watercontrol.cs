@@ -1,7 +1,5 @@
 ﻿namespace SabTool.Data.Misc;
 
-using SabTool.Utils;
-
 public sealed class Watercontrol
 {
     public List<WatercontrolPoint> Points { get; set; } = new();

@@ -1,7 +1,5 @@
 ﻿namespace SabTool.Data.Cinematics;
 
-using SabTool.Utils;
-
 [Flags]
 public enum ConversationFlags
 {

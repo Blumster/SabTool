@@ -1,7 +1,5 @@
 ﻿namespace SabTool.Data.Packs;
 
-using SabTool.Utils;
-
 public sealed class EditNodes
 {
     public List<EditNode> Nodes { get; } = new();

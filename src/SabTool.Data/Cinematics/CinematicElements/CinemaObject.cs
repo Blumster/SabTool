@@ -1,7 +1,5 @@
 ﻿namespace SabTool.Data.Cinematics.CinematicElements;
 
-using SabTool.Utils;
-
 public sealed class CinemaObject : CinemaElement
 {
     public float UnkFloat1 { get; set; }
