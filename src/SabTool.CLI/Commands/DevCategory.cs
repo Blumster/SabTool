@@ -2,13 +2,13 @@
 
 using SabTool.CLI.Base;
 
-public class DevCategory : BaseCategory
+public sealed class DevCategory : BaseCategory
 {
     public override string Key => "dev";
     public override string Shortcut => "d";
     public override string Usage => "<sub command>";
 
-    public class GenerateContainerSourceCommand : BaseCommand
+    public sealed class GenerateContainerSourceCommand : BaseCommand
     {
         public override string Key { get; } = "generate-container-source";
         public override string Shortcut { get; } = "gcs";

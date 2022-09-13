@@ -2,7 +2,7 @@
 
 using SabTool.Utils;
 
-public class GlobalMap
+public sealed class GlobalMap
 {
     public uint NumTotalBlocks { get; set; }
     public uint NumStreamBlocks { get; set; }

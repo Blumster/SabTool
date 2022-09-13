@@ -3,7 +3,7 @@
 using SabTool.CLI.Base;
 using SabTool.Depot;
 
-public class LooseFilesCategory : BaseCategory
+public sealed class LooseFilesCategory : BaseCategory
 {
     // TODO: move this data when extracting into a json/xml next to the files, so custom files can be unpacked and repacked
     public static IDictionary<string, uint> LooseFilesBinPCStaticFiles = new Dictionary<string, uint>
@@ -21,7 +21,7 @@ public class LooseFilesCategory : BaseCategory
     public override string Shortcut => "l";
     public override string Usage => "<sub command name>";
 
-    public class UnpackCommand : BaseCommand
+    public sealed class UnpackCommand : BaseCommand
     {
         public override string Key { get; } = "unpack";
         public override string Shortcut { get; } = "u";
@@ -78,7 +78,7 @@ public class LooseFilesCategory : BaseCategory
         }
     }
 
-    public class PackCommand : BaseCommand
+    public sealed class PackCommand : BaseCommand
     {
         public override string Key { get; } = "pack";
         public override string Shortcut { get; } = "p";

@@ -4,7 +4,7 @@ namespace SabTool.Data.Graphics;
 
 using SabTool.Utils;
 
-public class Bone
+public sealed class Bone
 {
     public static Bone DefaultBone { get; } = new Bone
     {

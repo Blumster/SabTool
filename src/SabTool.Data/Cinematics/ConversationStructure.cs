@@ -13,7 +13,7 @@ public enum ConversationFlags
     Unk20      = 0x20,
 }
 
-public class ConversationStructure
+public sealed class ConversationStructure
 {
     public Crc Name { get; set; }
     public Crc Camera { get; set; }

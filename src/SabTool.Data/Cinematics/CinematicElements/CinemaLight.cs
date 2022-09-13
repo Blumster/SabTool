@@ -1,6 +1,6 @@
 ﻿namespace SabTool.Data.Cinematics.CinematicElements;
 
-public class CinemaLight : CinemaElement
+public sealed class CinemaLight : CinemaElement
 {
     public float EndTime { get; set; }
     public int UnkInt { get; set; }

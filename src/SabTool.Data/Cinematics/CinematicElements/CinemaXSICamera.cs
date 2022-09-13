@@ -2,7 +2,7 @@
 
 namespace SabTool.Data.Cinematics.CinematicElements;
 
-public class CinemaXSICamera : CinemaElement
+public sealed class CinemaXSICamera : CinemaElement
 {
     public struct Sub
     {

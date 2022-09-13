@@ -4,15 +4,13 @@ using SabTool.CLI.Base;
 using SabTool.Depot;
 using SabTool.Serializers.Blueprints;
 
-public class BlueprintsCategory : BaseCategory
+public sealed class BlueprintsCategory : BaseCategory
 {
     public override string Key => "blueprints";
-
     public override string Shortcut => "b";
-
     public override string Usage => "<sub command>";
 
-    public class UnpackCommand : BaseCommand
+    public sealed class UnpackCommand : BaseCommand
     {
         public override string Key { get; } = "unpack";
         public override string Shortcut { get; } = "u";
@@ -43,7 +41,7 @@ public class BlueprintsCategory : BaseCategory
         }
     }
 
-    public class PackCommand : BaseCommand
+    public sealed class PackCommand : BaseCommand
     {
         public override string Key { get; } = "pack";
         public override string Shortcut { get; } = "p";
@@ -55,7 +53,7 @@ public class BlueprintsCategory : BaseCategory
         }
     }
 
-    public class DumpCommand : BaseCommand
+    public sealed class DumpCommand : BaseCommand
     {
         public override string Key { get; } = "dump";
         public override string Shortcut { get; } = "d";

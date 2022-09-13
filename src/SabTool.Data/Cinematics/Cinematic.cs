@@ -3,7 +3,7 @@
 using SabTool.Data.Cinematics.CinematicElements;
 using SabTool.Utils;
 
-public class Cinematic
+public sealed class Cinematic
 {
     public struct UnkSub
     {

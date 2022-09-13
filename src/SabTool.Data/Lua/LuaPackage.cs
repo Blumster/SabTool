@@ -2,11 +2,11 @@
 
 using SabTool.Utils;
 
-public class LuaPackage
+public sealed class LuaPackage
 {
     public List<Entry> Entries { get; } = new();
 
-    public class Entry
+    public sealed class Entry
     {
         public Crc PathCRC { get; set; }
         public Crc NameCRC { get; set; }

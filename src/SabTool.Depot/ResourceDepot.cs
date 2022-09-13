@@ -20,7 +20,7 @@ public enum Resource
     All        = Megapacks | Materials | Shaders | LooseFiles | Maps | Blueprints | Cinematics | Sounds | Lua | Misc,
 }
 
-public partial class ResourceDepot
+public sealed partial class ResourceDepot
 {
     private const string GameExecutableName = "Saboteur.exe";
 

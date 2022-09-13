@@ -4,18 +4,16 @@ using SabTool.CLI.Base;
 using SabTool.Depot;
 using SabTool.Serializers.Graphics;
 
-public class MaterialCategory : BaseCategory
+public sealed class MaterialCategory : BaseCategory
 {
     public const string MaterialsRawFileName = "France.materials";
     public const string MaterialsJsonFileName = "materials.json";
 
     public override string Key => "materials";
-
     public override string Shortcut => "ma";
-
     public override string Usage => "<sub command>";
 
-    public class UnpackCommand : BaseCommand
+    public sealed class UnpackCommand : BaseCommand
     {
         public override string Key { get; } = "unpack";
         public override string Shortcut { get; } = "u";
@@ -50,7 +48,7 @@ public class MaterialCategory : BaseCategory
         }
     }
 
-    public class PackCommand : BaseCommand
+    public sealed class PackCommand : BaseCommand
     {
         public override string Key { get; } = "pack";
         public override string Shortcut { get; } = "p";

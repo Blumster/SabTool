@@ -1,6 +1,6 @@
 ﻿namespace SabTool.Data.Packs.Assets;
 
-public class PhysicsAsset
+public sealed class PhysicsAsset
 {
     public void Export(string outputPath)
     {

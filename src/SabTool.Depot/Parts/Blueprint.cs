@@ -4,7 +4,7 @@ using SabTool.Data.Blueprints;
 using SabTool.Serializers.Blueprints;
 using SabTool.Utils;
 
-public partial class ResourceDepot
+public sealed partial class ResourceDepot
 {
     private Dictionary<string, Blueprint> BlueprintsByName { get; } = new();
     private Dictionary<Crc, Blueprint> BlueprintsByNameCrc { get; } = new();

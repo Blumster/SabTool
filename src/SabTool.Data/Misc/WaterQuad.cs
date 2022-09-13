@@ -2,7 +2,7 @@
 
 namespace SabTool.Data.Misc;
 
-public class WaterQuad
+public sealed class WaterQuad
 {
     public string Name { get; set; }
     public int Slot { get; set; }

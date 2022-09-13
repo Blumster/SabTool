@@ -1,6 +1,6 @@
 ﻿namespace SabTool.Data.Cinematics.CinematicElements;
 
-public class CinemaAttachObject : CinemaElement
+public sealed class CinemaAttachObject : CinemaElement
 {
     public float Unk { get; set; }
     public float EndTime { get; set; }

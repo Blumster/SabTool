@@ -4,7 +4,7 @@ namespace SabTool.Data.Graphics;
 
 using SabTool.Utils;
 
-public class Material
+public sealed class Material
 {
     public static Dictionary<Crc, Material> Container { get; } = new();
 

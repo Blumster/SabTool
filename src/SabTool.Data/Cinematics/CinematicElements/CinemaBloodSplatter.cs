@@ -1,6 +1,6 @@
 ﻿namespace SabTool.Data.Cinematics.CinematicElements;
 
-public class CinemaBloodSplatter : CinemaElement
+public sealed class CinemaBloodSplatter : CinemaElement
 {
     public float EndTime { get; set; }
     public float UnkFloat2 { get; set; }

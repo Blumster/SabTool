@@ -1,6 +1,6 @@
 ﻿namespace SabTool.Data.Cinematics.CinematicElements;
 
-public class CinemaFaceFX : CinemaElement
+public sealed class CinemaFaceFX : CinemaElement
 {
     public float UnkFloat1 { get; set; }
     public float UnkFloat2 { get; set; }

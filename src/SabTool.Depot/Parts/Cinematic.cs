@@ -3,7 +3,7 @@
 using SabTool.Data.Cinematics;
 using SabTool.Serializers.Cinematics;
 
-public partial class ResourceDepot
+public sealed partial class ResourceDepot
 {
     private const string DialogTextFileName = "GameText.dlg";
 

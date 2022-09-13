@@ -1,6 +1,6 @@
 ﻿namespace SabTool.Data.Cinematics.CinematicElements;
 
-public class CinemaSoundBank : CinemaElement
+public sealed class CinemaSoundBank : CinemaElement
 {
     public float Unk { get; set; }
     public float EndTime { get; set; }

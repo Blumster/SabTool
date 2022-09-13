@@ -2,13 +2,13 @@
 
 using SabTool.Utils;
 
-public class Freeplay
+public sealed class Freeplay
 {    
     public int Unknown4TotalCount { get; set; }
     public List<FreeplayPoint> Points { get; set; } = new();
 }
 
-public class FreeplayPoint
+public sealed class FreeplayPoint
 {
     public uint Unknown1 { get; set; }
     public uint Unknown2 { get; set; }

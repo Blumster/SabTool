@@ -2,7 +2,7 @@
 
 using SabTool.Utils;
 
-public class SoundPack
+public sealed class SoundPack
 {
     public record Entry(Crc Id, int Size, int Offset);
 

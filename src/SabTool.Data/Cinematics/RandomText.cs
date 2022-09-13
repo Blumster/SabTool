@@ -9,7 +9,7 @@ public enum RandomTextFlags
     EqualProbability = 0x1
 }
 
-public class RandomText
+public sealed class RandomText
 {
     public Crc Id { get; set; }
     public int NumTexts { get; set; }

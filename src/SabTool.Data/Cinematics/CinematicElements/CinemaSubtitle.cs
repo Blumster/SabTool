@@ -2,7 +2,7 @@
 
 using SabTool.Utils;
 
-public class CinemaSubtitle : CinemaElement
+public sealed class CinemaSubtitle : CinemaElement
 {
     public float EndTime { get; set; }
     public int UnkInt1 { get; set; }

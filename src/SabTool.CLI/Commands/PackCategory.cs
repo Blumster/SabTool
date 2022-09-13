@@ -11,13 +11,13 @@ using SabTool.Serializers.Megapacks;
 using SabTool.Serializers.Packs;
 using SabTool.Utils;
 
-public class PackCategory : BaseCategory
+public sealed class PackCategory : BaseCategory
 {
     public override string Key { get; } = "pack";
     public override string Shortcut { get; } = "p";
     public override string Usage { get; } = "<sub command>";
 
-    public class UnpackCommand : BaseCommand
+    public sealed class UnpackCommand : BaseCommand
     {
         public override string Key { get; } = "unpack";
         public override string Shortcut { get; } = "u";

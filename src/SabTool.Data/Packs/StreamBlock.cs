@@ -4,7 +4,7 @@ namespace SabTool.Data.Packs;
 
 using SabTool.Utils;
 
-public class StreamBlock
+public sealed class StreamBlock
 {
     public static readonly uint[] OffIndices = new uint[9] { 6, 7, 0, 2, 8, 4, 3, 1, 5 };
 

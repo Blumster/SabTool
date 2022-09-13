@@ -1,9 +1,9 @@
 ﻿namespace SabTool.CLI.Commands;
 
-using Base;
-using Cinematics;
+using SabTool.CLI.Base;
+using SabTool.CLI.Commands.Cinematics;
 
-public class CinematicsCategory : BaseCategory
+public sealed class CinematicsCategory : BaseCategory
 {
     public override string Key => "cinematics";
 

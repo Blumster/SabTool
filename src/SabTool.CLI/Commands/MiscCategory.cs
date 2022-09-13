@@ -5,13 +5,13 @@ using SabTool.Depot;
 using SabTool.Serializers.Misc;
 using SabTool.Utils;
 
-public class MiscCategory : BaseCategory
+public sealed class MiscCategory : BaseCategory
 {
     public override string Key => "misc";
     public override string Shortcut => "mi";
     public override string Usage => "<sub command name>";
 
-    public class UnpackHeightmapCommand : BaseCommand
+    public sealed class UnpackHeightmapCommand : BaseCommand
     {
         public override string Key { get; } = "unpack-heightmap";
         public override string Shortcut { get; } = "uheightmap";
@@ -40,11 +40,12 @@ public class MiscCategory : BaseCategory
         }
     }
 
-    public class ExportGltfFromWaterflowCommand : BaseCommand
+    public sealed class ExportGltfFromWaterflowCommand : BaseCommand
     {
         public override string Key => "export-waterflow-to-gltf";
         public override string Shortcut => "ewaterflowgltf";
         public override string Usage => "<game base path> <output directory path>";
+
         public override bool Execute(IEnumerable<string> arguments)
         {
             if (arguments.Count() < 2)
@@ -66,11 +67,12 @@ public class MiscCategory : BaseCategory
         }
     }
 
-    public class ExportGltfFromWatercontrolCommand : BaseCommand
+    public sealed class ExportGltfFromWatercontrolCommand : BaseCommand
     {
         public override string Key => "export-watercontrol-to-gltf";
         public override string Shortcut => "ewatercontrolgltf";
         public override string Usage => "<game base path> <output directory path>";
+
         public override bool Execute(IEnumerable<string> arguments)
         {
             if (arguments.Count() < 2)
@@ -92,11 +94,12 @@ public class MiscCategory : BaseCategory
         }
     }
 
-    public class ExportGltfFromFreeplayCommand : BaseCommand
+    public sealed class ExportGltfFromFreeplayCommand : BaseCommand
     {
         public override string Key => "export-freeplay-to-gltf";
         public override string Shortcut => "efreeplaygltf";
         public override string Usage => "<game base path> <output directory path>";
+
         public override bool Execute(IEnumerable<string> arguments)
         {
             if (arguments.Count() < 2)
@@ -118,11 +121,12 @@ public class MiscCategory : BaseCategory
         }
     }
 
-    public class ExportPlyFromHeiCommand : BaseCommand
+    public sealed class ExportPlyFromHeiCommand : BaseCommand
     {
         public override string Key => "export-heightmap-to-ply";
         public override string Shortcut => "eheightmapply";
         public override string Usage => "<game base path> <output directory path>";
+
         public override bool Execute(IEnumerable<string> arguments)
         {
             if (arguments.Count() < 2)
@@ -146,11 +150,12 @@ public class MiscCategory : BaseCategory
         }
     }
 
-    public class ExportGltfFromWaterplanesCommand : BaseCommand
+    public sealed class ExportGltfFromWaterplanesCommand : BaseCommand
     {
         public override string Key => "export-waterplanes-to-gltf";
         public override string Shortcut => "ewaterplanesgltf";
         public override string Usage => "<game base path> <output directory path>";
+
         public override bool Execute(IEnumerable<string> arguments)
         {
             if (arguments.Count() < 2)
@@ -171,11 +176,12 @@ public class MiscCategory : BaseCategory
         }
     }
 
-    public class ExportGltfMeshFromHeightmapCommand : BaseCommand
+    public sealed class ExportGltfMeshFromHeightmapCommand : BaseCommand
     {
         public override string Key => "export-heightmap-to-gltfl";
         public override string Shortcut => "eheightmapgltf";
         public override string Usage => "<game base path> <output directory path>";
+
         public override bool Execute(IEnumerable<string> arguments)
         {
             if (arguments.Count() < 2)
@@ -196,11 +202,12 @@ public class MiscCategory : BaseCategory
         }
     }
 
-    public class ExportGltfMeshMergedFromHeightmapCommand : BaseCommand
+    public sealed class ExportGltfMeshMergedFromHeightmapCommand : BaseCommand
     {
         public override string Key => "export-heightmap-merged-to-gltfl";
         public override string Shortcut => "eheightmapmergedgltf";
         public override string Usage => "<game base path> <output directory path>";
+
         public override bool Execute(IEnumerable<string> arguments)
         {
             if (arguments.Count() < 2)
@@ -221,11 +228,12 @@ public class MiscCategory : BaseCategory
         }
     }
 
-    public class ExportGltfMeshFromPacksCommand : BaseCommand
+    public sealed class ExportGltfMeshFromPacksCommand : BaseCommand
     {
         public override string Key => "export-heightmap-packs-to-gltfl";
         public override string Shortcut => "eheightmappacksgltf";
         public override string Usage => "<path to extracted megapack1 and 2> <output directory path>";
+
         public override bool Execute(IEnumerable<string> arguments)
         {
             if (arguments.Count() < 2)
@@ -243,11 +251,12 @@ public class MiscCategory : BaseCategory
         }
     }
 
-    public class ExportGltfSplinePointsFromRailways : BaseCommand
+    public sealed class ExportGltfSplinePointsFromRailways : BaseCommand
     {
         public override string Key => "export-railway-splinepoints-to-gltf";
         public override string Shortcut => "erailwaysplinepointsgltf";
         public override string Usage => "<game base path> <output directory path>";
+
         public override bool Execute(IEnumerable<string> arguments)
         {
             if (arguments.Count() < 2)

@@ -5,7 +5,7 @@ namespace SabTool.Data.Graphics;
 
 using SabTool.Utils;
 
-public class Model
+public sealed class Model
 {
     public Mesh Mesh { get; set; }
 

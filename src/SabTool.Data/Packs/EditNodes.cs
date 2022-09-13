@@ -2,12 +2,12 @@
 
 using SabTool.Utils;
 
-public class EditNodes
+public sealed class EditNodes
 {
     public List<EditNode> Nodes { get; } = new();
 }
 
-public class EditNode
+public sealed class EditNode
 {
     public Crc Name { get; set; }
     public int Length { get; set; }

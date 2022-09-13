@@ -5,7 +5,7 @@ namespace SabTool.Data.Packs.Assets;
 using SabTool.Data.Graphics;
 using SabTool.Utils;
 
-public class MeshAsset
+public sealed class MeshAsset
 {
     public Crc Name { get; }
     public Model Model { get; set; }

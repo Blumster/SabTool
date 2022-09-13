@@ -2,7 +2,7 @@
 
 namespace SabTool.Data.Graphics;
 
-public class Unk1
+public sealed class Unk1
 {
     public string DumpString(int indentCount = 0)
     {

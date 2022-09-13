@@ -9,7 +9,7 @@ public enum ConversationLineFlags
     CInt      = 0x02
 }
 
-public class ConversationLineStructure
+public sealed class ConversationLineStructure
 {
     public int Idx { get; set; }
     public Crc Name { get; set; }

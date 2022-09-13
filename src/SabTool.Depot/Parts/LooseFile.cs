@@ -3,7 +3,7 @@
 using SabTool.Data.Misc;
 using SabTool.Serializers;
 
-public partial class ResourceDepot
+public sealed partial class ResourceDepot
 {
     private const string LooseFilesFileName = @"France\loosefiles_BinPC.pack";
     private ICollection<LooseFile>? LooseFiles { get; set; }

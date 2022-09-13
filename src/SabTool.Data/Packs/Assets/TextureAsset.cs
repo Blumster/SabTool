@@ -2,7 +2,7 @@
 
 using SabTool.Utils;
 
-public class TextureAsset
+public sealed class TextureAsset
 {
     public Crc NameCrc { get; }
     public string Name { get; set; }

@@ -4,13 +4,13 @@ using SabTool.CLI.Base;
 using SabTool.Depot;
 using SabTool.Serializers.Cinematics;
 
-public class DialogCategory : BaseCategory
+public sealed class DialogCategory : BaseCategory
 {
     public override string Key { get; } = "dialog";
     public override string Shortcut { get; } = "d";
     public override string Usage { get; } = "";
 
-    public class UnpackCommand : BaseCommand
+    public sealed class UnpackCommand : BaseCommand
     {
         private const string DialogRootPath = @"Cinematics\Dialog";
 
@@ -61,7 +61,7 @@ public class DialogCategory : BaseCategory
         }
     }
 
-    public class PackCommand : BaseCommand
+    public sealed class PackCommand : BaseCommand
     {
         public override string Key { get; } = "pack";
         public override string Shortcut { get; } = "p";

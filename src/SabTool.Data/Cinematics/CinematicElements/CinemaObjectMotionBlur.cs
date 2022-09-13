@@ -2,7 +2,7 @@
 
 using SabTool.Utils;
 
-public class CinemaObjectMotionBlur : CinemaElement
+public sealed class CinemaObjectMotionBlur : CinemaElement
 {
     public float EndTime { get; set; }
     public Crc UnkCrc { get; set; }

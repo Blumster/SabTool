@@ -3,7 +3,7 @@
 using SabTool.Data.Misc;
 using SabTool.Serializers.Misc;
 
-public partial class ResourceDepot
+public sealed partial class ResourceDepot
 {
     public Heightmap? Heightmap { get; private set; }
     public Waterflow? Waterflow { get; private set; }

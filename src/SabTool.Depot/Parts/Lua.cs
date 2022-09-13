@@ -3,7 +3,7 @@
 using SabTool.Data.Lua;
 using SabTool.Serializers.Lua;
 
-public partial class ResourceDepot
+public sealed partial class ResourceDepot
 {
     private LuaPackage? LuaScriptsPackage { get; set; }
 

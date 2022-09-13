@@ -4,13 +4,13 @@ using SabTool.CLI.Base;
 using SabTool.Depot;
 using SabTool.Serializers.Cinematics;
 
-public class ConversationsCategory : BaseCategory
+public sealed class ConversationsCategory : BaseCategory
 {
     public override string Key { get; } = "conversations";
     public override string Shortcut { get; } = "co";
     public override string Usage { get; } = "";
 
-    public class UnpackCommand : BaseCommand
+    public sealed class UnpackCommand : BaseCommand
     {
         private const string ConversationsRootPath = @"Cinematics\Conversations";
         private const string ConversationsRootPathDLC = @"DLC\01\Cinematics\Conversations";
@@ -57,7 +57,7 @@ public class ConversationsCategory : BaseCategory
         }
     }
 
-    public class PackCommand : BaseCommand
+    public sealed class PackCommand : BaseCommand
     {
         public override string Key { get; } = "pack";
         public override string Shortcut { get; } = "p";

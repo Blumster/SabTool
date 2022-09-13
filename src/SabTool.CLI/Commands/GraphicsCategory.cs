@@ -3,7 +3,7 @@
 using SabTool.CLI.Base;
 using SabTool.CLI.Commands.Graphics;
 
-public class GraphicsCategory : BaseCategory
+public sealed class GraphicsCategory : BaseCategory
 {
     public override string Key => "graphics";
 

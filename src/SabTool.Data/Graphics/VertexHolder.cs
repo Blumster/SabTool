@@ -4,7 +4,7 @@ using System.Text;
 
 namespace SabTool.Data.Graphics;
 
-public class VertexHolder
+public sealed class VertexHolder
 {
     public List<VertexDeclaration> Decl1 { get; set; }
     public List<VertexDeclaration> Decl2 { get; set; }

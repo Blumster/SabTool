@@ -3,7 +3,7 @@
 using SabTool.CLI.Base;
 using SabTool.Utils;
 
-public class Program
+public sealed class Program
 {
     public static void Main(string[] args)
     {

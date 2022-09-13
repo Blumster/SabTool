@@ -6,15 +6,13 @@ namespace SabTool.CLI.Commands;
 using Base;
 using Utils;
 
-public class HashCategory : BaseCategory
+public sealed class HashCategory : BaseCategory
 {
     public override string Key => "hash";
-
     public override string Shortcut => "h";
-
     public override string Usage => "<sub command>";
 
-    public class CalcCommand : BaseCommand
+    public sealed class CalcCommand : BaseCommand
     {
         public override string Key { get; } = "calc";
         public override string Shortcut { get; } = "c";
@@ -34,7 +32,7 @@ public class HashCategory : BaseCategory
         }
     }
 
-    public class StatCommand : BaseCommand
+    public sealed class StatCommand : BaseCommand
     {
         public override string Key { get; } = "stat";
         public override string Shortcut { get; } = "st";
@@ -47,7 +45,7 @@ public class HashCategory : BaseCategory
         }
     }
 
-    public class ReplaceCommand : BaseCommand
+    public sealed class ReplaceCommand : BaseCommand
     {
         public override string Key { get; } = "replace";
         public override string Shortcut { get; } = "re";
@@ -86,7 +84,7 @@ public class HashCategory : BaseCategory
         }
     }
 
-    public class ResolveCommand : BaseCommand
+    public sealed class ResolveCommand : BaseCommand
     {
         public override string Key { get; } = "resolve";
         public override string Shortcut { get; } = "r";
@@ -127,7 +125,7 @@ public class HashCategory : BaseCategory
         }
     }
 
-    public class BruteforceCommand : BaseCommand
+    public sealed class BruteforceCommand : BaseCommand
     {
         public override string Key { get; } = "bruteforce";
         public override string Shortcut { get; } = "b";
@@ -159,7 +157,7 @@ public class HashCategory : BaseCategory
         }
     }
 
-    public class TestCommand : BaseCommand
+    public sealed class TestCommand : BaseCommand
     {
         public override string Key { get; } = "test";
         public override string Shortcut { get; } = "t";
@@ -185,7 +183,7 @@ public class HashCategory : BaseCategory
         }
     }
 
-    public class SaveCommand : BaseCommand
+    public sealed class SaveCommand : BaseCommand
     {
         public override string Key { get; } = "save";
         public override string Shortcut { get; } = "s";
@@ -199,7 +197,7 @@ public class HashCategory : BaseCategory
         }
     }
 
-    public class GenerateFromFileCommand : BaseCommand
+    public sealed class GenerateFromFileCommand : BaseCommand
     {
         public override string Key { get; } = "generate-from-file";
         public override string Shortcut { get; } = "g";
@@ -240,7 +238,7 @@ public class HashCategory : BaseCategory
         }
     }
 
-    public class GenerateFromSourceFilesCommand : BaseCommand
+    public sealed class GenerateFromSourceFilesCommand : BaseCommand
     {
         private static readonly Regex StringRegex = new("\"([^\"]+)?\"", RegexOptions.Compiled);
 

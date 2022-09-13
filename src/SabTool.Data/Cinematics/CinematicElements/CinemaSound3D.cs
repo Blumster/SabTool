@@ -2,7 +2,7 @@
 
 using SabTool.Utils;
 
-public class CinemaSound3D : CinemaElement
+public sealed class CinemaSound3D : CinemaElement
 {
     public float EndTime { get; set; }
     public string SoundName { get; set; }

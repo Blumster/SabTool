@@ -4,12 +4,12 @@ namespace SabTool.Data.Misc;
 
 using SabTool.Utils;
 
-public class Waterflow
+public sealed class Waterflow
 {
     public List<WaterflowPoint> Points { get; set; } = new ();
 }
 
-public class WaterflowPoint
+public sealed class WaterflowPoint
 {
     public Crc Name { get; set; }
     public Vector3 Position { get; set; }

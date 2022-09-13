@@ -2,7 +2,7 @@
 
 using SabTool.Utils;
 
-public class Megapack
+public sealed class Megapack
 {
     public Dictionary<Crc, FileEntry> FileEntries { get; set; } = new();
     public uint FileCount { get; set; }
@@ -37,7 +37,7 @@ public enum FileReadMethod : uint
     Typ3 = 0x00000003u  // SBLA (finished)
 }
 
-public class FileEntry
+public sealed class FileEntry
 {
     public Crc Path { get; set; }
     public Crc Name { get; set; }

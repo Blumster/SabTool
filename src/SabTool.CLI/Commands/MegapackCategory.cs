@@ -5,15 +5,13 @@ namespace SabTool.CLI.Commands;
 using SabTool.CLI.Base;
 using SabTool.Depot;
 
-public class MegapackCategory : BaseCategory
+public sealed class MegapackCategory : BaseCategory
 {
     public override string Key => "megapack";
-
     public override string Shortcut => "m";
-
     public override string Usage => "<sub command>";
 
-    public class ListCommand : BaseCommand
+    public sealed class ListCommand : BaseCommand
     {
         public override string Key { get; } = "list";
         public override string Shortcut { get; } = "l";
@@ -60,7 +58,7 @@ public class MegapackCategory : BaseCategory
         }
     }
 
-    public class UnpackCommand : BaseCommand
+    public sealed class UnpackCommand : BaseCommand
     {
         public override string Key { get; } = "unpack";
         public override string Shortcut { get; } = "u";
@@ -135,7 +133,7 @@ public class MegapackCategory : BaseCategory
         }
     }
 
-    public class PackCommand : BaseCommand
+    public sealed class PackCommand : BaseCommand
     {
         public override string Key { get; } = "pack";
         public override string Shortcut { get; } = "p";

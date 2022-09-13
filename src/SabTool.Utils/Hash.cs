@@ -7,410 +7,409 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SabTool.Utils
+namespace SabTool.Utils;
+
+public static class Hash
 {
-    public static class Hash
+    private static readonly Dictionary<uint, string> lookupTable = new();
+    private static readonly HashSet<uint> missingHashes = new();
+
+    public const uint FNV32Offset = 0x811C9DC5u;
+    public const uint FNV32Prime = 0x1000193u;
+
+    static Hash()
     {
-        private static readonly Dictionary<uint, string> lookupTable = new();
-        private static readonly HashSet<uint> missingHashes = new();
-
-        public const uint FNV32Offset = 0x811C9DC5u;
-        public const uint FNV32Prime = 0x1000193u;
-
-        static Hash()
+        foreach (var line in File.ReadAllLines("Hashes.txt"))
         {
-            foreach (var line in File.ReadAllLines("Hashes.txt"))
+            var parts = line.Split(':', 2);
+            if (parts.Length < 2)
             {
-                var parts = line.Split(':', 2);
-                if (parts.Length < 2)
+                Console.WriteLine($"HASH: Invalid line found: \"{line}\"");
+                continue;
+            }
+
+            if (!uint.TryParse(parts[0][2..], NumberStyles.HexNumber, CultureInfo.InvariantCulture, out uint hash))
+            {
+                Console.WriteLine($"HASH: Unable to parse {parts[0]} as uint!");
+                continue;
+            }
+
+            if (lookupTable.ContainsKey(hash))
+            {
+                if (lookupTable[hash].ToLowerInvariant() != parts[1].ToLowerInvariant())
+                    Console.WriteLine($"HASH: Matching hashes for different string! Hash: 0x{hash:X8}: \"{parts[1]}\" != \"{lookupTable[hash]}\"");
+
+                continue;
+            }
+
+            lookupTable.Add(hash, parts[1]);
+        }
+
+        if (File.Exists("Missing.txt"))
+        {
+            foreach (var line in File.ReadAllLines("Missing.txt"))
+            {
+                if (!uint.TryParse(line[2..], NumberStyles.HexNumber, CultureInfo.InvariantCulture, out uint hash))
                 {
-                    Console.WriteLine($"HASH: Invalid line found: \"{line}\"");
+                    Console.WriteLine($"HASH: Unable to parse {line} as uint!");
                     continue;
                 }
 
-                if (!uint.TryParse(parts[0][2..], NumberStyles.HexNumber, CultureInfo.InvariantCulture, out uint hash))
-                {
-                    Console.WriteLine($"HASH: Unable to parse {parts[0]} as uint!");
-                    continue;
-                }
-
-                if (lookupTable.ContainsKey(hash))
-                {
-                    if (lookupTable[hash].ToLowerInvariant() != parts[1].ToLowerInvariant())
-                        Console.WriteLine($"HASH: Matching hashes for different string! Hash: 0x{hash:X8}: \"{parts[1]}\" != \"{lookupTable[hash]}\"");
-
-                    continue;
-                }
-
-                lookupTable.Add(hash, parts[1]);
+                missingHashes.Add(hash);
             }
-
-            if (File.Exists("Missing.txt"))
-            {
-                foreach (var line in File.ReadAllLines("Missing.txt"))
-                {
-                    if (!uint.TryParse(line[2..], NumberStyles.HexNumber, CultureInfo.InvariantCulture, out uint hash))
-                    {
-                        Console.WriteLine($"HASH: Unable to parse {line} as uint!");
-                        continue;
-                    }
-
-                    missingHashes.Add(hash);
-                }
-            }
-
-            /* Debug code: It writes back the contents of the lookup table. This way redundant entries can be filtered out after addig rows to the file.
-             * Notice: It will overwrite the file that was copied to the output directory, not the one in the project files!
-            Save();
-            SaveMissing();
-            */
         }
 
-        public static void Save()
+        /* Debug code: It writes back the contents of the lookup table. This way redundant entries can be filtered out after addig rows to the file.
+         * Notice: It will overwrite the file that was copied to the output directory, not the one in the project files!
+        Save();
+        SaveMissing();
+        */
+    }
+
+    public static void Save()
+    {
+        Cleanup();
+
+        Console.WriteLine("Saving hashes...");
+
+        var lines = new string[lookupTable.Count];
+        var i = 0;
+
+        foreach (var pair in lookupTable.OrderBy(p => p.Key))
         {
-            Cleanup();
+            lines[i++] = $"0x{pair.Key:X8}:{pair.Value}";
+        }
 
-            Console.WriteLine("Saving hashes...");
+        File.WriteAllLines("Hashes.txt", lines);
 
-            var lines = new string[lookupTable.Count];
-            var i = 0;
+        Console.WriteLine("Saving missing hashes...");
 
-            foreach (var pair in lookupTable.OrderBy(p => p.Key))
+        lines = new string[missingHashes.Count];
+        i = 0;
+
+        foreach (var hash in missingHashes.OrderBy(h => h))
+        {
+            lines[i++] = $"0x{hash:X8}";
+        }
+
+        File.WriteAllLines("Missing.txt", lines);
+    }
+
+    public static void Cleanup()
+    {
+        Console.WriteLine("Cleaning up hashes...");
+
+        var toRemove = new List<uint>();
+        var toRecalc = new List<string>();
+
+        foreach (var hash in lookupTable)
+        {
+            var reHash = InternalFNV32string(hash.Value);
+            if (reHash != hash.Key)
             {
-                lines[i++] = $"0x{pair.Key:X8}:{pair.Value}";
+                Console.WriteLine($"Invalid saved hash 0x{hash.Key:X8} found for \"0x{reHash:X8} -> {hash.Value}\"!");
+
+                toRemove.Add(hash.Key);
+                toRecalc.Add(hash.Value);
+                continue;
             }
 
-            File.WriteAllLines("Hashes.txt", lines);
-
-            Console.WriteLine("Saving missing hashes...");
-
-            lines = new string[missingHashes.Count];
-            i = 0;
-
-            foreach (var hash in missingHashes.OrderBy(h => h))
+            if (missingHashes.Remove(hash.Key))
             {
-                lines[i++] = $"0x{hash:X8}";
+                Console.WriteLine($"Removed already known hash \"0x{hash.Key:X8} -> {hash.Value}\" from missing hashes!");
             }
-
-            File.WriteAllLines("Missing.txt", lines);
         }
 
-        public static void Cleanup()
-        {
-            Console.WriteLine("Cleaning up hashes...");
+        foreach (var hash in toRemove)
+            lookupTable.Remove(hash);
 
-            var toRemove = new List<uint>();
-            var toRecalc = new List<string>();
+        foreach (var str in toRecalc)
+            StringToHash(str);
+    }
 
-            foreach (var hash in lookupTable)
-            {
-                var reHash = InternalFNV32string(hash.Value);
-                if (reHash != hash.Key)
-                {
-                    Console.WriteLine($"Invalid saved hash 0x{hash.Key:X8} found for \"0x{reHash:X8} -> {hash.Value}\"!");
+    public static void PrintStatistics()
+    {
+        Console.WriteLine("Hash statistics:");
+        Console.WriteLine($"  Table entry count: {lookupTable.Count}");
+        Console.WriteLine($"  Missing hash count: {missingHashes.Count}");
+        Console.WriteLine();
+    }
 
-                    toRemove.Add(hash.Key);
-                    toRecalc.Add(hash.Value);
-                    continue;
-                }
+    public static uint FNV32string(string source, int maxLen = -1, bool addToLookup = true)
+    {
+        var hash = InternalFNV32string(source, maxLen);
 
-                if (missingHashes.Remove(hash.Key))
-                {
-                    Console.WriteLine($"Removed already known hash \"0x{hash.Key:X8} -> {hash.Value}\" from missing hashes!");
-                }
-            }
-
-            foreach (var hash in toRemove)
-                lookupTable.Remove(hash);
-
-            foreach (var str in toRecalc)
-                StringToHash(str);
-        }
-
-        public static void PrintStatistics()
-        {
-            Console.WriteLine("Hash statistics:");
-            Console.WriteLine($"  Table entry count: {lookupTable.Count}");
-            Console.WriteLine($"  Missing hash count: {missingHashes.Count}");
-            Console.WriteLine();
-        }
-
-        public static uint FNV32string(string source, int maxLen = -1, bool addToLookup = true)
-        {
-            var hash = InternalFNV32string(source, maxLen);
-
-            if (addToLookup && missingHashes.Remove(hash))
-            {
-                if (lookupTable.ContainsKey(hash))
-                {
-                    if (source.ToLowerInvariant() != lookupTable[hash].ToLowerInvariant())
-                    {
-                        Console.WriteLine($"HASH: Different string for the same hash! Hash: 0x{hash:X8}: \"{source}\" != \"{lookupTable[hash]}\"");
-                    }
-                }
-                else
-                {
-                    lookupTable.Add(hash, source);
-
-                    Console.WriteLine($"Found hash 0x{hash:X8}:{source}");
-                }
-            }
-
-            return hash;
-        }
-
-        private static uint InternalFNV32string(string source, int maxLen = -1)
-        {
-            if (string.IsNullOrEmpty(source))
-                return 0;
-
-            var bytes = Encoding.UTF8.GetBytes(source);
-            var hash = FNV32Offset;
-
-            for (var i = 0; i < bytes.Length && (maxLen == -1 || i < maxLen); ++i)
-                hash = FNV32Prime * (hash ^ (bytes[i] | 0x20u));
-
-            return (hash ^ 0x2Au) * FNV32Prime;
-        }
-
-        public static string HashToString(uint hash)
+        if (addToLookup && missingHashes.Remove(hash))
         {
             if (lookupTable.ContainsKey(hash))
-                return lookupTable[hash];
-
-            missingHashes.Add(hash);
-
-            return null;
-        }
-
-        public static uint StringToHash(string source)
-        {
-            /*foreach (var pair in lookupTable)
-                if (pair.Value.ToLowerInvariant() == source.ToLowerInvariant())
-                    return pair.Key;*/
-
-            var hash = InternalFNV32string(source);
-
-            if (!lookupTable.ContainsKey(hash))
+            {
+                if (source.ToLowerInvariant() != lookupTable[hash].ToLowerInvariant())
+                {
+                    Console.WriteLine($"HASH: Different string for the same hash! Hash: 0x{hash:X8}: \"{source}\" != \"{lookupTable[hash]}\"");
+                }
+            }
+            else
             {
                 lookupTable.Add(hash, source);
 
-                missingHashes.Remove(hash);
-
-                return hash;
+                Console.WriteLine($"Found hash 0x{hash:X8}:{source}");
             }
+        }
 
-            if (source.ToLowerInvariant() != lookupTable[hash].ToLowerInvariant())
-            {
-                Console.WriteLine($"HASH: Different string for the same hash! Hash: 0x{hash:X8}: \"{source}\" != \"{lookupTable[hash]}\"");
-                return 0xFFFFFFFFu;
-            }
+        return hash;
+    }
+
+    private static uint InternalFNV32string(string source, int maxLen = -1)
+    {
+        if (string.IsNullOrEmpty(source))
+            return 0;
+
+        var bytes = Encoding.UTF8.GetBytes(source);
+        var hash = FNV32Offset;
+
+        for (var i = 0; i < bytes.Length && (maxLen == -1 || i < maxLen); ++i)
+            hash = FNV32Prime * (hash ^ (bytes[i] | 0x20u));
+
+        return (hash ^ 0x2Au) * FNV32Prime;
+    }
+
+    public static string HashToString(uint hash)
+    {
+        if (lookupTable.ContainsKey(hash))
+            return lookupTable[hash];
+
+        missingHashes.Add(hash);
+
+        return null;
+    }
+
+    public static uint StringToHash(string source)
+    {
+        /*foreach (var pair in lookupTable)
+            if (pair.Value.ToLowerInvariant() == source.ToLowerInvariant())
+                return pair.Key;*/
+
+        var hash = InternalFNV32string(source);
+
+        if (!lookupTable.ContainsKey(hash))
+        {
+            lookupTable.Add(hash, source);
+
+            missingHashes.Remove(hash);
 
             return hash;
         }
 
-        private const int CharCount = 45;
-        private static readonly char[] Characters = new char[CharCount] {
-            'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
-            'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
-            'u', 'v', 'w', 'x', 'y', 'z',
-            '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-            '_', '-', '.', ',', '/', ' ', '+', '\'', '\\'
-        };
-
-        private const int TaskCount = 2;
-        private static readonly long[] Progress = new long[TaskCount];
-        private static readonly StringBuilder[] Builders = new StringBuilder[TaskCount];
-
-        public static void Bruteforce(int length, uint hash)
+        if (source.ToLowerInvariant() != lookupTable[hash].ToLowerInvariant())
         {
-            var tasks = new List<Task<bool>>();
+            Console.WriteLine($"HASH: Different string for the same hash! Hash: 0x{hash:X8}: \"{source}\" != \"{lookupTable[hash]}\"");
+            return 0xFFFFFFFFu;
+        }
+
+        return hash;
+    }
+
+    private const int CharCount = 45;
+    private static readonly char[] Characters = new char[CharCount] {
+        'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
+        'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
+        'u', 'v', 'w', 'x', 'y', 'z',
+        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+        '_', '-', '.', ',', '/', ' ', '+', '\'', '\\'
+    };
+
+    private const int TaskCount = 2;
+    private static readonly long[] Progress = new long[TaskCount];
+    private static readonly StringBuilder[] Builders = new StringBuilder[TaskCount];
+
+    public static void Bruteforce(int length, uint hash)
+    {
+        var tasks = new List<Task<bool>>();
+
+        while (true)
+        {
+            tasks.Clear();
+
+            var stopAfter = false;
+
+            long total = (long)Math.Pow(CharCount, length);
+            long onePct = (long)(total / 100.0d);
+            long oneTaskCount = total / TaskCount;
+            long remaining = total;
+            long totalCount = 0;
+
+            // Create and start tasks
+            for (var i = 0; i < TaskCount; ++i)
+            {
+                if (Builders[i] == null)
+                    Builders[i] = new();
+
+                var strVals = new int[length];
+                var count = oneTaskCount;
+
+                // Compensate for integer division, the last task takes all the remaining work
+                if (i == TaskCount - 1)
+                {
+                    count = remaining;
+                }
+
+                // Setup the start values for the task
+                if (totalCount > 0)
+                {
+                    AddCount(strVals, totalCount);
+                }
+
+                var id = i;
+                var localCount = count;
+                var localStrVals = strVals;
+
+                Console.WriteLine($"Task {id} from {totalCount,10} to {totalCount + localCount - 1,10} ({total,10}) ({CalcString(localStrVals, id),10}) with count {localCount,10} looking for hash 0x{hash:X8}");
+
+                // Start and store the task
+                tasks.Add(Task.Factory.StartNew(() =>
+                {
+                    return Bruteforce(id, localStrVals, hash, localCount);
+                }));
+
+                // Update the counters
+                remaining -= count;
+                totalCount += count;
+            }
+
+            Console.WriteLine();
+
+            var lastCurr = 0L;
 
             while (true)
             {
-                tasks.Clear();
+                var stop = true;
 
-                var stopAfter = false;
-
-                long total = (long)Math.Pow(CharCount, length);
-                long onePct = (long)(total / 100.0d);
-                long oneTaskCount = total / TaskCount;
-                long remaining = total;
-                long totalCount = 0;
-
-                // Create and start tasks
-                for (var i = 0; i < TaskCount; ++i)
+                // Check if the tasks have completed
+                foreach (var task in tasks)
                 {
-                    if (Builders[i] == null)
-                        Builders[i] = new();
-
-                    var strVals = new int[length];
-                    var count = oneTaskCount;
-
-                    // Compensate for integer division, the last task takes all the remaining work
-                    if (i == TaskCount - 1)
+                    if (!task.IsCompleted)
                     {
-                        count = remaining;
+                        stop = false;
                     }
-
-                    // Setup the start values for the task
-                    if (totalCount > 0)
+                    else if (task.Result)
                     {
-                        AddCount(strVals, totalCount);
+                        stopAfter = true;
                     }
-
-                    var id = i;
-                    var localCount = count;
-                    var localStrVals = strVals;
-
-                    Console.WriteLine($"Task {id} from {totalCount,10} to {totalCount + localCount - 1,10} ({total,10}) ({CalcString(localStrVals, id),10}) with count {localCount,10} looking for hash 0x{hash:X8}");
-
-                    // Start and store the task
-                    tasks.Add(Task.Factory.StartNew(() =>
-                    {
-                        return Bruteforce(id, localStrVals, hash, localCount);
-                    }));
-
-                    // Update the counters
-                    remaining -= count;
-                    totalCount += count;
                 }
 
-                Console.WriteLine();
-
-                var lastCurr = 0L;
-
-                while (true)
-                {
-                    var stop = true;
-
-                    // Check if the tasks have completed
-                    foreach (var task in tasks)
-                    {
-                        if (!task.IsCompleted)
-                        {
-                            stop = false;
-                        }
-                        else if (task.Result)
-                        {
-                            stopAfter = true;
-                        }
-                    }
-
-                    if (stop)
-                        break;
-
-                    var curr = 0L;
-
-                    foreach (var current in Progress)
-                    {
-                        curr += current;
-                    }
-
-                    if (curr - lastCurr > onePct)
-                    {
-                        Console.Title = $"Bruteforce: {length}: {curr}/{total}: {curr / (double)total * 100.0d:0.00}%";
-
-                        lastCurr = curr;
-                    }
-
-                    Thread.Sleep(1000);
-                }
-
-                Task.WaitAll(tasks.ToArray());
-
-                ++length;
-
-                if (stopAfter)
+                if (stop)
                     break;
-            }
-        }
 
-        
-        private static bool Bruteforce(int taskId, int[] strVals, uint hash, long itrCount)
-        {
-            var stopAfter = false;
-            var i = 0L;
+                var curr = 0L;
 
-            Progress[taskId] = 0;
-
-            do
-            {
-                var str = CalcString(strVals, taskId);
-
-                if (FNV32string(str) == hash)
+                foreach (var current in Progress)
                 {
-                    Console.WriteLine($"Bruteforce: {str} => 0x{hash:X8}");
-                    stopAfter = true;
+                    curr += current;
                 }
 
-                Progress[taskId] += 1;
-
-                if (++i == itrCount)
-                    break;
-            }
-            while (IncString(strVals));
-
-            return stopAfter;
-        }
-
-        private static bool IncString(int[] values)
-        {
-            for (var i = values.Length; i > 0; --i)
-            {
-                // return false if the first character would overflow
-                if (i == 1 && values[i - 1] == CharCount - 1)
-                    return false;
-
-                // increase the last character
-                values[i - 1] += 1;
-
-                // check if the character overflowed
-                if (values[i - 1] < CharCount)
+                if (curr - lastCurr > onePct)
                 {
-                    return true;
+                    Console.Title = $"Bruteforce: {length}: {curr}/{total}: {curr / (double)total * 100.0d:0.00}%";
+
+                    lastCurr = curr;
                 }
 
-                // on overflow, set to zero and increase the next character
-                values[i - 1] = 0;
+                Thread.Sleep(1000);
             }
 
-            return false;
-        }
+            Task.WaitAll(tasks.ToArray());
 
-        private static void AddCount(int[] values, long count)
+            ++length;
+
+            if (stopAfter)
+                break;
+        }
+    }
+
+    
+    private static bool Bruteforce(int taskId, int[] strVals, uint hash, long itrCount)
+    {
+        var stopAfter = false;
+        var i = 0L;
+
+        Progress[taskId] = 0;
+
+        do
         {
-            for (var i = values.Length; i > 0; --i)
+            var str = CalcString(strVals, taskId);
+
+            if (FNV32string(str) == hash)
             {
-                values[i - 1] = (int)(count % CharCount);
-
-                count /= CharCount;
+                Console.WriteLine($"Bruteforce: {str} => 0x{hash:X8}");
+                stopAfter = true;
             }
-        }
 
-        private static string CalcString(int[] values, int taskId)
+            Progress[taskId] += 1;
+
+            if (++i == itrCount)
+                break;
+        }
+        while (IncString(strVals));
+
+        return stopAfter;
+    }
+
+    private static bool IncString(int[] values)
+    {
+        for (var i = values.Length; i > 0; --i)
         {
-            Builders[taskId].Clear();
+            // return false if the first character would overflow
+            if (i == 1 && values[i - 1] == CharCount - 1)
+                return false;
 
-            for (var i = 0; i < values.Length; ++i)
+            // increase the last character
+            values[i - 1] += 1;
+
+            // check if the character overflowed
+            if (values[i - 1] < CharCount)
             {
-                Builders[taskId].Append(Characters[values[i]]);
+                return true;
             }
 
-            return Builders[taskId].ToString();
+            // on overflow, set to zero and increase the next character
+            values[i - 1] = 0;
         }
 
-        private static long AlreadyDone(int[] values)
+        return false;
+    }
+
+    private static void AddCount(int[] values, long count)
+    {
+        for (var i = values.Length; i > 0; --i)
         {
-            long val = 0;
-            int pow = 0;
+            values[i - 1] = (int)(count % CharCount);
 
-            for (var i = values.Length; i > 0; --i)
-            {
-                val += (long)Math.Pow(CharCount, pow++) * values[i - 1];
-            }
-
-            return val;
+            count /= CharCount;
         }
+    }
+
+    private static string CalcString(int[] values, int taskId)
+    {
+        Builders[taskId].Clear();
+
+        for (var i = 0; i < values.Length; ++i)
+        {
+            Builders[taskId].Append(Characters[values[i]]);
+        }
+
+        return Builders[taskId].ToString();
+    }
+
+    private static long AlreadyDone(int[] values)
+    {
+        long val = 0;
+        int pow = 0;
+
+        for (var i = values.Length; i > 0; --i)
+        {
+            val += (long)Math.Pow(CharCount, pow++) * values[i - 1];
+        }
+
+        return val;
     }
 }

@@ -4,7 +4,7 @@ namespace SabTool.Data.Misc;
 
 using SabTool.Utils;
 
-public class RailwaySpline
+public sealed class RailwaySpline
 {
     public string Name { get; set; }
     public Crc NameCrc { get; set; }
@@ -12,7 +12,7 @@ public class RailwaySpline
     public List<RailwaySplineNode> Nodes { get; set; } = new();
 }
 
-public class RailwaySplineNode
+public sealed class RailwaySplineNode
 {
     public string Name { get; set; }
     public Crc NameCrc { get; set; }
@@ -31,7 +31,7 @@ public class RailwaySplineNode
     public List<RailwaySplineNodeAttachment> Attachments { get; set; } = new();
 }
 
-public class RailwaySplineNodeAttachment
+public sealed class RailwaySplineNodeAttachment
 {
     public Crc SplineNameCrc { get; set; }
     public Crc NodeNameCrc { get; set; }

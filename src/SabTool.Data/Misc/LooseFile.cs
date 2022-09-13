@@ -2,7 +2,7 @@
 
 using SabTool.Utils;
 
-public class LooseFile
+public sealed class LooseFile
 {
     public Crc Crc { get; set; }
     public string Name { get; set; }

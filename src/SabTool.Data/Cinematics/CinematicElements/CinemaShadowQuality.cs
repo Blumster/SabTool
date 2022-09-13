@@ -2,7 +2,7 @@
 
 using SabTool.Utils;
 
-public class CinemaShadowQuality : CinemaElement
+public sealed class CinemaShadowQuality : CinemaElement
 {
     public float EndTime { get; set; }
     public Crc Quality { get; set; }

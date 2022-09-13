@@ -3,7 +3,7 @@
 using SabTool.Data.Sounds;
 using SabTool.Serializers.Sounds;
 
-public partial class ResourceDepot
+public sealed partial class ResourceDepot
 {
     private List<SoundPack> SoundPacks { get; set; } = new();
     private List<SoundPack> DLCSoundPacks { get; set; } = new();

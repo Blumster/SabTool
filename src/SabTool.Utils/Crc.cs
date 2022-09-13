@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SabTool.Utils
 {
-    public class Crc
+    public sealed class Crc
     {
         public uint Value { get; }
 

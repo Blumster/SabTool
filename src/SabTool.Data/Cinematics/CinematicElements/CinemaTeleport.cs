@@ -2,7 +2,7 @@
 
 using SabTool.Utils;
 
-public class CinemaTeleport : CinemaElement
+public sealed class CinemaTeleport : CinemaElement
 {
     public float EndTime { get; set; }
     public Crc UnkCrc1 { get; set; }

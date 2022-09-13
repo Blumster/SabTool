@@ -2,7 +2,7 @@
 
 namespace SabTool.Data.Graphics;
 
-public class Mesh
+public sealed class Mesh
 {
     public Skeleton Skeleton { get; set; }
     public Segment[] Segments { get; set; }

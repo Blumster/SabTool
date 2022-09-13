@@ -4,7 +4,7 @@ using SabTool.Data.Graphics;
 using SabTool.Serializers.Graphics;
 using SabTool.Utils;
 
-public partial class ResourceDepot
+public sealed partial class ResourceDepot
 {
     private const string MaterialsFileName = "France.materials";
     private Dictionary<Crc, Material> Materials { get; } = new();

@@ -5,7 +5,7 @@ using SharpGLTF.Transforms;
 
 namespace SabTool.Data.Graphics;
 
-public class Skeleton
+public sealed class Skeleton
 {
     public static Skeleton SingleBoneInstance { get; } = new Skeleton
     {

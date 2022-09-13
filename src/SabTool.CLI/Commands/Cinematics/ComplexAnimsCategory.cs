@@ -4,13 +4,13 @@ using SabTool.CLI.Base;
 using SabTool.Depot;
 using SabTool.Serializers.Cinematics;
 
-public class ComplexAnimsCategory : BaseCategory
+public sealed class ComplexAnimsCategory : BaseCategory
 {
     public override string Key { get; } = "complex-anims";
     public override string Shortcut { get; } = "ca";
     public override string Usage { get; } = "";
 
-    public class UnpackCommand : BaseCommand
+    public sealed class UnpackCommand : BaseCommand
     {
         private const string ComplexAnimsRootPath = @"Cinematics\ComplexAnimations";
 
@@ -45,7 +45,7 @@ public class ComplexAnimsCategory : BaseCategory
         }
     }
 
-    public class PackCommand : BaseCommand
+    public sealed class PackCommand : BaseCommand
     {
         public override string Key { get; } = "pack";
         public override string Shortcut { get; } = "p";

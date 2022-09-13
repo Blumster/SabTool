@@ -1,6 +1,6 @@
 ﻿namespace SabTool.Data.Cinematics.ComplexAnimationElements;
 
-public class SoundElement : ComplexAnimElement
+public sealed class SoundElement : ComplexAnimElement
 {
     public bool UnkBool { get; set; }
 

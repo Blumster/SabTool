@@ -3,7 +3,7 @@
 using SabTool.Data.Graphics.Shaders;
 using SabTool.Serializers.Graphics.Shaders;
 
-public partial class ResourceDepot
+public sealed partial class ResourceDepot
 {
     private const string ShadersFileName = "France.shaders";
     private ShaderContainer? ShaderContainer { get; set; }

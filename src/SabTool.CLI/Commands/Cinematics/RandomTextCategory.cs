@@ -4,13 +4,13 @@ using SabTool.CLI.Base;
 using SabTool.Depot;
 using SabTool.Serializers.Cinematics;
 
-public class RandomTextCategory : BaseCategory
+public sealed class RandomTextCategory : BaseCategory
 {
     public override string Key { get; } = "random-text";
     public override string Shortcut { get; } = "r";
     public override string Usage { get; } = "";
 
-    public class UnpackCommand : BaseCommand
+    public sealed class UnpackCommand : BaseCommand
     {
         private const string RandomTextRootPath = @"Cinematics\Dialog\Random\";
 
@@ -51,7 +51,7 @@ public class RandomTextCategory : BaseCategory
         }
     }
 
-    public class PackCommand : BaseCommand
+    public sealed class PackCommand : BaseCommand
     {
         public override string Key { get; } = "pack";
         public override string Shortcut { get; } = "p";

@@ -5,13 +5,13 @@ namespace SabTool.CLI.Commands;
 using SabTool.CLI.Base;
 using SabTool.Depot;
 
-public class LuaCategory : BaseCategory
+public sealed class LuaCategory : BaseCategory
 {
     public override string Key { get; } = "lua";
     public override string Shortcut { get; } = "lu";
     public override string Usage { get; } = "";
 
-    public class UnpackCommand : BaseCommand
+    public sealed class UnpackCommand : BaseCommand
     {
         public override string Key { get; } = "unpack";
         public override string Shortcut { get; } = "u";
@@ -70,7 +70,7 @@ public class LuaCategory : BaseCategory
         }
     }
 
-    public class PackCommand : BaseCommand
+    public sealed class PackCommand : BaseCommand
     {
         public override string Key { get; } = "pack";
         public override string Shortcut { get; } = "p";
@@ -83,7 +83,7 @@ public class LuaCategory : BaseCategory
         }
     }
 
-    public class DecompileCommand : BaseCommand
+    public sealed class DecompileCommand : BaseCommand
     {
         public override string Key { get; } = "decompile";
         public override string Shortcut { get; } = "d";
@@ -96,7 +96,7 @@ public class LuaCategory : BaseCategory
         }
     }
 
-    public class CompileCommand : BaseCommand
+    public sealed class CompileCommand : BaseCommand
     {
         public override string Key { get; } = "compile";
         public override string Shortcut { get; } = "c";

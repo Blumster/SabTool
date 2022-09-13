@@ -6,15 +6,13 @@ namespace SabTool.CLI.Commands.Graphics;
 using SabTool.CLI.Base;
 using SabTool.Depot;
 
-public class ShaderCategory : BaseCategory
+public sealed class ShaderCategory : BaseCategory
 {
     public override string Key => "shaders";
-
     public override string Shortcut => "s";
-
     public override string Usage => "<sub command>";
 
-    public class UnpackCommand : BaseCommand
+    public sealed class UnpackCommand : BaseCommand
     {
         public override string Key { get; } = "unpack";
         public override string Shortcut { get; } = "u";
@@ -107,7 +105,7 @@ public class ShaderCategory : BaseCategory
         }
     }
 
-    public class PackCommand : BaseCommand
+    public sealed class PackCommand : BaseCommand
     {
         public override string Key { get; } = "pack";
         public override string Shortcut { get; } = "p";

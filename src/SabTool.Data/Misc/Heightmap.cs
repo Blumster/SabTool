@@ -1,6 +1,6 @@
 ﻿namespace SabTool.Data.Misc;
 
-public class Heightmap // HEI5
+public sealed class Heightmap // HEI5
 {
     public List<HeightmapCell> Cells { get; } = new();
     public int CellCountMaxX { get; set; }
@@ -11,7 +11,7 @@ public class Heightmap // HEI5
     public float MinZ { get; set; }
 }
 
-public class HeightmapCell // HEI1 + other data
+public sealed class HeightmapCell // HEI1 + other data
 {
     public HeightmapCellData Data = new();
     public float MinX { get; set; }
@@ -22,7 +22,7 @@ public class HeightmapCell // HEI1 + other data
     public float MaxZ { get; set; }
 }
 
-public class HeightmapCellData
+public sealed class HeightmapCellData
 {
     // HEI1
     public int PointCountX { get; set; }

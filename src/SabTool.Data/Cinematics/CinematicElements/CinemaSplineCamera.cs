@@ -2,7 +2,7 @@
 
 using SabTool.Utils;
 
-public class CinemaSplineCamera : CinemaElement
+public sealed class CinemaSplineCamera : CinemaElement
 {
     public float UnkFloat { get; set; }
     public float EndTime { get; set; }

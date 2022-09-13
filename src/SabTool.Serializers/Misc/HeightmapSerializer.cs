@@ -7,6 +7,7 @@ using System.Numerics;
 using System.Text;
 
 using Newtonsoft.Json;
+
 using SharpGLTF.Schema2;
 
 namespace SabTool.Serializers.Misc;
@@ -389,7 +390,7 @@ public static class HeightmapSerializer
             {
                 packNumber = int.Parse(Path.GetFileNameWithoutExtension(path));
             }
-            catch (FormatException ex)
+            catch (FormatException)
             {
                 continue;
             }

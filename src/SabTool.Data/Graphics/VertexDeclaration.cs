@@ -1,6 +1,6 @@
 ﻿namespace SabTool.Data.Graphics;
 
-public class VertexDeclaration
+public sealed class VertexDeclaration
 {
     public short StreamId { get; set; }
     public short Offset { get; set; }

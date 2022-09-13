@@ -7,7 +7,7 @@ using SabTool.Serializers.Megapacks;
 using SabTool.Serializers.Packs;
 using SabTool.Utils;
 
-public partial class ResourceDepot
+public sealed partial class ResourceDepot
 {
     public GlobalMap? GlobalMap { get; set; }
     public GlobalMap? DLCGlobalMap { get; set; }

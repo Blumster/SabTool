@@ -12,7 +12,7 @@ public enum MegapackType
     FranceDLC
 }
 
-public partial class ResourceDepot
+public sealed partial class ResourceDepot
 {
     private static readonly List<string> PossibleMegapackFiles = new()
     {

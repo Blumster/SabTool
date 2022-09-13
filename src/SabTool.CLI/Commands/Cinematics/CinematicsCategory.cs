@@ -4,13 +4,13 @@ using SabTool.CLI.Base;
 using SabTool.Depot;
 using SabTool.Serializers.Cinematics;
 
-public class CinematicsCategory : BaseCategory
+public sealed class CinematicsCategory : BaseCategory
 {
     public override string Key { get; } = "cinematics";
     public override string Shortcut { get; } = "c";
     public override string Usage { get; } = "";
 
-    public class UnpackCommand : BaseCommand
+    public sealed class UnpackCommand : BaseCommand
     {
         private const string CinematicsRootPath = @"Cinematics";
         private const string CienmaticsRootPathDLC = @"DLC\01\Cinematics";
@@ -69,7 +69,7 @@ public class CinematicsCategory : BaseCategory
         }
     }
 
-    public class PackCommand : BaseCommand
+    public sealed class PackCommand : BaseCommand
     {
         public override string Key { get; } = "pack";
         public override string Shortcut { get; } = "p";

@@ -5,15 +5,13 @@ using SabTool.Data.Graphics.Shaders;
 using SabTool.Serializers.Graphics.Shaders;
 using SabTool.Utils;
 
-public class ShaderMappingCategory : BaseCategory
+public sealed class ShaderMappingCategory : BaseCategory
 {
     public override string Key => "shadermappings";
-
     public override string Shortcut => "sm";
-
     public override string Usage => "<sub command>";
 
-    public class UnpackCommand : BaseCommand
+    public sealed class UnpackCommand : BaseCommand
     {
         public override string Key { get; } = "unpack";
         public override string Shortcut { get; } = "u";

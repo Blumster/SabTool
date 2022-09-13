@@ -4,7 +4,7 @@ namespace SabTool.Data.Graphics;
 
 using SabTool.Utils;
 
-public class Segment
+public sealed class Segment
 {
     public Mesh Mesh { get; set; }
     public int PrimitiveIndex { get; set; }

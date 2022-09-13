@@ -1,6 +1,6 @@
 ﻿namespace SabTool.Data.Cinematics.ComplexAnimationElements;
 
-public class ExpressionElement : ComplexAnimElement
+public sealed class ExpressionElement : ComplexAnimElement
 {
     public int UnkInt2 { get; set; }
     public float UnkFloat { get; set; }

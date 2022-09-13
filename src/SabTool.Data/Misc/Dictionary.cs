@@ -5,13 +5,13 @@ namespace SabTool.Data.Misc;
 
 using SabTool.Utils;
 
-public class Dictionary
+public sealed class Dictionary
 {
     public Crc Name { get; set; }
     public List<DictionaryObject> Objects { get; } = new();
 }
 
-public class DictionaryObject
+public sealed class DictionaryObject
 {
     public Crc Name { get; set; }
     public List<Property> Properties { get; } = new();

@@ -2,7 +2,7 @@
 
 using SabTool.Utils;
 
-public class CinemaAnimateObject : CinemaElement
+public sealed class CinemaAnimateObject : CinemaElement
 {
     public float UnkFloat1 { get; set; }
     public float UnkFloat2 { get; set; }

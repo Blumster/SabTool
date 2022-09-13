@@ -2,12 +2,12 @@
 
 using SabTool.Utils;
 
-public class ShaderMapping
+public sealed class ShaderMapping
 {
     public List<ShaderMappingData> Mappings { get; } = new();
 }
 
-public class ShaderMappingData
+public sealed class ShaderMappingData
 {
     public Crc Unk { get; set; }
     public Crc Pass { get; set; }

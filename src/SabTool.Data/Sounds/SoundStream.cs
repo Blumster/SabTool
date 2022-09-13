@@ -2,7 +2,7 @@
 
 using SabTool.Utils;
 
-public class SoundStream
+public sealed class SoundStream
 {
     public Crc Id { get; set; }
     public byte[] Data { get; set; }

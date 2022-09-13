@@ -1,11 +1,8 @@
-﻿using System.Text;
-
-namespace SabTool.Data.Blueprints;
+﻿namespace SabTool.Data.Blueprints;
 
 using SabTool.Data.Misc;
-using SabTool.Utils;
 
-public class Blueprint
+public sealed class Blueprint
 {
     private const int NamePad = -30;
 

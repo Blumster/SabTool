@@ -2,7 +2,7 @@
 
 using SabTool.Utils;
 
-public class PaletteBlock
+public sealed class PaletteBlock
 {
     public Crc Crc { get; set; }
     public float X { get; set; }

@@ -3,7 +3,7 @@
 using SabTool.Utils;
 using SabTool.Utils.Extensions;
 
-public class LuaParam
+public sealed class LuaParam
 {
     public const int NamePad = -20;
     public const int TypePad = -10;

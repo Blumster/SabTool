@@ -1,6 +1,6 @@
 ﻿namespace SabTool.Data.Cinematics.CinematicElements;
 
-public class CinemaSound2D : CinemaElement
+public sealed class CinemaSound2D : CinemaElement
 {
     public float UnkFloat { get; set; }
     public float EndTime { get; set; }

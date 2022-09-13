@@ -4,7 +4,7 @@ namespace SabTool.Data.Packs;
 
 using SabTool.Utils;
 
-public class FranceMap
+public sealed class FranceMap
 {
     public static readonly float[] GridLimits = new float[3] { 500.0f, 200.0f, 25.0f };
 

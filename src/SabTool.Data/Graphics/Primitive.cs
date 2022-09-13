@@ -3,7 +3,7 @@ using System.Text;
 
 namespace SabTool.Data.Graphics;
 
-public class Primitive
+public sealed class Primitive
 {
     public Mesh Mesh { get; set; }
     public Unk3 Unk3 { get; set; }

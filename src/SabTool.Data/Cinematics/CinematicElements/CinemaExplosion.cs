@@ -2,7 +2,7 @@
 
 using SabTool.Utils;
 
-public class CinemaExplosion : CinemaElement
+public sealed class CinemaExplosion : CinemaElement
 {
     public float EndTime { get; set; }
     public Crc UnkCrc1 { get; set; }

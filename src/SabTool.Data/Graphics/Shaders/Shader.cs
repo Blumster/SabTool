@@ -8,7 +8,7 @@ public enum ShaderType
     Vertex
 }
 
-public class Shader
+public sealed class Shader
 {
     public ShaderType Type { get; }
     public uint Index { get; set; }
@@ -21,14 +21,14 @@ public class Shader
     }
 }
 
-public class ShaderData
+public sealed class ShaderData
 {
     public int Size { get; set; }
     public byte[] Data { get; set; }
     public List<ShaderConfigParameter> Parameters { get; } = new();
 }
 
-public class ShaderConfigParameter
+public sealed class ShaderConfigParameter
 {
     public string Name { get; set; }
     public int DefaultValue { get; set; }
