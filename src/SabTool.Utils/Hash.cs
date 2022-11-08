@@ -209,6 +209,7 @@ public static class Hash
         return hash;
     }
 
+    private const int BasicCharCount = 26;
     private const int CharCount = 45;
     private static readonly char[] Characters = new char[CharCount] {
         'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
@@ -218,25 +219,39 @@ public static class Hash
         '_', '-', '.', ',', '/', ' ', '+', '\'', '\\'
     };
 
-    private const int TaskCount = 2;
+    private const int TaskCount = 6;
     private static readonly long[] Progress = new long[TaskCount];
     private static readonly StringBuilder[] Builders = new StringBuilder[TaskCount];
 
-    public static void Bruteforce(int length, uint hash)
+    public static void BruteforceMissing(int length, bool basic = false, int maxLength = -1)
+    {
+        var missing = missingHashes.Skip(10000);
+        foreach (var hash in missing)
+        {
+            Bruteforce(length, hash, basic, maxLength);
+
+            //Console.WriteLine("Press enter to continue...");
+            //Console.ReadKey();
+        }
+    }
+
+    public static void Bruteforce(int length, uint hash, bool basic = false, int maxLength = -1)
     {
         var tasks = new List<Task<bool>>();
 
-        while (true)
+        while (maxLength == -1 || length <= maxLength)
         {
             tasks.Clear();
 
             var stopAfter = false;
 
-            long total = (long)Math.Pow(CharCount, length);
+            long total = (long)Math.Pow(basic ? BasicCharCount : CharCount, length);
             long onePct = (long)(total / 100.0d);
             long oneTaskCount = total / TaskCount;
             long remaining = total;
             long totalCount = 0;
+
+            Console.WriteLine($"Starting bruteforce for hash 0x{hash:X8} with length {length}...");
 
             // Create and start tasks
             for (var i = 0; i < TaskCount; ++i)
@@ -249,27 +264,20 @@ public static class Hash
 
                 // Compensate for integer division, the last task takes all the remaining work
                 if (i == TaskCount - 1)
-                {
                     count = remaining;
-                }
 
                 // Setup the start values for the task
                 if (totalCount > 0)
-                {
-                    AddCount(strVals, totalCount);
-                }
+                    AddCount(strVals, totalCount, basic);
 
                 var id = i;
                 var localCount = count;
                 var localStrVals = strVals;
 
-                Console.WriteLine($"Task {id} from {totalCount,10} to {totalCount + localCount - 1,10} ({total,10}) ({CalcString(localStrVals, id),10}) with count {localCount,10} looking for hash 0x{hash:X8}");
+                Console.WriteLine($"Task {id} from {totalCount,10} to {totalCount + localCount - 1,10} ({total,10}) ({CalcString(localStrVals, id, basic),10}) with count {localCount,10} looking for hash 0x{hash:X8}");
 
                 // Start and store the task
-                tasks.Add(Task.Factory.StartNew(() =>
-                {
-                    return Bruteforce(id, localStrVals, hash, localCount);
-                }));
+                tasks.Add(Task.Factory.StartNew(() => Bruteforce(id, localStrVals, hash, localCount)));
 
                 // Update the counters
                 remaining -= count;
@@ -322,12 +330,15 @@ public static class Hash
             ++length;
 
             if (stopAfter)
+            {
+                Console.ReadKey();
                 break;
+            }
         }
     }
 
     
-    private static bool Bruteforce(int taskId, int[] strVals, uint hash, long itrCount)
+    private static bool Bruteforce(int taskId, int[] strVals, uint hash, long itrCount, bool basic = false)
     {
         var stopAfter = false;
         var i = 0L;
@@ -336,9 +347,9 @@ public static class Hash
 
         do
         {
-            var str = CalcString(strVals, taskId);
+            var str = CalcString(strVals, taskId, basic);
 
-            if (FNV32string(str) == hash)
+            if (InternalFNV32string(str) == hash)
             {
                 Console.WriteLine($"Bruteforce: {str} => 0x{hash:X8}");
                 stopAfter = true;
@@ -349,24 +360,24 @@ public static class Hash
             if (++i == itrCount)
                 break;
         }
-        while (IncString(strVals));
+        while (IncString(strVals, basic));
 
         return stopAfter;
     }
 
-    private static bool IncString(int[] values)
+    private static bool IncString(int[] values, bool basic)
     {
         for (var i = values.Length; i > 0; --i)
         {
             // return false if the first character would overflow
-            if (i == 1 && values[i - 1] == CharCount - 1)
+            if (i == 1 && values[i - 1] == (basic ? BasicCharCount : CharCount) - 1)
                 return false;
 
             // increase the last character
             values[i - 1] += 1;
 
             // check if the character overflowed
-            if (values[i - 1] < CharCount)
+            if (values[i - 1] < (basic ? BasicCharCount : CharCount))
             {
                 return true;
             }
@@ -378,36 +389,34 @@ public static class Hash
         return false;
     }
 
-    private static void AddCount(int[] values, long count)
+    private static void AddCount(int[] values, long count, bool basic)
     {
         for (var i = values.Length; i > 0; --i)
         {
-            values[i - 1] = (int)(count % CharCount);
+            values[i - 1] = (int)(count % (basic ? BasicCharCount : CharCount));
 
-            count /= CharCount;
+            count /= (basic ? BasicCharCount : CharCount);
         }
     }
 
-    private static string CalcString(int[] values, int taskId)
+    private static string CalcString(int[] values, int taskId, bool basic)
     {
         Builders[taskId].Clear();
 
         for (var i = 0; i < values.Length; ++i)
-        {
             Builders[taskId].Append(Characters[values[i]]);
-        }
 
         return Builders[taskId].ToString();
     }
 
-    private static long AlreadyDone(int[] values)
+    private static long AlreadyDone(int[] values, bool basic)
     {
         long val = 0;
         int pow = 0;
 
         for (var i = values.Length; i > 0; --i)
         {
-            val += (long)Math.Pow(CharCount, pow++) * values[i - 1];
+            val += (long)Math.Pow((basic ? BasicCharCount : CharCount), pow++) * values[i - 1];
         }
 
         return val;

@@ -129,11 +129,11 @@ public sealed class HashCategory : BaseCategory
     {
         public override string Key { get; } = "bruteforce";
         public override string Shortcut { get; } = "b";
-        public override string Usage { get; } = "<length> <hash>";
+        public override string Usage { get; } = "<length> <hash> [basic]";
 
         public override bool Execute(IEnumerable<string> arguments)
         {
-            if (arguments.Count() < 1)
+            if (arguments.Count() < 2)
             {
                 Console.WriteLine("ERROR: Not enough arguments given!");
                 return false;
@@ -147,10 +147,34 @@ public sealed class HashCategory : BaseCategory
 
             if (int.TryParse(lenStr, out int length) && uint.TryParse(hashStr, NumberStyles.HexNumber, null, out uint hash))
             {
-                Hash.Bruteforce(length, hash);
+                Hash.Bruteforce(length, hash, arguments.Count() == 3);
 
                 return true;
             }
+
+            Console.WriteLine("ERROR: Invalid length argument given!");
+            return false;
+        }
+    }
+
+    public sealed class BruteforceMissingCommand : BaseCommand
+    {
+        public override string Key { get; } = "bruteforce-missing";
+        public override string Shortcut { get; } = "bm";
+        public override string Usage { get; } = "<length> [basic]";
+
+        public override bool Execute(IEnumerable<string> arguments)
+        {
+            if (arguments.Count() < 2)
+            {
+                Console.WriteLine("ERROR: Not enough arguments given!");
+                return false;
+            }
+
+            var lenStr = arguments.ElementAt(0);
+
+            if (int.TryParse(lenStr, out var length))
+                Hash.BruteforceMissing(length, arguments.Count() == 2, 5);
 
             Console.WriteLine("ERROR: Invalid length argument given!");
             return false;
