@@ -22,7 +22,7 @@ public static class ModelSerializer
 
         stream.Position += 0x4C;
 
-        model.Field4C = reader.ReadVector3();
+        model.CullingOffset = reader.ReadVector3();
         model.BoxAndRadius = reader.ReadVector4();
         model.Field68 = reader.ReadInt32();
 

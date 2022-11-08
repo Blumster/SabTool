@@ -4,7 +4,7 @@ public sealed class Model
 {
     public Mesh Mesh { get; set; }
 
-    public Vector3 Field4C { get; set; }
+    public Vector3 CullingOffset { get; set; }
     public Vector4 BoxAndRadius { get; set; }
     public int Field68 { get; set; }
     public int Field78 { get; set; }
@@ -23,7 +23,7 @@ public sealed class Model
 
         indentCount += 2;
 
-        sb.Append(' ', indentCount).AppendLine($"{nameof(Field4C)} = {Field4C}");
+        sb.Append(' ', indentCount).AppendLine($"{nameof(CullingOffset)} = {CullingOffset}");
         sb.Append(' ', indentCount).AppendLine($"{nameof(BoxAndRadius)} = {BoxAndRadius}");
         sb.Append(' ', indentCount).AppendLine($"{nameof(Field68)} = {Field68}");
         sb.Append(' ', indentCount).AppendLine($"{nameof(Field78)} = {Field78}");
@@ -35,6 +35,8 @@ public sealed class Model
         indentCount -= 2;
 
         sb.Append(' ', indentCount).AppendLine("}");
+
+        sb.AppendLine(Mesh.DumpString(indentCount));
 
         return sb.ToString();
     }

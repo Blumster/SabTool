@@ -3,9 +3,9 @@
 public sealed class Primitive
 {
     public Mesh Mesh { get; set; }
-    public Unk3 Unk3 { get; set; }
+    public Shadow Shadow { get; set; }
     public VertexHolder VertexHolder { get; set; }
-    public int Unk3Index { get; set; }
+    public int ShadowIndex { get; set; }
     public int VertexHolderIndex { get; set; }
     public float Float30 { get; set; }
     public float Float34 { get; set; }
@@ -171,7 +171,7 @@ public sealed class Primitive
 
         sb.Append(' ', indentCount).AppendLine($"{nameof(Primitive)}()");
         sb.Append(' ', indentCount).AppendLine("{");
-        sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Unk3Index)} = {Unk3Index}");
+        sb.Append(' ', indentCount + 2).AppendLine($"{nameof(ShadowIndex)} = {ShadowIndex}");
         sb.Append(' ', indentCount + 2).AppendLine($"{nameof(VertexHolderIndex)} = {VertexHolderIndex}");
         sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Float30)} = {Float30}");
         sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Float34)} = {Float34}");

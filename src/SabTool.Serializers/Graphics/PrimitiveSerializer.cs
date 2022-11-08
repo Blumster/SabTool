@@ -23,9 +23,9 @@ public static class PrimitiveSerializer
 
         stream.Position += 0x4;
 
-        primitive.Unk3Index = reader.ReadInt32();
-        if (primitive.Unk3Index >= 0)
-            primitive.Unk3 = primitive.Mesh.Unk3s[primitive.Unk3Index];
+        primitive.ShadowIndex = reader.ReadInt32();
+        if (primitive.ShadowIndex >= 0)
+            primitive.Shadow = primitive.Mesh.Shadows[primitive.ShadowIndex];
 
         stream.Position += 0x28;
 

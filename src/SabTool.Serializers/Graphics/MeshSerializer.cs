@@ -23,11 +23,11 @@ public static class MeshSerializer
         stream.Position += 0xC;
 
         mesh.NumBones = reader.ReadInt32();
-        mesh.NumUnk1 = reader.ReadInt32();
+        mesh.NumSkeletonRemaps = reader.ReadInt32();
         mesh.Field14 = reader.ReadInt32();
         mesh.NumVertexHolder = reader.ReadInt16();
         mesh.NumPrimitives = reader.ReadInt16();
-        mesh.NumUnk3 = reader.ReadInt16();
+        mesh.NumShadows = reader.ReadInt16();
         mesh.Field1E = reader.ReadInt16();
         mesh.Field20 = reader.ReadInt32();
         mesh.Field24 = reader.ReadInt32();
@@ -41,8 +41,8 @@ public static class MeshSerializer
         mesh.Primitives = new Primitive[mesh.NumPrimitives];
         mesh.Segments = new Segment[mesh.NumSegments];
         mesh.VertexHolders = new VertexHolder[mesh.NumVertexHolder];
-        mesh.Unk1s = new Unk1[mesh.NumUnk1];
-        mesh.Unk3s = new Unk3[mesh.NumUnk3];
+        mesh.SkeletonRemaps = new SkeletonRemap[mesh.NumSkeletonRemaps];
+        mesh.Shadows = new Shadow[mesh.NumShadows];
 
         currentStart = stream.Position;
 
@@ -67,17 +67,18 @@ public static class MeshSerializer
                 throw new Exception("Unable to deserialize the Mesh's Skeleton!");
         }
 
-        if (mesh.NumUnk1 > 0)
+        if (mesh.NumSkeletonRemaps > 0)
         {
-            // TODO
-            var vals = reader.ReadConstArray(2, reader.ReadInt32);
+            mesh.NumSkeletonRemapBones = reader.ReadInt32();
 
-            for (var i = 0; i < mesh.NumUnk1; ++i)
-                mesh.Unk1s[i] = Unk1Serializer.DeserializeRaw(stream);
+            stream.Position += 4;
+
+            for (var i = 0; i < mesh.NumSkeletonRemaps; ++i)
+                mesh.SkeletonRemaps[i] = SkeletonRemapSerializer.DeserializeRaw(stream);
         }
 
-        for (var i = 0; i < mesh.NumUnk3; ++i)
-            mesh.Unk3s[i] = Unk3Serializer.DeserializeRaw(stream);
+        for (var i = 0; i < mesh.NumShadows; ++i)
+            mesh.Shadows[i] = ShadowSerializer.DeserializeRaw(stream);
 
         for (var i = 0; i < mesh.NumVertexHolder; ++i)
             mesh.VertexHolders[i] = VertexHolderSerializer.DeserializeRaw(stream);

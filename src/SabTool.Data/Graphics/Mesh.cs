@@ -6,14 +6,15 @@ public sealed class Mesh
     public Segment[] Segments { get; set; }
     public Primitive[] Primitives { get; set; }
     public VertexHolder[] VertexHolders { get; set; }
-    public Unk1[] Unk1s { get; set; }
-    public Unk3[] Unk3s { get; set; }
+    public SkeletonRemap[] SkeletonRemaps { get; set; }
+    public Shadow[] Shadows { get; set; }
+    public int NumSkeletonRemapBones { get; set; }
     public int NumBones { get; set; }
-    public int NumUnk1 { get; set; }
+    public int NumSkeletonRemaps { get; set; }
     public int Field14 { get; set; }
     public short NumVertexHolder { get; set; }
     public short NumPrimitives { get; set; }
-    public short NumUnk3 { get; set; }
+    public short NumShadows { get; set; }
     public short Field1E { get; set; }
     public int Field20 { get; set; }
     public int Field24 { get; set; }
@@ -36,11 +37,11 @@ public sealed class Mesh
         indentCount += 2;
 
         sb.Append(' ', indentCount).AppendLine($"{nameof(NumBones)} = {NumBones}");
-        sb.Append(' ', indentCount).AppendLine($"{nameof(NumUnk1)} = {NumUnk1}");
+        sb.Append(' ', indentCount).AppendLine($"{nameof(NumSkeletonRemaps)} = {NumSkeletonRemaps}");
         sb.Append(' ', indentCount).AppendLine($"{nameof(Field14)} = {Field14}");
         sb.Append(' ', indentCount).AppendLine($"{nameof(NumVertexHolder)} = {NumVertexHolder}");
         sb.Append(' ', indentCount).AppendLine($"{nameof(NumPrimitives)} = {NumPrimitives}");
-        sb.Append(' ', indentCount).AppendLine($"{nameof(NumUnk3)} = {NumUnk3}");
+        sb.Append(' ', indentCount).AppendLine($"{nameof(NumShadows)} = {NumShadows}");
         sb.Append(' ', indentCount).AppendLine($"{nameof(Field1E)} = {Field1E}");
         sb.Append(' ', indentCount).AppendLine($"{nameof(Field20)} = {Field20}");
         sb.Append(' ', indentCount).AppendLine($"{nameof(Field24)} = {Field24}");
@@ -63,23 +64,23 @@ public sealed class Mesh
             sb.Append(Skeleton.DumpString(indentCount + 2));
         }
 
-        sb.Append(' ', indentCount).AppendLine($"{nameof(Unk1s)} =");
+        sb.Append(' ', indentCount).AppendLine($"{nameof(SkeletonRemaps)} =");
         sb.Append(' ', indentCount).AppendLine("[");
 
-        for (var i = 0; i < NumUnk1; ++i)
+        for (var i = 0; i < NumSkeletonRemaps; ++i)
         {
             sb.Append(' ', indentCount + 2).AppendLine($"{i}:");
-            sb.Append(Unk1s[i].DumpString(indentCount + 4));
+            sb.Append(SkeletonRemaps[i].DumpString(indentCount + 4));
         }
 
         sb.Append(' ', indentCount).AppendLine("]");
-        sb.Append(' ', indentCount).AppendLine($"{nameof(Unk3s)} =");
+        sb.Append(' ', indentCount).AppendLine($"{nameof(Shadows)} =");
         sb.Append(' ', indentCount).AppendLine("[");
 
-        for (var i = 0; i < NumUnk3; ++i)
+        for (var i = 0; i < NumShadows; ++i)
         {
             sb.Append(' ', indentCount + 2).AppendLine($"{i}:");
-            sb.Append(Unk3s[i].DumpString(indentCount + 4));
+            sb.Append(Shadows[i].DumpString(indentCount + 4));
         }
 
         sb.Append(' ', indentCount).AppendLine("]");
