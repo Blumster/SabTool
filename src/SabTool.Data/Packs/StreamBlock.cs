@@ -1,5 +1,12 @@
 ﻿namespace SabTool.Data.Packs;
 
+public enum StreamBlockFlags
+{
+    Dynpack     = 0x008,
+    NoPackType  = 0x010,
+    Palettepack = 0x100,
+}
+
 public sealed class StreamBlock
 {
     public static readonly uint[] OffIndices = new uint[9] { 6, 7, 0, 2, 8, 4, 3, 1, 5 };
@@ -14,7 +21,7 @@ public sealed class StreamBlock
     public int PointCountY { get; set; }
     public float HeightRangeMin { get; set; }
     public float HeightRangeMax { get; set; }
-    public uint Flags { get; set; } // 0x8: dynpack? 0x10: no extension? 0x100: palettepack? no 0x8 and no 0x100: pack?
+    public uint Flags { get; set; }
     public byte[] HeightMapData { get; set; }
     public uint TextureCount { get; set; }
     public TextureInfo[] TextureInfoArray { get; set; }
