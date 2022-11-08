@@ -20,6 +20,7 @@ public partial class ResourceDepot
         { Resource.Sounds,     new(() => Instance.LoadSounds(),     new() { Resource.None }) },
         { Resource.Lua,        new(() => Instance.LoadLua(),        new() { Resource.None }) },
         { Resource.Misc,       new(() => Instance.LoadMisc(),       new() { Resource.None }) },
+        { Resource.Animations, new(() => Instance.LoadAnimations(), new() { Resource.None }) },
     };
 
     private static HashSet<Resource> CollectAllDependencies(Resource resource, HashSet<Resource>? container = null)

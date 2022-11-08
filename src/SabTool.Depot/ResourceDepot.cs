@@ -16,8 +16,9 @@ public enum Resource
     Sounds     = 0x0080,
     Lua        = 0x0100,
     Misc       = 0x0200,
+    Animations = 0x0400,
 
-    All        = Megapacks | Materials | Shaders | LooseFiles | Maps | Blueprints | Cinematics | Sounds | Lua | Misc,
+    All        = Megapacks | Materials | Shaders | LooseFiles | Maps | Blueprints | Cinematics | Sounds | Lua | Misc | Animations,
 }
 
 public sealed partial class ResourceDepot
