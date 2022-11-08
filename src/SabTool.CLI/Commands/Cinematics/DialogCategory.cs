@@ -41,7 +41,7 @@ public sealed class DialogCategory : BaseCategory
                 if (!string.IsNullOrEmpty(language) && language.ToLowerInvariant() != entry.Key.ToLowerInvariant())
                     continue;
 
-                var outputFilePath = Path.Combine(outputDirectory, DialogRootPath, $@"{ entry.Key}\dialogs.json");
+                var outputFilePath = Path.Combine(outputDirectory, DialogRootPath, $@"{entry.Key}\dialogs.json");
 
                 var outputFileDirectory = Path.GetDirectoryName(outputFilePath);
                 if (outputFileDirectory == null)
