@@ -49,11 +49,13 @@ public sealed class SoundPackCategory : BaseCategory
             {
                 var soundPackOutputDir = Path.Combine(outputDirectory, soundPack.FilePath);
                 Directory.CreateDirectory(soundPackOutputDir);
+                Directory.CreateDirectory(Path.Combine(soundPackOutputDir, "banks"));
+                Directory.CreateDirectory(Path.Combine(soundPackOutputDir, "oggs"));
 
                 foreach (var bank in soundPack.SoundBanks)
                 {
                     var bankName = bank.Id.GetStringOrHexString();
-                    var bankFilePath = Path.Combine(soundPackOutputDir, $"{bankName}.bnk");
+                    var bankFilePath = Path.Combine(soundPackOutputDir, $"banks\\{bankName}.bnk");
 
                     using var fs = new FileStream(bankFilePath, FileMode.Create, FileAccess.Write, FileShare.None);
 
@@ -70,7 +72,7 @@ public sealed class SoundPackCategory : BaseCategory
                         streamName = stream.Id.GetHexString();
                     }
 
-                    var streamFilePath = Path.Combine(soundPackOutputDir, $"{streamName}.wwogg");
+                    var streamFilePath = Path.Combine(soundPackOutputDir, $"oggs\\{streamName}.wem");
 
                     using var fs = new FileStream(streamFilePath, FileMode.Create, FileAccess.Write, FileShare.None);
 
