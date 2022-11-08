@@ -18,10 +18,7 @@ public sealed class MeshAsset
     public void Export(string outputPath)
     {
         using (var sb = new StreamWriter(new FileStream(Path.Combine(outputPath, $"{ModelName}-dump.txt"), FileMode.Create, FileAccess.Write, FileShare.Read)))
-        {
             sb.WriteLine(Model.DumpString());
-            sb.WriteLine(Model.Mesh.DumpString());
-        }
 
         var model = ModelRoot.CreateModel();
         var scene = model.UseScene(ModelName);
