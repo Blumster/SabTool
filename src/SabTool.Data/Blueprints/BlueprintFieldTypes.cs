@@ -1554,7 +1554,7 @@ public static class BlueprintFieldTypes
         { (BlueprintType.Item, 0xF7CEEE0B), typeof(bool) },
         { (BlueprintType.Item, 0x650A47ED), typeof(bool) },
         { (BlueprintType.Item, 0x2D1BCD5A), typeof(Crc) },
-        { (BlueprintType.Item, 0x5B724250), typeof(int) },
+        { (BlueprintType.Item, 0x5B724250), typeof(Crc) },
         { (BlueprintType.Item, 0x5D4608B5), typeof(bool) },
         { (BlueprintType.Item, 0x1E757409), typeof(Crc) },
         { (BlueprintType.Item, 0x13F47172), typeof(bool) },
