@@ -12,9 +12,15 @@ public sealed class TextureAsset
         NameCrc = nameCrc;
     }
 
-    public void Import(string filePath)
+    public static TextureAsset Import(string filePath)
     {
-        throw new NotImplementedException();
+        var name = Path.GetFileNameWithoutExtension(filePath);
+
+        return new TextureAsset(Hash.StringToHash(name))
+        {
+            Name = name,
+            DDSFile = File.ReadAllBytes(filePath)
+        };
     }
 
     public void Export(string outputPath)

@@ -25,7 +25,7 @@ namespace SabTool.Utils.Extensions
             var bytes = Encoding.UTF8.GetBytes(value);
             writer.Write(bytes, 0, Math.Min(bytes.Length, len));
 
-            for (var i = 0; i < len - value.Length; ++i)
+            for (var i = 0; i < len - bytes.Length; ++i)
                 writer.Write((byte)0);
         }
 

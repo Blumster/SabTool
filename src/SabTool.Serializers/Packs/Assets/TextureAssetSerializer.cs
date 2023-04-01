@@ -41,7 +41,7 @@ public static class TextureAssetSerializer
         //Hash.StringToHash($"{textureAsset.Name}_High"); // save to the lookup table the high version
 
         var fmt = reader.ReadUInt32();
-        if (fmt != 0x31545844 && fmt != 0x33545844 && fmt != 0x35545844 && fmt != 0x15 && fmt != 0x1A) // DXT1, DXT3, DXT5, RGBA32, RGBA16
+        if (fmt is not 0x31545844 and not 0x33545844 and not 0x35545844 and not 0x15 and not 0x1A) // DXT1, DXT3, DXT5, RGBA32, RGBA16
             throw new Exception($"Texture ({textureAsset.Name}) has unsupported format: 0x{fmt:X8}");
 
         var flags = reader.ReadInt32();
@@ -54,7 +54,7 @@ public static class TextureAssetSerializer
         if (numChunks == 0)
             numChunks = 1;
 
-        byte[] ddsMipMapData = numChunks == 1
+        var ddsMipMapData = numChunks == 1
             ? reader.ReadDecompressedBytes(reader.ReadInt32())
             : new byte[dataSize];
 
@@ -164,17 +164,10 @@ public static class TextureAssetSerializer
     public static void SerializeRaw(TextureAsset meshAsset, Stream stream)
     {
         using var writer = new BinaryWriter(stream, Encoding.UTF8, true);
-    }
 
-    public static TextureAsset? DeserializeJSON(Stream stream)
-    {
-        return null;
-    }
+        var nameLength = Math.Min(meshAsset.Name.Length, 1024);
 
-    public static void SerializeJSON(TextureAsset textureAsset, Stream stream)
-    {
-        using var writer = new StreamWriter(stream, Encoding.UTF8, leaveOpen: true);
-
-        writer.Write(JsonConvert.SerializeObject(textureAsset, Formatting.Indented));
+        writer.Write(nameLength);
+        writer.WriteUtf8StringOn(meshAsset.Name, nameLength);
     }
 }
