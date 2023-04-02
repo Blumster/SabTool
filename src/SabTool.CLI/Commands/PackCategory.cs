@@ -98,7 +98,10 @@ public sealed class PackCategory : BaseCategory
 
             var streamBlock = ResourceDepot.Instance.GetStreamBlock(crc);
             if (streamBlock == null)
+            {
+                Console.WriteLine($"Could not find StreamBlock for {crc} ({filePath})");
                 return;
+            }
 
             outputDir = Path.Combine(outputDir, Path.GetFileNameWithoutExtension(filePath));
             outputDir = outputDir.Replace(" ", "");

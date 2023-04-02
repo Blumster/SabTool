@@ -53,13 +53,6 @@ public class DDSImage
         public const uint Magic = 0x20534444;
         public const int Size = 124;
 
-        public void Read(Stream stream)
-        {
-            using var reader = new BinaryReader(stream, Encoding.UTF8, true);
-
-            Read(reader);
-        }
-
         public void Read(BinaryReader reader)
         {
             if (reader.ReadUInt32() != Magic)
@@ -130,5 +123,38 @@ public class DDSImage
         public uint Caps3 { get; set; }
         public uint Caps4 { get; set; }
         public uint Reserved2 { get; set; }
+    }
+
+    public static DDSImage ReadFrom(Stream stream)
+    {
+        var image = new DDSImage();
+
+        image.Read(stream);
+
+        return image;
+    }
+
+    public void Read(Stream stream)
+    {
+        using var reader = new BinaryReader(stream, Encoding.UTF8, true);
+
+        Read(reader);
+    }
+
+    public void Read(BinaryReader reader)
+    {
+        // TODO
+    }
+
+    public void Write(Stream stream)
+    {
+        using var writer = new BinaryWriter(stream, Encoding.UTF8, true);
+
+        Write(writer);
+    }
+
+    public void Write(BinaryWriter writer)
+    {
+        // TODO
     }
 }
