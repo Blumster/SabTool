@@ -1,8 +1,8 @@
-﻿namespace SabTool.Depot;
-
+﻿
 using SabTool.Data.Lua;
 using SabTool.Serializers.Lua;
 
+namespace SabTool.Depot;
 public sealed partial class ResourceDepot
 {
     private LuaPackage? LuaScriptsPackage { get; set; }
@@ -11,9 +11,9 @@ public sealed partial class ResourceDepot
     {
         Console.WriteLine("Loading Lua...");
 
-        var conversationsFilePath = GetGamePath("LuaScripts.luap");
+        string conversationsFilePath = GetGamePath("LuaScripts.luap");
 
-        using var fs = new FileStream(conversationsFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+        using FileStream fs = new(conversationsFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
 
         LuaScriptsPackage = LuapSerializer.DeserializeRaw(fs);
 

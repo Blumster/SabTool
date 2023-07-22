@@ -2,7 +2,7 @@
 
 public sealed class Waterflow
 {
-    public List<WaterflowPoint> Points { get; set; } = new ();
+    public List<WaterflowPoint> Points { get; set; } = new();
 }
 
 public sealed class WaterflowPoint

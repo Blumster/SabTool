@@ -1,9 +1,9 @@
-﻿namespace SabTool.Depot;
-
+﻿
 using SabTool.Data.Blueprints;
 using SabTool.Serializers.Blueprints;
 using SabTool.Utils;
 
+namespace SabTool.Depot;
 public sealed partial class ResourceDepot
 {
     private Dictionary<string, Blueprint> BlueprintsByName { get; } = new();
@@ -13,11 +13,11 @@ public sealed partial class ResourceDepot
     {
         Console.WriteLine("Loading Blueprints...");
 
-        using var gameTemplatesStream = GetLooseFile(@"GameTemplates.wsd") ?? throw new Exception("GameTemplates.wsd is missing from the loosefiles!");
+        using MemoryStream gameTemplatesStream = GetLooseFile(@"GameTemplates.wsd") ?? throw new Exception("GameTemplates.wsd is missing from the loosefiles!");
 
-        var blueprints = BlueprintSerializer.DeserializeRaw(gameTemplatesStream);
+        List<Blueprint> blueprints = BlueprintSerializer.DeserializeRaw(gameTemplatesStream);
 
-        foreach (var blueprint in blueprints)
+        foreach (Blueprint blueprint in blueprints)
         {
             BlueprintsByName.Add(blueprint.Name, blueprint);
             BlueprintsByNameCrc.Add(new(Hash.StringToHash(blueprint.Name)), blueprint);
@@ -32,12 +32,12 @@ public sealed partial class ResourceDepot
 
     public Blueprint? GetBlueprintByName(string name)
     {
-        return BlueprintsByName.TryGetValue(name, out var blueprint) ? blueprint : null;
+        return BlueprintsByName.TryGetValue(name, out Blueprint? blueprint) ? blueprint : null;
     }
 
     public Blueprint? GetBlueprintByNameCrc(Crc nameCrc)
     {
-        return BlueprintsByNameCrc.TryGetValue(nameCrc, out var blueprint) ? blueprint : null;
+        return BlueprintsByNameCrc.TryGetValue(nameCrc, out Blueprint? blueprint) ? blueprint : null;
     }
 
     public IEnumerable<Blueprint> GetAllBlueprints() => BlueprintsByName.Values;

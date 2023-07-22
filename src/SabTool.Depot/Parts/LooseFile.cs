@@ -1,8 +1,8 @@
-﻿namespace SabTool.Depot;
-
+﻿
 using SabTool.Data.Misc;
 using SabTool.Serializers;
 
+namespace SabTool.Depot;
 public sealed partial class ResourceDepot
 {
     private const string LooseFilesFileName = @"France\loosefiles_BinPC.pack";
@@ -33,11 +33,11 @@ public sealed partial class ResourceDepot
 
     public MemoryStream? GetLooseFile(string name)
     {
-        var entry = LooseFiles?.FirstOrDefault(file => file.Name == name);
+        LooseFile? entry = LooseFiles?.FirstOrDefault(file => file.Name == name);
         if (entry == null || LooseFilesFileStream == null)
             return null;
 
-        var memoryStream = new MemoryStream(entry.Size);
+        MemoryStream memoryStream = new(entry.Size);
         memoryStream.SetLength(entry.Size);
 
         lock (LooseFilesFileStream)

@@ -1,8 +1,8 @@
-﻿namespace SabTool.CLI.Commands.Graphics;
-
+﻿
 using SabTool.CLI.Base;
 using SabTool.Depot;
 
+namespace SabTool.CLI.Commands.Graphics;
 public sealed class AnimationCategory : BaseCategory
 {
     public override string Key => "animation";
@@ -24,11 +24,11 @@ public sealed class AnimationCategory : BaseCategory
             }
 
             ResourceDepot.Instance.Initialize(arguments.ElementAt(0));
-            ResourceDepot.Instance.Load(Resource.Animations);
+            _ = ResourceDepot.Instance.Load(Resource.Animations);
 
-            var outputDir = arguments.ElementAt(1);
+            string outputDir = arguments.ElementAt(1);
 
-            Directory.CreateDirectory(outputDir);
+            _ = Directory.CreateDirectory(outputDir);
 
             return true;
         }
@@ -48,8 +48,8 @@ public sealed class AnimationCategory : BaseCategory
                 return false;
             }
 
-            var inputFilePath = arguments.ElementAt(0);
-            var outputDir = arguments.ElementAt(1);
+            string inputFilePath = arguments.ElementAt(0);
+            string outputDir = arguments.ElementAt(1);
 
             if (!File.Exists(inputFilePath))
             {
@@ -57,9 +57,9 @@ public sealed class AnimationCategory : BaseCategory
                 return false;
             }
 
-            Directory.CreateDirectory(outputDir);
+            _ = Directory.CreateDirectory(outputDir);
 
-            using var inFileStream = new FileStream(inputFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            using FileStream inFileStream = new(inputFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
 
             return true;
         }

@@ -100,7 +100,7 @@ public enum BlueprintType : uint
     SabotageTarget = 0xC5B4B2B6,
     BigMap = 0x3E85904D,
     FlashMovie = 0x9CC86FE3,
-    ItemCache = 0x50C4254A, 
+    ItemCache = 0x50C4254A,
     VirVehicleWheel = 0xAFC35781,
     VirVehicleTransmission = 0xDD0A5AF8,
     VirVehicleEngine = 0x91EB2C3E,

@@ -1,10 +1,10 @@
-﻿namespace SabTool.CLI.Commands.Graphics;
-
+﻿
 using SabTool.CLI.Base;
 using SabTool.Data.Graphics.Shaders;
 using SabTool.Serializers.Graphics.Shaders;
 using SabTool.Utils;
 
+namespace SabTool.CLI.Commands.Graphics;
 public sealed class ShaderMappingCategory : BaseCategory
 {
     public override string Key => "shadermappings";
@@ -25,18 +25,18 @@ public sealed class ShaderMappingCategory : BaseCategory
                 return false;
             }
 
-            var inputFile = arguments.ElementAt(0);
-            var outputDir = arguments.ElementAt(1);
+            string inputFile = arguments.ElementAt(0);
+            string outputDir = arguments.ElementAt(1);
 
-            Directory.CreateDirectory(outputDir);
+            _ = Directory.CreateDirectory(outputDir);
 
-            using var fs = new FileStream(inputFile, FileMode.Open, FileAccess.Read, FileShare.Read);
-            using var outFs = new FileStream(Path.Combine(outputDir, "shadermappings.txt"), FileMode.Create, FileAccess.Write, FileShare.None);
-            using var sw = new StreamWriter(outFs);
+            using FileStream fs = new(inputFile, FileMode.Open, FileAccess.Read, FileShare.Read);
+            using FileStream outFs = new(Path.Combine(outputDir, "shadermappings.txt"), FileMode.Create, FileAccess.Write, FileShare.None);
+            using StreamWriter sw = new(outFs);
 
-            var mapping = ShaderMappingSerializer.DeserializeRaw(fs);
+            ShaderMapping mapping = ShaderMappingSerializer.DeserializeRaw(fs);
 
-            foreach (var data in mapping.Mappings)
+            foreach (ShaderMappingData? data in mapping.Mappings)
             {
                 sw.WriteLine($"Unk: {data.Unk}");
                 sw.WriteLine($"Pass: {data.Pass}");

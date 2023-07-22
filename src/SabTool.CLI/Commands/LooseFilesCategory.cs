@@ -1,8 +1,8 @@
-﻿namespace SabTool.CLI.Commands;
-
+﻿
 using SabTool.CLI.Base;
 using SabTool.Depot;
 
+namespace SabTool.CLI.Commands;
 public sealed class LooseFilesCategory : BaseCategory
 {
     // TODO: move this data when extracting into a json/xml next to the files, so custom files can be unpacked and repacked
@@ -36,34 +36,34 @@ public sealed class LooseFilesCategory : BaseCategory
             }
 
             ResourceDepot.Instance.Initialize(arguments.ElementAt(0));
-            ResourceDepot.Instance.Load(Resource.LooseFiles);
+            _ = ResourceDepot.Instance.Load(Resource.LooseFiles);
 
-            var outputFolder = arguments.ElementAt(1);
+            string outputFolder = arguments.ElementAt(1);
 
-            Directory.CreateDirectory(outputFolder);
+            _ = Directory.CreateDirectory(outputFolder);
 
-            var looseFiles = ResourceDepot.Instance.GetLooseFiles();
+            IEnumerable<Data.Misc.LooseFile>? looseFiles = ResourceDepot.Instance.GetLooseFiles();
             if (looseFiles == null)
             {
                 Console.WriteLine("ERROR: LooseFiles were not loaded!");
                 return false;
             }
 
-            foreach (var file in looseFiles)
+            foreach (Data.Misc.LooseFile file in looseFiles)
             {
-                var outFilePath = Path.Combine(outputFolder, file.Name);
-                var directoryName = Path.GetDirectoryName(outFilePath);
+                string outFilePath = Path.Combine(outputFolder, file.Name);
+                string? directoryName = Path.GetDirectoryName(outFilePath);
                 if (directoryName == null)
                 {
                     Console.WriteLine("ERROR: Output directory is invalid!");
                     return false;
                 }
 
-                Directory.CreateDirectory(directoryName);
+                _ = Directory.CreateDirectory(directoryName);
 
                 Console.WriteLine($"Unpacking {file}...");
 
-                var looseFile = ResourceDepot.Instance.GetLooseFile(file.Name);
+                MemoryStream? looseFile = ResourceDepot.Instance.GetLooseFile(file.Name);
                 if (looseFile == null)
                 {
                     Console.WriteLine("ERROR: LooseFile can't be read!");
@@ -92,8 +92,8 @@ public sealed class LooseFilesCategory : BaseCategory
                 return false;
             }
 
-            var filePath = arguments.ElementAt(0);
-            var inputFolder = arguments.ElementAt(1);
+            string filePath = arguments.ElementAt(0);
+            string inputFolder = arguments.ElementAt(1);
 
             if (File.Exists(filePath))
             {

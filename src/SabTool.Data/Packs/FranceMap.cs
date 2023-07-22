@@ -17,7 +17,7 @@ public sealed class FranceMap
 
     public PaletteBlock? GetPaletteBlock(int x, int y)
     {
-        return Palettes.TryGetValue((x, y), out var paletteBlock) ? paletteBlock : null;
+        return Palettes.TryGetValue((x, y), out PaletteBlock paletteBlock) ? paletteBlock : null;
     }
 
     public (int X, int Z) CalculateGrid(PaletteBlock paletteBlock)
@@ -29,8 +29,8 @@ public sealed class FranceMap
     {
         if (resolution <= 3)
         {
-            var xVal = (x - Extents[resolution][0].X) / GridLimits[resolution];
-            var zVal = (z - Extents[resolution][0].Z) / GridLimits[resolution];
+            float xVal = (x - Extents[resolution][0].X) / GridLimits[resolution];
+            float zVal = (z - Extents[resolution][0].Z) / GridLimits[resolution];
 
             return ((int)Math.Floor(xVal), (int)Math.Floor(zVal));
         }

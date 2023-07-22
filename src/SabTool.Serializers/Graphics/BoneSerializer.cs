@@ -1,24 +1,21 @@
-﻿using System;
-using System.IO;
-using System.Text;
+﻿using System.Text;
 
 using Newtonsoft.Json;
-
-namespace SabTool.Serializers.Graphics;
 
 using SabTool.Data.Graphics;
 using SabTool.Serializers.Json.Converters;
 using SabTool.Utils;
 
+namespace SabTool.Serializers.Graphics;
 public static class BoneSerializer
 {
     public static Bone DeserializeRaw(Stream stream)
     {
-        using var reader = new BinaryReader(stream, Encoding.UTF8, true);
+        using BinaryReader reader = new(stream, Encoding.UTF8, true);
 
-        var bone = new Bone();
+        Bone bone = new();
 
-        var currentStart = stream.Position;
+        long currentStart = stream.Position;
 
         bone.UnkNamePtr = new Crc(reader.ReadUInt32());
         bone.UnkByte = reader.ReadByte();
@@ -41,17 +38,16 @@ public static class BoneSerializer
         bone.Field38 = reader.ReadSingle();
         bone.Field3C = reader.ReadSingle();
 
-        if (currentStart + 0x40 != stream.Position)
-            throw new Exception($"Under or orver read of the Bone part of the mesh asset! Pos: {stream.Position} | Expected: {currentStart + 0x40}");
-
-        return bone;
+        return currentStart + 0x40 != stream.Position
+            ? throw new Exception($"Under or orver read of the Bone part of the mesh asset! Pos: {stream.Position} | Expected: {currentStart + 0x40}")
+            : bone;
     }
 
     public static void SerializeRaw(Bone bone, Stream stream)
     {
-        using var writer = new BinaryWriter(stream, Encoding.UTF8, true);
+        using BinaryWriter writer = new(stream, Encoding.UTF8, true);
 
-        var currentStart = stream.Position;
+        long currentStart = stream.Position;
 
         writer.Write(bone.UnkNamePtr.Value);
         writer.Write(bone.UnkByte);
@@ -85,7 +81,7 @@ public static class BoneSerializer
 
     public static void SerializeJSON(Bone bone, Stream stream)
     {
-        using var writer = new StreamWriter(stream, Encoding.UTF8, leaveOpen: true);
+        using StreamWriter writer = new(stream, Encoding.UTF8, leaveOpen: true);
 
         writer.Write(JsonConvert.SerializeObject(bone, Formatting.Indented, new CrcConverter()));
     }

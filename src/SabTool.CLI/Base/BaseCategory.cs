@@ -14,7 +14,7 @@ public abstract class BaseCategory : ICommand
     {
         _commands.Clear();
 
-        foreach (var type in GetType().GetNestedTypes())
+        foreach (Type type in GetType().GetNestedTypes())
             SetupType(type);
     }
 
@@ -22,10 +22,10 @@ public abstract class BaseCategory : ICommand
     {
         _commands.Clear();
 
-        foreach (var type in GetType().GetNestedTypes())
+        foreach (Type type in GetType().GetNestedTypes())
             SetupType(type);
 
-        foreach (var type in types)
+        foreach (Type type in types)
             SetupType(type);
     }
 
@@ -69,7 +69,7 @@ public abstract class BaseCategory : ICommand
             return false;
         }
 
-        var nextKey = arguments.First();
+        string nextKey = arguments.First();
         if (!_commands.ContainsKey(nextKey))
         {
             Console.WriteLine("ERROR: Unknown command!");
@@ -81,14 +81,14 @@ public abstract class BaseCategory : ICommand
 
     public virtual void BuildUsage(StringBuilder builder, IEnumerable<string> arguments)
     {
-        builder.AppendFormat(" {0}", Key);
+        _ = builder.AppendFormat(" {0}", Key);
 
         if (arguments.Any())
         {
-            var nextKey = arguments.First();
+            string nextKey = arguments.First();
             if (!_commands.ContainsKey(nextKey))
             {
-                builder.Append(" <non-existant sub command specified>!");
+                _ = builder.Append(" <non-existant sub command specified>!");
                 return;
             }
 
@@ -96,10 +96,10 @@ public abstract class BaseCategory : ICommand
             return;
         }
 
-        builder.Append(" <");
-        var first = true;
+        _ = builder.Append(" <");
+        bool first = true;
 
-        foreach (var command in _commands)
+        foreach (KeyValuePair<string, ICommand> command in _commands)
         {
             // Don't list the shortcuts
             if (command.Key == command.Value.Shortcut)
@@ -107,15 +107,15 @@ public abstract class BaseCategory : ICommand
 
             if (!first)
             {
-                builder.Append(" | ");
+                _ = builder.Append(" | ");
             }
             else
                 first = false;
 
-            builder.Append($"{command.Key}/{command.Value.Shortcut}");
+            _ = builder.Append($"{command.Key}/{command.Value.Shortcut}");
         }
 
-        builder.Append('>');
+        _ = builder.Append('>');
     }
 
     protected void AddInstance(ICommand command)

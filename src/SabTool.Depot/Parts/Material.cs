@@ -1,9 +1,9 @@
-﻿namespace SabTool.Depot;
-
+﻿
 using SabTool.Data.Graphics;
 using SabTool.Serializers.Graphics;
 using SabTool.Utils;
 
+namespace SabTool.Depot;
 public sealed partial class ResourceDepot
 {
     private const string MaterialsFileName = "France.materials";
@@ -13,15 +13,15 @@ public sealed partial class ResourceDepot
     {
         try
         {
-            using var fs = new FileStream(GetGamePath(MaterialsFileName), FileMode.Open, FileAccess.Read, FileShare.Read);
+            using FileStream fs = new(GetGamePath(MaterialsFileName), FileMode.Open, FileAccess.Read, FileShare.Read);
 
             Console.WriteLine($"Loading Materials from {MaterialsFileName}...");
 
-            var materials = MaterialSerializer.DeserializeRaw(fs);
+            List<Material> materials = MaterialSerializer.DeserializeRaw(fs);
 
-            foreach (var material in materials)
+            foreach (Material material in materials)
             {
-                for (var i = 0; i < material.Keys.Count; ++i)
+                for (int i = 0; i < material.Keys.Count; ++i)
                 {
                     Materials.Add(material.Keys[i], material);
                 }
@@ -39,12 +39,12 @@ public sealed partial class ResourceDepot
 
     public Material? GetMaterial(Crc key)
     {
-        return Materials.TryGetValue(key, out var value) ? value : null;
+        return Materials.TryGetValue(key, out Material? value) ? value : null;
     }
 
     public IEnumerable<KeyValuePair<Crc, Material>> GetMaterials()
     {
-        foreach (var material in Materials)
+        foreach (KeyValuePair<Crc, Material> material in Materials)
             yield return material;
 
         yield break;

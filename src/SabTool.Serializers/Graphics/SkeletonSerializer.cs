@@ -1,24 +1,22 @@
-﻿using System.IO;
-using System.Numerics;
+﻿using System.Numerics;
 using System.Text;
 
 using Newtonsoft.Json;
-
-using SharpGLTF.Transforms;
-
-namespace SabTool.Serializers.Graphics;
 
 using SabTool.Data.Graphics;
 using SabTool.Serializers.Json.Converters;
 using SabTool.Utils.Extensions;
 
+using SharpGLTF.Transforms;
+
+namespace SabTool.Serializers.Graphics;
 public static class SkeletonSerializer
 {
     public static Skeleton DeserializeRaw(Stream stream, int numBones)
     {
-        using var reader = new BinaryReader(stream, Encoding.UTF8, true);
+        using BinaryReader reader = new(stream, Encoding.UTF8, true);
 
-        var skeleton = new Skeleton
+        Skeleton skeleton = new()
         {
             NumBones = numBones,
             SomeSize = reader.ReadInt32(),
@@ -42,24 +40,24 @@ public static class SkeletonSerializer
         stream.Position += skeleton.SomeSize;
 
         skeleton.BasePoses = new Matrix4x4[skeleton.NumBones];
-        for (var i = 0; i < skeleton.NumBones; ++i)
+        for (int i = 0; i < skeleton.NumBones; ++i)
         {
             skeleton.BasePoses[i] = reader.ReadMatrix4x4();
         }
 
         skeleton.Bones = new Bone[skeleton.NumBones];
-        for (var i = 0; i < skeleton.NumBones; ++i)
+        for (int i = 0; i < skeleton.NumBones; ++i)
         {
             skeleton.Bones[i] = BoneSerializer.DeserializeRaw(stream);
             skeleton.Bones[i].Index = (short)i;
         }
 
         skeleton.UnkBasePoses = new AffineTransform[skeleton.NumBones];
-        for (var i = 0; i < skeleton.NumBones; ++i)
+        for (int i = 0; i < skeleton.NumBones; ++i)
             skeleton.UnkBasePoses[i] = reader.ReadAffineTransform();
 
         skeleton.Indices = new short[skeleton.NumBones];
-        for (var i = 0; i < skeleton.NumBones; ++i)
+        for (int i = 0; i < skeleton.NumBones; ++i)
             skeleton.Indices[i] = reader.ReadInt16();
 
         stream.Position += skeleton.SomeSize2;
@@ -82,7 +80,7 @@ public static class SkeletonSerializer
 
     public static void SerializeJSON(Skeleton skeleton, Stream stream)
     {
-        using var writer = new StreamWriter(stream, Encoding.UTF8, leaveOpen: true);
+        using StreamWriter writer = new(stream, Encoding.UTF8, leaveOpen: true);
 
         writer.Write(JsonConvert.SerializeObject(skeleton, Formatting.Indented, new CrcConverter()));
     }

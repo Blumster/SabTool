@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Linq;
+﻿using System.Globalization;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace SabTool.Utils;
 
@@ -19,9 +13,9 @@ public static class Hash
 
     static Hash()
     {
-        foreach (var line in File.ReadAllLines("Hashes.txt"))
+        foreach (string line in File.ReadAllLines("Hashes.txt"))
         {
-            var parts = line.Split(':', 2);
+            string[] parts = line.Split(':', 2);
             if (parts.Length < 2)
             {
                 Console.WriteLine($"HASH: Invalid line found: \"{line}\"");
@@ -47,7 +41,7 @@ public static class Hash
 
         if (File.Exists("Missing.txt"))
         {
-            foreach (var line in File.ReadAllLines("Missing.txt"))
+            foreach (string line in File.ReadAllLines("Missing.txt"))
             {
                 if (!uint.TryParse(line[2..], NumberStyles.HexNumber, CultureInfo.InvariantCulture, out uint hash))
                 {
@@ -55,7 +49,7 @@ public static class Hash
                     continue;
                 }
 
-                missingHashes.Add(hash);
+                _ = missingHashes.Add(hash);
             }
         }
 
@@ -72,10 +66,10 @@ public static class Hash
 
         Console.WriteLine("Saving hashes...");
 
-        var lines = new string[lookupTable.Count];
-        var i = 0;
+        string[] lines = new string[lookupTable.Count];
+        int i = 0;
 
-        foreach (var pair in lookupTable.OrderBy(p => p.Key))
+        foreach (KeyValuePair<uint, string> pair in lookupTable.OrderBy(p => p.Key))
         {
             lines[i++] = $"0x{pair.Key:X8}:{pair.Value}";
         }
@@ -87,7 +81,7 @@ public static class Hash
         lines = new string[missingHashes.Count];
         i = 0;
 
-        foreach (var hash in missingHashes.OrderBy(h => h))
+        foreach (uint hash in missingHashes.OrderBy(h => h))
         {
             lines[i++] = $"0x{hash:X8}";
         }
@@ -99,12 +93,12 @@ public static class Hash
     {
         Console.WriteLine("Cleaning up hashes...");
 
-        var toRemove = new List<uint>();
-        var toRecalc = new List<string>();
+        List<uint> toRemove = new();
+        List<string> toRecalc = new();
 
-        foreach (var hash in lookupTable)
+        foreach (KeyValuePair<uint, string> hash in lookupTable)
         {
-            var reHash = InternalFNV32string(hash.Value);
+            uint reHash = InternalFNV32string(hash.Value);
             if (reHash != hash.Key)
             {
                 Console.WriteLine($"Invalid saved hash 0x{hash.Key:X8} found for \"0x{reHash:X8} -> {hash.Value}\"!");
@@ -120,11 +114,11 @@ public static class Hash
             }
         }
 
-        foreach (var hash in toRemove)
-            lookupTable.Remove(hash);
+        foreach (uint hash in toRemove)
+            _ = lookupTable.Remove(hash);
 
-        foreach (var str in toRecalc)
-            StringToHash(str);
+        foreach (string str in toRecalc)
+            _ = StringToHash(str);
     }
 
     public static void PrintStatistics()
@@ -137,7 +131,7 @@ public static class Hash
 
     public static uint FNV32string(string source, int maxLen = -1, bool addToLookup = true)
     {
-        var hash = InternalFNV32string(source, maxLen);
+        uint hash = InternalFNV32string(source, maxLen);
 
         if (addToLookup && missingHashes.Remove(hash))
         {
@@ -164,10 +158,10 @@ public static class Hash
         if (string.IsNullOrEmpty(source))
             return 0;
 
-        var bytes = Encoding.UTF8.GetBytes(source);
-        var hash = FNV32Offset;
+        byte[] bytes = Encoding.UTF8.GetBytes(source);
+        uint hash = FNV32Offset;
 
-        for (var i = 0; i < bytes.Length && (maxLen == -1 || i < maxLen); ++i)
+        for (int i = 0; i < bytes.Length && (maxLen == -1 || i < maxLen); ++i)
             hash = FNV32Prime * (hash ^ (bytes[i] | 0x20u));
 
         return (hash ^ 0x2Au) * FNV32Prime;
@@ -178,7 +172,7 @@ public static class Hash
         if (lookupTable.ContainsKey(hash))
             return lookupTable[hash];
 
-        missingHashes.Add(hash);
+        _ = missingHashes.Add(hash);
 
         return null;
     }
@@ -189,13 +183,13 @@ public static class Hash
             if (pair.Value.ToLowerInvariant() == source.ToLowerInvariant())
                 return pair.Key;*/
 
-        var hash = InternalFNV32string(source);
+        uint hash = InternalFNV32string(source);
 
         if (!lookupTable.ContainsKey(hash))
         {
             lookupTable.Add(hash, source);
 
-            missingHashes.Remove(hash);
+            _ = missingHashes.Remove(hash);
 
             return hash;
         }
@@ -225,8 +219,8 @@ public static class Hash
 
     public static void BruteforceMissing(int length, bool basic = false, int maxLength = -1)
     {
-        var missing = missingHashes.Skip(10000);
-        foreach (var hash in missing)
+        IEnumerable<uint> missing = missingHashes.Skip(10000);
+        foreach (uint hash in missing)
         {
             Bruteforce(length, hash, basic, maxLength);
 
@@ -237,13 +231,13 @@ public static class Hash
 
     public static void Bruteforce(int length, uint hash, bool basic = false, int maxLength = -1)
     {
-        var tasks = new List<Task<bool>>();
+        List<Task<bool>> tasks = new();
 
         while (maxLength == -1 || length <= maxLength)
         {
             tasks.Clear();
 
-            var stopAfter = false;
+            bool stopAfter = false;
 
             long total = (long)Math.Pow(basic ? BasicCharCount : CharCount, length);
             long onePct = (long)(total / 100.0d);
@@ -254,13 +248,13 @@ public static class Hash
             Console.WriteLine($"Starting bruteforce for hash 0x{hash:X8} with length {length}...");
 
             // Create and start tasks
-            for (var i = 0; i < TaskCount; ++i)
+            for (int i = 0; i < TaskCount; ++i)
             {
                 if (Builders[i] == null)
                     Builders[i] = new();
 
-                var strVals = new int[length];
-                var count = oneTaskCount;
+                int[] strVals = new int[length];
+                long count = oneTaskCount;
 
                 // Compensate for integer division, the last task takes all the remaining work
                 if (i == TaskCount - 1)
@@ -270,9 +264,9 @@ public static class Hash
                 if (totalCount > 0)
                     AddCount(strVals, totalCount, basic);
 
-                var id = i;
-                var localCount = count;
-                var localStrVals = strVals;
+                int id = i;
+                long localCount = count;
+                int[] localStrVals = strVals;
 
                 Console.WriteLine($"Task {id} from {totalCount,10} to {totalCount + localCount - 1,10} ({total,10}) ({CalcString(localStrVals, id, basic),10}) with count {localCount,10} looking for hash 0x{hash:X8}");
 
@@ -286,14 +280,14 @@ public static class Hash
 
             Console.WriteLine();
 
-            var lastCurr = 0L;
+            long lastCurr = 0L;
 
             while (true)
             {
-                var stop = true;
+                bool stop = true;
 
                 // Check if the tasks have completed
-                foreach (var task in tasks)
+                foreach (Task<bool> task in tasks)
                 {
                     if (!task.IsCompleted)
                     {
@@ -308,9 +302,9 @@ public static class Hash
                 if (stop)
                     break;
 
-                var curr = 0L;
+                long curr = 0L;
 
-                foreach (var current in Progress)
+                foreach (long current in Progress)
                 {
                     curr += current;
                 }
@@ -331,23 +325,23 @@ public static class Hash
 
             if (stopAfter)
             {
-                Console.ReadKey();
+                _ = Console.ReadKey();
                 break;
             }
         }
     }
 
-    
+
     private static bool Bruteforce(int taskId, int[] strVals, uint hash, long itrCount, bool basic = false)
     {
-        var stopAfter = false;
-        var i = 0L;
+        bool stopAfter = false;
+        long i = 0L;
 
         Progress[taskId] = 0;
 
         do
         {
-            var str = CalcString(strVals, taskId, basic);
+            string str = CalcString(strVals, taskId, basic);
 
             if (InternalFNV32string(str) == hash)
             {
@@ -367,7 +361,7 @@ public static class Hash
 
     private static bool IncString(int[] values, bool basic)
     {
-        for (var i = values.Length; i > 0; --i)
+        for (int i = values.Length; i > 0; --i)
         {
             // return false if the first character would overflow
             if (i == 1 && values[i - 1] == (basic ? BasicCharCount : CharCount) - 1)
@@ -391,20 +385,20 @@ public static class Hash
 
     private static void AddCount(int[] values, long count, bool basic)
     {
-        for (var i = values.Length; i > 0; --i)
+        for (int i = values.Length; i > 0; --i)
         {
             values[i - 1] = (int)(count % (basic ? BasicCharCount : CharCount));
 
-            count /= (basic ? BasicCharCount : CharCount);
+            count /= basic ? BasicCharCount : CharCount;
         }
     }
 
     private static string CalcString(int[] values, int taskId, bool basic)
     {
-        Builders[taskId].Clear();
+        _ = Builders[taskId].Clear();
 
-        for (var i = 0; i < values.Length; ++i)
-            Builders[taskId].Append(Characters[values[i]]);
+        for (int i = 0; i < values.Length; ++i)
+            _ = Builders[taskId].Append(Characters[values[i]]);
 
         return Builders[taskId].ToString();
     }
@@ -414,9 +408,9 @@ public static class Hash
         long val = 0;
         int pow = 0;
 
-        for (var i = values.Length; i > 0; --i)
+        for (int i = values.Length; i > 0; --i)
         {
-            val += (long)Math.Pow((basic ? BasicCharCount : CharCount), pow++) * values[i - 1];
+            val += (long)Math.Pow(basic ? BasicCharCount : CharCount, pow++) * values[i - 1];
         }
 
         return val;

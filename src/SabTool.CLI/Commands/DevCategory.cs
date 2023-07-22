@@ -1,7 +1,7 @@
-﻿namespace SabTool.CLI.Commands;
-
+﻿
 using SabTool.CLI.Base;
 
+namespace SabTool.CLI.Commands;
 public sealed class DevCategory : BaseCategory
 {
     public override string Key => "dev";
@@ -58,7 +58,7 @@ public sealed class DevCategory : BaseCategory
 
         private static void EchoPblList(string structType)
         {
-            var originalStructType = structType;
+            string originalStructType = structType;
 
             structType = structType.Replace(':', '_');
             structType = structType.Replace('<', '_');
@@ -83,7 +83,7 @@ public sealed class DevCategory : BaseCategory
 
         private static void EchoPblListInv(string structType)
         {
-            var originalStructType = structType;
+            string originalStructType = structType;
 
             structType = structType.Replace(':', '_');
             structType = structType.Replace('<', '_');
@@ -107,7 +107,7 @@ public sealed class DevCategory : BaseCategory
 
         private static void EchoPblSortedListInv(string structType)
         {
-            var originalStructType = structType;
+            string originalStructType = structType;
 
             structType = structType.Replace(':', '_');
             structType = structType.Replace('<', '_');
@@ -131,7 +131,7 @@ public sealed class DevCategory : BaseCategory
 
         private static void EchoPblTree(string structType, string keyType)
         {
-            var originalKeyType = keyType;
+            string originalKeyType = keyType;
 
             keyType = keyType.Replace(':', '_');
             keyType = keyType.Replace('<', '_');
@@ -139,7 +139,7 @@ public sealed class DevCategory : BaseCategory
             keyType = keyType.Replace(' ', '_');
             keyType = keyType.Replace("*", "Ptr");
 
-            var originalStructType = structType;
+            string originalStructType = structType;
 
             structType = structType.Replace(':', '_');
             structType = structType.Replace('<', '_');
@@ -171,7 +171,7 @@ public sealed class DevCategory : BaseCategory
 
         private static void EchoPblQueue(string structType, string size)
         {
-            var originalStructType = structType;
+            string originalStructType = structType;
 
             structType = structType.Replace(':', '_');
             structType = structType.Replace('<', '_');
@@ -190,7 +190,7 @@ public sealed class DevCategory : BaseCategory
 
         private static void EchoPblDynArray(string structType, string unk1, string unk2)
         {
-            var originalStructType = structType;
+            string originalStructType = structType;
 
             structType = structType.Replace(':', '_');
             structType = structType.Replace('<', '_');

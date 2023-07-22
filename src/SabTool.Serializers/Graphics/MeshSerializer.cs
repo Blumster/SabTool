@@ -1,24 +1,20 @@
-﻿using System;
-using System.IO;
-using System.Text;
+﻿using System.Text;
 
 using Newtonsoft.Json;
 
-namespace SabTool.Serializers.Graphics;
-
 using SabTool.Data.Graphics;
 using SabTool.Serializers.Json.Converters;
-using SabTool.Utils.Extensions;
 
+namespace SabTool.Serializers.Graphics;
 public static class MeshSerializer
 {
     public static Mesh DeserializeRaw(Stream stream)
     {
-        using var reader = new BinaryReader(stream, Encoding.UTF8, true);
+        using BinaryReader reader = new(stream, Encoding.UTF8, true);
 
-        var mesh = new Mesh();
+        Mesh mesh = new();
 
-        var currentStart = stream.Position;
+        long currentStart = stream.Position;
 
         stream.Position += 0xC;
 
@@ -73,31 +69,30 @@ public static class MeshSerializer
 
             stream.Position += 4;
 
-            for (var i = 0; i < mesh.NumSkeletonRemaps; ++i)
+            for (int i = 0; i < mesh.NumSkeletonRemaps; ++i)
                 mesh.SkeletonRemaps[i] = SkeletonRemapSerializer.DeserializeRaw(stream);
         }
 
-        for (var i = 0; i < mesh.NumShadows; ++i)
+        for (int i = 0; i < mesh.NumShadows; ++i)
             mesh.Shadows[i] = ShadowSerializer.DeserializeRaw(stream);
 
-        for (var i = 0; i < mesh.NumVertexHolder; ++i)
+        for (int i = 0; i < mesh.NumVertexHolder; ++i)
             mesh.VertexHolders[i] = VertexHolderSerializer.DeserializeRaw(stream);
 
-        for (var i = 0; i < mesh.NumPrimitives; ++i)
+        for (int i = 0; i < mesh.NumPrimitives; ++i)
             mesh.Primitives[i] = PrimitiveSerializer.DeserializeRaw(stream, mesh);
 
-        for (var i = 0; i < mesh.NumSegments; ++i)
+        for (int i = 0; i < mesh.NumSegments; ++i)
             mesh.Segments[i] = SegmentSerializer.DeserializeRaw(stream, mesh);
 
-        if (stream.Length != stream.Position)
-            throw new Exception($"Under or over read of the mesh asset! Pos: {stream.Position} | Expected: {stream.Length}");
-
-        return mesh;
+        return stream.Length != stream.Position
+            ? throw new Exception($"Under or over read of the mesh asset! Pos: {stream.Position} | Expected: {stream.Length}")
+            : mesh;
     }
 
     public static void DeserializeVerticesRaw(Mesh mesh, Stream stream)
     {
-        for (var i = 0; i < mesh.NumVertexHolder; ++i)
+        for (int i = 0; i < mesh.NumVertexHolder; ++i)
             VertexHolderSerializer.DeserializeVerticesRaw(mesh.VertexHolders[i], stream);
     }
 
@@ -113,7 +108,7 @@ public static class MeshSerializer
 
     public static void SerializeJSON(Mesh mesh, Stream stream)
     {
-        using var writer = new StreamWriter(stream, Encoding.UTF8, leaveOpen: true);
+        using StreamWriter writer = new(stream, Encoding.UTF8, leaveOpen: true);
 
         writer.Write(JsonConvert.SerializeObject(mesh, Formatting.Indented, new CrcConverter()));
     }

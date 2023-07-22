@@ -1,71 +1,58 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace SabTool.Utils;
 
-namespace SabTool.Utils
+public sealed class Crc
 {
-    public sealed class Crc
+    public uint Value { get; }
+
+    public Crc(uint value)
     {
-        public uint Value { get; }
+        Value = value;
+    }
 
-        public Crc(uint value)
-        {
-            Value = value;
-        }
+    public string GetString()
+    {
+        return Hash.HashToString(Value);
+    }
 
-        public string GetString()
-        {
-            return Hash.HashToString(Value);
-        }
+    public string GetHexString()
+    {
+        return $"0x{Value:X8}";
+    }
 
-        public string GetHexString()
-        {
-            return $"0x{Value:X8}";
-        }
+    public string GetStringOrHexString()
+    {
+        string stringValue = GetString();
 
-        public string GetStringOrHexString()
-        {
-            var stringValue = GetString();
+        return string.IsNullOrEmpty(stringValue) ? $"0x{Value:X8}" : stringValue;
+    }
 
-            return string.IsNullOrEmpty(stringValue) ? $"0x{Value:X8}" : stringValue;
-        }
+    public static bool operator ==(Crc left, Crc right)
+    {
+        return left is null || right is null ? left is null && right is null : left.Value == right.Value;
+    }
 
-        public static bool operator==(Crc left, Crc right)
-        {
-            if (left is null || right is null)
-                return left is null && right is null;
+    public static bool operator !=(Crc left, Crc right)
+    {
+        return !(left == right);
+    }
 
-            return left.Value == right.Value;
-        }
+    public override string ToString()
+    {
+        return $"0x{Value:X8} ({Hash.HashToString(Value)})";
+    }
 
-        public static bool operator!=(Crc left, Crc right)
-        {
-            return !(left == right);
-        }
+    public override bool Equals(object obj)
+    {
+        return obj is Crc other && other.Value == Value;
+    }
 
-        public override string ToString()
-        {
-            return $"0x{Value:X8} ({Hash.HashToString(Value)})";
-        }
+    public override int GetHashCode()
+    {
+        return (int)Value;
+    }
 
-        public override bool Equals(object obj)
-        {
-            if (obj is Crc other)
-                return other.Value == Value;
-
-            return false;
-        }
-
-        public override int GetHashCode()
-        {
-            return (int)Value;
-        }
-
-        public static implicit operator Crc(uint val)
-        {
-            return new Crc(val);
-        }
+    public static implicit operator Crc(uint val)
+    {
+        return new Crc(val);
     }
 }

@@ -1,9 +1,9 @@
-﻿namespace SabTool.Depot;
-
+﻿
 using SabTool.Data.Packs;
 using SabTool.Serializers.Megapacks;
 using SabTool.Utils;
 
+namespace SabTool.Depot;
 public enum MegapackType
 {
     Global,
@@ -44,14 +44,14 @@ public sealed partial class ResourceDepot
     {
         Console.WriteLine("Loading Megapacks...");
 
-        foreach (var megapack in PossibleMegapackFiles)
+        foreach (string megapack in PossibleMegapackFiles)
         {
-            var filePath = GetGamePath(megapack);
+            string filePath = GetGamePath(megapack);
 
             if (!File.Exists(filePath))
                 continue;
 
-            var entry = new MegapackEntry(filePath);
+            MegapackEntry entry = new(filePath);
 
             if (!LoadMegapack(entry))
                 continue;
@@ -82,7 +82,7 @@ public sealed partial class ResourceDepot
         }
 
         Console.WriteLine($"Loaded Megapack: {entry.FilePath}");
-        
+
         return true;
     }
 
@@ -93,16 +93,16 @@ public sealed partial class ResourceDepot
 
     public MemoryStream? GetPackStream(Crc key)
     {
-        foreach (var megapackPairs in Megapacks)
+        foreach (KeyValuePair<string, MegapackEntry> megapackPairs in Megapacks)
         {
-            var megapackEntry = megapackPairs.Value;
-            var megapack = megapackEntry.Megapack;
+            MegapackEntry megapackEntry = megapackPairs.Value;
+            Megapack? megapack = megapackEntry.Megapack;
             if (megapack == null)
                 continue;
 
-            if (megapack.FileEntries.TryGetValue(key, out var fileEntry))
+            if (megapack.FileEntries.TryGetValue(key, out FileEntry? fileEntry))
             {
-                var memoryStream = new MemoryStream(fileEntry.Size);
+                MemoryStream memoryStream = new(fileEntry.Size);
                 memoryStream.SetLength(fileEntry.Size);
 
                 lock (megapackEntry.Stream)
@@ -122,30 +122,30 @@ public sealed partial class ResourceDepot
 
     public IEnumerable<string> GetMegapacks()
     {
-        foreach (var megapack in Megapacks)
+        foreach (KeyValuePair<string, MegapackEntry> megapack in Megapacks)
             yield return megapack.Key;
     }
 
     public IEnumerable<FileEntry> GetFileEntries(string key)
     {
-        if (Megapacks.TryGetValue(key, out var entry))
+        if (Megapacks.TryGetValue(key, out MegapackEntry? entry))
         {
             if (entry.Megapack == null)
                 yield break;
 
-            foreach (var entryPair in entry.Megapack.FileEntries)
+            foreach (KeyValuePair<Crc, FileEntry> entryPair in entry.Megapack.FileEntries)
                 yield return entryPair.Value;
         }
     }
 
     public IEnumerable<(Crc, Crc)> GetBlockPathToNameCrcs(string key)
     {
-        if (Megapacks.TryGetValue(key, out var entry))
+        if (Megapacks.TryGetValue(key, out MegapackEntry? entry))
         {
             if (entry.Megapack == null)
                 yield break;
 
-            foreach (var entryPair in entry.Megapack.BlockPathToNameCrcs)
+            foreach (Tuple<Crc, Crc>? entryPair in entry.Megapack.BlockPathToNameCrcs)
                 yield return entryPair.ToValueTuple();
         }
     }

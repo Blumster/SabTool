@@ -1,28 +1,25 @@
-﻿using System;
-using System.IO;
-using System.Text;
-
-namespace SabTool.Serializers.Packs;
+﻿using System.Text;
 
 using SabTool.Data.Packs;
 using SabTool.Utils.Extensions;
 
+namespace SabTool.Serializers.Packs;
 public static class EditNodesSerializer
 {
     public static EditNodes DeserializeRaw(Stream stream)
     {
-        using var reader = new BinaryReader(stream, Encoding.UTF8, true);
+        using BinaryReader reader = new(stream, Encoding.UTF8, true);
 
-        var nodes = new EditNodes();
+        EditNodes nodes = new();
 
         if (!reader.CheckHeaderString("00ED"))
             throw new Exception("Invalid EditNodes header found!");
 
-        var count = reader.ReadInt32();
+        int count = reader.ReadInt32();
 
-        for (var i = 0; i < count; ++i)
+        for (int i = 0; i < count; ++i)
         {
-            var node = new EditNode
+            EditNode node = new()
             {
                 Name = new(reader.ReadUInt32()),
                 Length = reader.ReadInt32(),

@@ -1,8 +1,8 @@
-﻿namespace SabTool.Depot;
-
+﻿
 using SabTool.Data.Sounds;
 using SabTool.Serializers.Sounds;
 
+namespace SabTool.Depot;
 public sealed partial class ResourceDepot
 {
     private List<SoundPack> SoundPacks { get; set; } = new();
@@ -26,17 +26,17 @@ public sealed partial class ResourceDepot
     {
         Console.WriteLine("  Loading Sound packs...");
 
-        var inputFolder = GetGamePath(@"Sound");
+        string inputFolder = GetGamePath(@"Sound");
 
-        foreach (var filePath in Directory.EnumerateFiles(inputFolder, "*.pck"))
+        foreach (string filePath in Directory.EnumerateFiles(inputFolder, "*.pck"))
         {
-            var relativeFilePath = Path.GetRelativePath(inputFolder, filePath);
+            string relativeFilePath = Path.GetRelativePath(inputFolder, filePath);
 
             Console.WriteLine($"    Loading {relativeFilePath}...");
 
-            using var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            using FileStream fs = new(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
 
-            var soundPack = SoundPackSerializer.DeserializeRaw(fs);
+            SoundPack soundPack = SoundPackSerializer.DeserializeRaw(fs);
 
             soundPack.FilePath = relativeFilePath;
 
@@ -50,17 +50,17 @@ public sealed partial class ResourceDepot
     {
         Console.WriteLine("  Loading DLC Sound packs...");
 
-        var inputFolder = GetGamePath(@"DLC\01\sound");
+        string inputFolder = GetGamePath(@"DLC\01\sound");
 
-        foreach (var filePath in Directory.EnumerateFiles(inputFolder, "*.pck"))
+        foreach (string filePath in Directory.EnumerateFiles(inputFolder, "*.pck"))
         {
-            var relativeFilePath = Path.GetRelativePath(inputFolder, filePath);
+            string relativeFilePath = Path.GetRelativePath(inputFolder, filePath);
 
             Console.WriteLine($"    Loading {relativeFilePath}...");
 
-            using var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            using FileStream fs = new(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
 
-            var soundPack = SoundPackSerializer.DeserializeRaw(fs);
+            SoundPack soundPack = SoundPackSerializer.DeserializeRaw(fs);
 
             soundPack.FilePath = relativeFilePath;
 

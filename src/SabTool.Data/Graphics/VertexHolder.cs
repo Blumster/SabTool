@@ -23,31 +23,31 @@ public sealed class VertexHolder
 
     public string DumpVertices(int indentCount = 0)
     {
-        var sb = new StringBuilder();
+        StringBuilder sb = new();
 
-        for (var i = 0; i < ArrayCount; ++i)
+        for (int i = 0; i < ArrayCount; ++i)
         {
-            sb.Append(' ', indentCount).AppendLine($"VertexArray[{i}] =");
-            sb.Append(' ', indentCount).AppendLine("[");
+            _ = sb.Append(' ', indentCount).AppendLine($"VertexArray[{i}] =");
+            _ = sb.Append(' ', indentCount).AppendLine("[");
 
             indentCount += 2;
 
-            for (var j = 0; j < Counts[i]; ++j)
+            for (int j = 0; j < Counts[i]; ++j)
             {
-                sb.Append(' ', indentCount).AppendLine($"Vertex[{j}] =");
-                sb.Append(' ', indentCount).AppendLine("{");
+                _ = sb.Append(' ', indentCount).AppendLine($"Vertex[{j}] =");
+                _ = sb.Append(' ', indentCount).AppendLine("{");
 
                 indentCount += 2;
 
-                foreach (var vertexDeclaration in Decl1)
+                foreach (VertexDeclaration vertexDeclaration in Decl1)
                 {
                     if (vertexDeclaration.Type == VDType.Unused)
                         continue;
 
-                    sb.Append(' ', indentCount).Append($"{vertexDeclaration.Usage}: ");
+                    _ = sb.Append(' ', indentCount).Append($"{vertexDeclaration.Usage}: ");
 
-                    var arr = Vertices[i];
-                    var off = Sizes[i] * j + vertexDeclaration.Offset;
+                    byte[] arr = Vertices[i];
+                    int off = (Sizes[i] * j) + vertexDeclaration.Offset;
 
                     object val = vertexDeclaration.Type switch
                     {
@@ -72,48 +72,48 @@ public sealed class VertexHolder
                         _ => "Unknown type",
                     };
 
-                    sb.AppendLine(val.ToString());
+                    _ = sb.AppendLine(val.ToString());
                 }
 
                 indentCount -= 2;
 
-                sb.Append(' ', indentCount).AppendLine("}");
+                _ = sb.Append(' ', indentCount).AppendLine("}");
             }
 
             indentCount -= 2;
 
-            sb.Append(' ', indentCount).AppendLine("]");
+            _ = sb.Append(' ', indentCount).AppendLine("]");
         }
 
         if (IndexCount > 0)
         {
-            sb.Append(' ', indentCount).AppendLine($"IndexArray =");
-            sb.Append(' ', indentCount).AppendLine("[");
+            _ = sb.Append(' ', indentCount).AppendLine($"IndexArray =");
+            _ = sb.Append(' ', indentCount).AppendLine("[");
 
             indentCount += 2;
 
-            var off = 0;
-            var is16Bit = ArrayCount <= 1;
+            int off = 0;
+            bool is16Bit = ArrayCount <= 1;
 
-            for (var i = 0; i < IndexCount; ++i)
+            for (int i = 0; i < IndexCount; ++i)
             {
                 if (i % 3 == 0)
                 {
                     if (i > 0)
-                        sb.AppendLine();
+                        _ = sb.AppendLine();
 
-                    sb.Append(' ', indentCount);
+                    _ = sb.Append(' ', indentCount);
                 }
 
                 if (is16Bit)
                 {
-                    sb.Append(BitConverter.ToInt16(Indices, off)).Append(" ");
+                    _ = sb.Append(BitConverter.ToInt16(Indices, off)).Append(" ");
 
                     off += 2;
                 }
                 else
                 {
-                    sb.Append(BitConverter.ToInt32(Indices, off)).Append(" ");
+                    _ = sb.Append(BitConverter.ToInt32(Indices, off)).Append(" ");
 
                     off += 4;
                 }
@@ -121,7 +121,7 @@ public sealed class VertexHolder
 
             indentCount -= 2;
 
-            sb.AppendLine().Append(' ', indentCount).AppendLine("]");
+            _ = sb.AppendLine().Append(' ', indentCount).AppendLine("]");
         }
 
         return sb.ToString();
@@ -129,57 +129,57 @@ public sealed class VertexHolder
 
     public string DumpString(int indentCount = 0)
     {
-        var sb = new StringBuilder();
+        StringBuilder sb = new();
 
-        sb.Append(' ', indentCount).AppendLine($"{nameof(VertexHolder)}()");
-        sb.Append(' ', indentCount).AppendLine("{");
+        _ = sb.Append(' ', indentCount).AppendLine($"{nameof(VertexHolder)}()");
+        _ = sb.Append(' ', indentCount).AppendLine("{");
 
         indentCount += 2;
 
-        for (var i = 0; i < ArrayCount; ++i)
-            sb.Append(' ', indentCount).AppendLine($"{nameof(Counts)}[{i}] = {Counts[i]}");
+        for (int i = 0; i < ArrayCount; ++i)
+            _ = sb.Append(' ', indentCount).AppendLine($"{nameof(Counts)}[{i}] = {Counts[i]}");
 
-        for (var i = 0; i < ArrayCount; ++i)
-            sb.Append(' ', indentCount).AppendLine($"{nameof(Formats)}[{i}] = 0x{Formats[i]:X8}");
+        for (int i = 0; i < ArrayCount; ++i)
+            _ = sb.Append(' ', indentCount).AppendLine($"{nameof(Formats)}[{i}] = 0x{Formats[i]:X8}");
 
-        for (var i = 0; i < ArrayCount; ++i)
-            sb.Append(' ', indentCount).AppendLine($"{nameof(UVFormats)}[{i}] = 0x{UVFormats[i]:X8}");
+        for (int i = 0; i < ArrayCount; ++i)
+            _ = sb.Append(' ', indentCount).AppendLine($"{nameof(UVFormats)}[{i}] = 0x{UVFormats[i]:X8}");
 
-        for (var i = 0; i < ArrayCount; ++i)
-            sb.Append(' ', indentCount).AppendLine($"{nameof(ArrayOffsets)}[{i}] = {ArrayOffsets[i]}");
+        for (int i = 0; i < ArrayCount; ++i)
+            _ = sb.Append(' ', indentCount).AppendLine($"{nameof(ArrayOffsets)}[{i}] = {ArrayOffsets[i]}");
 
-        for (var i = 0; i < ArrayCount; ++i)
-            sb.Append(' ', indentCount).AppendLine($"{nameof(ArraySizes)}[{i}] = {ArraySizes[i]}");
+        for (int i = 0; i < ArrayCount; ++i)
+            _ = sb.Append(' ', indentCount).AppendLine($"{nameof(ArraySizes)}[{i}] = {ArraySizes[i]}");
 
-        for (var i = 0; i < ArrayCount; ++i)
-            sb.Append(' ', indentCount).AppendLine($"{nameof(Sizes)}[{i}] = {Sizes[i]}");
+        for (int i = 0; i < ArrayCount; ++i)
+            _ = sb.Append(' ', indentCount).AppendLine($"{nameof(Sizes)}[{i}] = {Sizes[i]}");
 
-        sb.Append(' ', indentCount).AppendLine($"{nameof(IndexArrayOffset)} = {IndexArrayOffset}");
-        sb.Append(' ', indentCount).AppendLine($"{nameof(IndexArraySize)} = {IndexArraySize}");
-        sb.Append(' ', indentCount).AppendLine($"{nameof(SomeFlags)} = 0x{SomeFlags:X8}");
-        sb.Append(' ', indentCount).AppendLine($"{nameof(ArrayCount)} = {ArrayCount}");
-        sb.Append(' ', indentCount).AppendLine($"{nameof(IndexCount)} = {IndexCount}");
+        _ = sb.Append(' ', indentCount).AppendLine($"{nameof(IndexArrayOffset)} = {IndexArrayOffset}");
+        _ = sb.Append(' ', indentCount).AppendLine($"{nameof(IndexArraySize)} = {IndexArraySize}");
+        _ = sb.Append(' ', indentCount).AppendLine($"{nameof(SomeFlags)} = 0x{SomeFlags:X8}");
+        _ = sb.Append(' ', indentCount).AppendLine($"{nameof(ArrayCount)} = {ArrayCount}");
+        _ = sb.Append(' ', indentCount).AppendLine($"{nameof(IndexCount)} = {IndexCount}");
 
-        for (var i = 0; i < Decl1.Count; ++i)
+        for (int i = 0; i < Decl1.Count; ++i)
         {
-            sb.Append(' ', indentCount).AppendLine($"{nameof(Decl1)}[{i}] = {Decl1[i]}");
+            _ = sb.Append(' ', indentCount).AppendLine($"{nameof(Decl1)}[{i}] = {Decl1[i]}");
         }
 
-        for (var i = 0; i < Decl2.Count; ++i)
+        for (int i = 0; i < Decl2.Count; ++i)
         {
-            sb.Append(' ', indentCount).AppendLine($"{nameof(Decl2)}[{i}] = {Decl2[i]}");
+            _ = sb.Append(' ', indentCount).AppendLine($"{nameof(Decl2)}[{i}] = {Decl2[i]}");
         }
 
-        sb.Append(' ', indentCount).AppendLine("Vertexes =");
-        sb.Append(' ', indentCount).AppendLine("[");
+        _ = sb.Append(' ', indentCount).AppendLine("Vertexes =");
+        _ = sb.Append(' ', indentCount).AppendLine("[");
 
-        sb.Append(DumpVertices(indentCount + 2));
+        _ = sb.Append(DumpVertices(indentCount + 2));
 
-        sb.Append(' ', indentCount).AppendLine("]");
+        _ = sb.Append(' ', indentCount).AppendLine("]");
 
         indentCount -= 2;
 
-        sb.Append(' ', indentCount).AppendLine("}");
+        _ = sb.Append(' ', indentCount).AppendLine("}");
 
         return sb.ToString();
     }

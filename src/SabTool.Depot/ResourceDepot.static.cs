@@ -30,16 +30,16 @@ public partial class ResourceDepot
         if (resource == Resource.None)
             return container;
 
-        if (!LoadingInfos.TryGetValue(resource, out var info))
+        if (!LoadingInfos.TryGetValue(resource, out ResourceLoadingInfo? info))
             throw new Exception($"Invalid or non-mapped resource found: {resource}!");
 
-        foreach (var dependency in info.Dependencies)
+        foreach (Resource dependency in info.Dependencies)
         {
             if (dependency != Resource.None && !container.Contains(dependency))
             {
-                container.Add(dependency);
+                _ = container.Add(dependency);
 
-                CollectAllDependencies(dependency, container);
+                _ = CollectAllDependencies(dependency, container);
             }
         }
 

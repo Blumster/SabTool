@@ -1,24 +1,21 @@
-﻿using System;
-using System.IO;
-using System.Text;
+﻿using System.Text;
 
 using Newtonsoft.Json;
-
-namespace SabTool.Serializers.Graphics;
 
 using SabTool.Data.Graphics;
 using SabTool.Serializers.Json.Converters;
 using SabTool.Utils;
 using SabTool.Utils.Extensions;
 
+namespace SabTool.Serializers.Graphics;
 public static class ModelSerializer
 {
     public static Model DeserializeRaw(Stream stream)
     {
-        using var reader = new BinaryReader(stream, Encoding.UTF8, true);
+        using BinaryReader reader = new(stream, Encoding.UTF8, true);
 
-        var currentStart = stream.Position;
-        var model = new Model();
+        long currentStart = stream.Position;
+        Model model = new();
 
         stream.Position += 0x4C;
 
@@ -50,10 +47,9 @@ public static class ModelSerializer
 
         model.FieldBF = reader.ReadByte();
 
-        if (currentStart + 0xC0 != stream.Position)
-            throw new Exception($"Under or over read of the model part of the mesh asset! Pos: {stream.Position} | Expected: {currentStart + 0xC0}");
-
-        return model;
+        return currentStart + 0xC0 != stream.Position
+            ? throw new Exception($"Under or over read of the model part of the mesh asset! Pos: {stream.Position} | Expected: {currentStart + 0xC0}")
+            : model;
     }
 
     public static void SerializeRaw(Model model, Stream stream)
@@ -68,7 +64,7 @@ public static class ModelSerializer
 
     public static void SerializeJSON(Model model, Stream stream)
     {
-        using var writer = new StreamWriter(stream, Encoding.UTF8, leaveOpen: true);
+        using StreamWriter writer = new(stream, Encoding.UTF8, leaveOpen: true);
 
         writer.Write(JsonConvert.SerializeObject(model, Formatting.Indented, new CrcConverter()));
     }

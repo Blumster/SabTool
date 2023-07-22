@@ -24,25 +24,25 @@ public sealed class Bone
 
     public string DumpString(int indentCount = 0)
     {
-        var sb = new StringBuilder();
+        StringBuilder sb = new();
 
-        sb.Append(' ', indentCount).AppendLine($"{nameof(Bone)}()");
-        sb.Append(' ', indentCount).AppendLine("{");
-        sb.Append(' ', indentCount + 2).AppendLine($"{nameof(UnkNamePtr)} = {UnkNamePtr}");
-        sb.Append(' ', indentCount + 2).AppendLine($"{nameof(UnkByte)} = {UnkByte}");
-        sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Crc)} = {Crc}");
-        sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Flags)} = 0x{Flags:X4}");
-        sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Index)} = {Index}");
-        sb.Append(' ', indentCount + 2).AppendLine($"{nameof(UnkFlags)} = 0x{UnkFlags:X2}");
-        sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Field20)} = {Field20}");
-        sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Field24)} = {Field24}");
-        sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Field28)} = {Field28}");
-        sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Field2C)} = {Field2C}");
-        sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Field30)} = {Field30}");
-        sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Field34)} = {Field34}");
-        sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Field38)} = {Field38}");
-        sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Field3C)} = {Field3C}");
-        sb.Append(' ', indentCount).AppendLine("}");
+        _ = sb.Append(' ', indentCount).AppendLine($"{nameof(Bone)}()");
+        _ = sb.Append(' ', indentCount).AppendLine("{");
+        _ = sb.Append(' ', indentCount + 2).AppendLine($"{nameof(UnkNamePtr)} = {UnkNamePtr}");
+        _ = sb.Append(' ', indentCount + 2).AppendLine($"{nameof(UnkByte)} = {UnkByte}");
+        _ = sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Crc)} = {Crc}");
+        _ = sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Flags)} = 0x{Flags:X4}");
+        _ = sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Index)} = {Index}");
+        _ = sb.Append(' ', indentCount + 2).AppendLine($"{nameof(UnkFlags)} = 0x{UnkFlags:X2}");
+        _ = sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Field20)} = {Field20}");
+        _ = sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Field24)} = {Field24}");
+        _ = sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Field28)} = {Field28}");
+        _ = sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Field2C)} = {Field2C}");
+        _ = sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Field30)} = {Field30}");
+        _ = sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Field34)} = {Field34}");
+        _ = sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Field38)} = {Field38}");
+        _ = sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Field3C)} = {Field3C}");
+        _ = sb.Append(' ', indentCount).AppendLine("}");
 
         return sb.ToString();
     }

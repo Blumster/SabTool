@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
 
 using Newtonsoft.Json;
-
-namespace SabTool.Serializers.Cinematics;
 
 using SabTool.Data.Cinematics;
 using SabTool.Data.Cinematics.ComplexAnimationElements;
@@ -15,19 +8,20 @@ using SabTool.Serializers.Json.Converters;
 using SabTool.Utils;
 using SabTool.Utils.Extensions;
 
+namespace SabTool.Serializers.Cinematics;
 public static class ComplexAnimsSerializer
 {
     private const int Version = 9;
 
     public static List<ComplexAnimStructure> DeserializeRaw(Stream stream)
     {
-        using var reader = new BinaryReader(stream, Encoding.UTF8, true);
+        using BinaryReader reader = new(stream, Encoding.UTF8, true);
 
-        var version = reader.ReadInt16();
+        short version = reader.ReadInt16();
         if (version != Version)
             throw new Exception($"Invalid version {version} for ComplexAnimations!");
 
-        var structures = new List<ComplexAnimStructure>();
+        List<ComplexAnimStructure> structures = new();
 
         while (stream.Position < stream.Length)
         {
@@ -45,14 +39,14 @@ public static class ComplexAnimsSerializer
         if (!reader.CheckHeaderString("CXA2", reversed: true))
             throw new Exception("Invalid magic found for ComplexAnimStructure!");
 
-        var structure = new ComplexAnimStructure
+        ComplexAnimStructure structure = new()
         {
             Crc = new Crc(reader.ReadUInt32())
         };
 
         while (true)
         {
-            var magic = reader.ReadHeaderString(4, reversed: true);
+            string magic = reader.ReadHeaderString(4, reversed: true);
             if (magic == "CEND")
             {
                 break;
@@ -61,9 +55,9 @@ public static class ComplexAnimsSerializer
             if (magic != "ELEM")
                 throw new Exception("Invalid element tag found for ComplexAnimStructure!");
 
-            var typeCrc = new Crc(reader.ReadUInt32());
+            Crc typeCrc = new(reader.ReadUInt32());
 
-            var element = typeCrc.Value switch
+            ComplexAnimElement element = typeCrc.Value switch
             {
                 0xE1DACE7E => new ComplexAnimElement(ElementType.Say), // Hash("Say")
                 0xDD62BA1A => new SoundElement(), // Hash("Sound")
@@ -123,7 +117,7 @@ public static class ComplexAnimsSerializer
 
     public static void SerializeJSON(List<ComplexAnimStructure> structures, Stream stream)
     {
-        using var writer = new StreamWriter(stream, Encoding.UTF8, leaveOpen: true);
+        using StreamWriter writer = new(stream, Encoding.UTF8, leaveOpen: true);
 
         writer.Write(JsonConvert.SerializeObject(structures, Formatting.Indented, new CrcConverter()));
     }

@@ -1,7 +1,7 @@
 ﻿namespace SabTool.Data.Misc;
 
 public sealed class Freeplay
-{    
+{
     public int Unknown4TotalCount { get; set; }
     public List<FreeplayPoint> Points { get; set; } = new();
 }

@@ -1,11 +1,11 @@
-﻿using HlslDecompiler;
+﻿
+using HlslDecompiler;
 using HlslDecompiler.DirectXShaderModel;
-
-namespace SabTool.CLI.Commands.Graphics;
 
 using SabTool.CLI.Base;
 using SabTool.Depot;
 
+namespace SabTool.CLI.Commands.Graphics;
 public sealed class ShaderCategory : BaseCategory
 {
     public override string Key => "shaders";
@@ -27,44 +27,44 @@ public sealed class ShaderCategory : BaseCategory
             }
 
             ResourceDepot.Instance.Initialize(arguments.ElementAt(0));
-            ResourceDepot.Instance.Load(Resource.Shaders);
+            _ = ResourceDepot.Instance.Load(Resource.Shaders);
 
-            var outputDir = arguments.ElementAt(1);
+            string outputDir = arguments.ElementAt(1);
 
-            Directory.CreateDirectory(outputDir);
+            _ = Directory.CreateDirectory(outputDir);
 
-            using var outFs = new FileStream(Path.Combine(outputDir, "shaders.txt"), FileMode.Create, FileAccess.Write, FileShare.None);
-            using var sw = new StreamWriter(outFs);
+            using FileStream outFs = new(Path.Combine(outputDir, "shaders.txt"), FileMode.Create, FileAccess.Write, FileShare.None);
+            using StreamWriter sw = new(outFs);
 
             sw.WriteLine("Pixel shaders:");
 
-            var index = 0;
-            foreach (var shader in ResourceDepot.Instance.GetPixelShaders())
+            int index = 0;
+            foreach (Data.Graphics.Shaders.Shader shader in ResourceDepot.Instance.GetPixelShaders())
             {
                 sw.WriteLine($"{index++}:");
                 sw.WriteLine($"  i: {shader.Index} id: {shader.Id}");
 
-                var i = 0;
+                int i = 0;
 
-                foreach (var data in shader.Data)
+                foreach (Data.Graphics.Shaders.ShaderData? data in shader.Data)
                 {
-                    var shaderFileName = $"{shader.Id.GetStringOrHexString()}_p_{i++}.fx";
+                    string shaderFileName = $"{shader.Id.GetStringOrHexString()}_p_{i++}.fx";
 
                     sw.WriteLine($"  {i}: {shaderFileName}");
                     sw.WriteLine($"    Size: {data.Size}");
 
-                    foreach (var param in data.Parameters)
+                    foreach (Data.Graphics.Shaders.ShaderConfigParameter? param in data.Parameters)
                         sw.WriteLine($"    Param: {param.Name} = {param.DefaultValue}");
 
                     if (data.Size == 0)
                         continue;
 
-                    using var stream = new MemoryStream(data.Data, false);
-                    using var shaderReader = new ShaderReader(stream, true);
+                    using MemoryStream stream = new(data.Data, false);
+                    using ShaderReader shaderReader = new(stream, true);
 
-                    var writer = new HlslSimpleWriter(shaderReader.ReadShader());
+                    HlslSimpleWriter writer = new(shaderReader.ReadShader());
 
-                    
+
                     writer.Write(Path.Combine(outputDir, shaderFileName));
                 }
             }
@@ -72,30 +72,30 @@ public sealed class ShaderCategory : BaseCategory
             index = 0;
             sw.WriteLine("Vertex shaders:");
 
-            foreach (var shader in ResourceDepot.Instance.GetVertexShaders())
+            foreach (Data.Graphics.Shaders.Shader shader in ResourceDepot.Instance.GetVertexShaders())
             {
                 sw.WriteLine($"{index++}:");
                 sw.WriteLine($"  i: {shader.Index} id: {shader.Id}");
 
-                var i = 0;
+                int i = 0;
 
-                foreach (var data in shader.Data)
+                foreach (Data.Graphics.Shaders.ShaderData? data in shader.Data)
                 {
-                    var shaderFileName = $"{shader.Id.GetStringOrHexString()}_v_{i++}.fx";
+                    string shaderFileName = $"{shader.Id.GetStringOrHexString()}_v_{i++}.fx";
 
                     sw.WriteLine($"  {i}: {shaderFileName}");
                     sw.WriteLine($"    Size: {data.Size}");
 
-                    foreach (var param in data.Parameters)
+                    foreach (Data.Graphics.Shaders.ShaderConfigParameter? param in data.Parameters)
                         sw.WriteLine($"    Param: {param.Name} = {param.DefaultValue}");
 
                     if (data.Size == 0)
                         continue;
 
-                    using var stream = new MemoryStream(data.Data, false);
-                    using var shaderReader = new ShaderReader(stream, true);
+                    using MemoryStream stream = new(data.Data, false);
+                    using ShaderReader shaderReader = new(stream, true);
 
-                    var writer = new HlslSimpleWriter(shaderReader.ReadShader());
+                    HlslSimpleWriter writer = new(shaderReader.ReadShader());
 
                     writer.Write(Path.Combine(outputDir, shaderFileName));
                 }
@@ -119,8 +119,8 @@ public sealed class ShaderCategory : BaseCategory
                 return false;
             }
 
-            var inputFilePath = arguments.ElementAt(0);
-            var outputDir = arguments.ElementAt(1);
+            string inputFilePath = arguments.ElementAt(0);
+            string outputDir = arguments.ElementAt(1);
 
             if (!File.Exists(inputFilePath))
             {
@@ -128,9 +128,9 @@ public sealed class ShaderCategory : BaseCategory
                 return false;
             }
 
-            Directory.CreateDirectory(outputDir);
+            _ = Directory.CreateDirectory(outputDir);
 
-            using var inFileStream = new FileStream(inputFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            using FileStream inFileStream = new(inputFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
 
             return true;
         }

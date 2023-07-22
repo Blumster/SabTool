@@ -1,9 +1,9 @@
-﻿namespace SabTool.CLI.Commands.Graphics;
-
+﻿
 using SabTool.CLI.Base;
 using SabTool.Depot;
 using SabTool.Serializers.Graphics;
 
+namespace SabTool.CLI.Commands.Graphics;
 public sealed class MaterialCategory : BaseCategory
 {
     public const string MaterialsRawFileName = "France.materials";
@@ -32,15 +32,15 @@ public sealed class MaterialCategory : BaseCategory
                 ResourceDepot.Instance.Initialize(arguments.ElementAt(0));
             }
 
-            ResourceDepot.Instance.Load(Resource.Materials);
+            _ = ResourceDepot.Instance.Load(Resource.Materials);
 
-            var outputDir = arguments.ElementAt(1);
+            string outputDir = arguments.ElementAt(1);
 
-            Directory.CreateDirectory(outputDir);
+            _ = Directory.CreateDirectory(outputDir);
 
-            using var outFileStream = new FileStream(Path.Combine(outputDir, MaterialsJsonFileName), FileMode.Create, FileAccess.Write, FileShare.None);
+            using FileStream outFileStream = new(Path.Combine(outputDir, MaterialsJsonFileName), FileMode.Create, FileAccess.Write, FileShare.None);
 
-            var materials = ResourceDepot.Instance.GetMaterials();
+            IEnumerable<KeyValuePair<Utils.Crc, Data.Graphics.Material>> materials = ResourceDepot.Instance.GetMaterials();
 
             MaterialSerializer.SerializeJSON(materials.Select(p => p.Value).ToList(), outFileStream);
 
@@ -62,8 +62,8 @@ public sealed class MaterialCategory : BaseCategory
                 return false;
             }
 
-            var inputFilePath = arguments.ElementAt(0);
-            var outputDir = arguments.ElementAt(1);
+            string inputFilePath = arguments.ElementAt(0);
+            string outputDir = arguments.ElementAt(1);
 
             if (!File.Exists(inputFilePath))
             {
@@ -71,13 +71,13 @@ public sealed class MaterialCategory : BaseCategory
                 return false;
             }
 
-            Directory.CreateDirectory(outputDir);
+            _ = Directory.CreateDirectory(outputDir);
 
-            using var inFileStream = new FileStream(inputFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            using FileStream inFileStream = new(inputFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
 
-            var materials = MaterialSerializer.DeserialzieJSON(inFileStream);
+            List<Data.Graphics.Material> materials = MaterialSerializer.DeserialzieJSON(inFileStream);
 
-            using var outFileStream = new FileStream(Path.Combine(outputDir, MaterialsRawFileName), FileMode.Create, FileAccess.Write, FileShare.None);
+            using FileStream outFileStream = new(Path.Combine(outputDir, MaterialsRawFileName), FileMode.Create, FileAccess.Write, FileShare.None);
 
             MaterialSerializer.SerializeRaw(materials, outFileStream);
 

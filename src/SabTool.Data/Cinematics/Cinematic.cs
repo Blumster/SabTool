@@ -1,13 +1,13 @@
-﻿namespace SabTool.Data.Cinematics;
-
+﻿
 using SabTool.Data.Cinematics.CinematicElements;
 
+namespace SabTool.Data.Cinematics;
 public sealed class Cinematic
 {
     public struct UnkSub
     {
         public Crc A;
-        public int B; 
+        public int B;
         public byte C;
     }
 

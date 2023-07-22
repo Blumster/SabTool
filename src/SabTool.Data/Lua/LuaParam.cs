@@ -1,7 +1,7 @@
-﻿namespace SabTool.Data.Lua;
-
+﻿
 using SabTool.Utils.Extensions;
 
+namespace SabTool.Data.Lua;
 public sealed class LuaParam
 {
     public const int NamePad = -20;
@@ -81,7 +81,7 @@ public sealed class LuaParam
             case LuaCrcListCrc:
                 CrcCount = reader.ReadInt32();
 
-                for (var i = 0; i < CrcCount; ++i)
+                for (int i = 0; i < CrcCount; ++i)
                 {
                     CrcList.Add(reader.ReadStringWithMaxLength(128));
                 }
@@ -103,7 +103,7 @@ public sealed class LuaParam
 
     public override string ToString()
     {
-        var typeStr = TypeCrc switch
+        string typeStr = TypeCrc switch
         {
             LuaStringCrc => "LuaString",
             LuaIntCrc => "LuaInt",

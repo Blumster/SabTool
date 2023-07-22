@@ -2,8 +2,8 @@
 
 public enum StreamBlockFlags
 {
-    Dynpack     = 0x008,
-    NoPackType  = 0x010,
+    Dynpack = 0x008,
+    NoPackType = 0x010,
     Palettepack = 0x100,
 }
 
@@ -47,12 +47,12 @@ public sealed class StreamBlock
 
     public void FreePayloads()
     {
-        foreach (var entryArray in Entries)
+        foreach (Entry[] entryArray in Entries)
         {
             if (entryArray == null)
                 continue;
 
-            foreach (var entry in entryArray)
+            foreach (Entry entry in entryArray)
                 entry.Payload = null;
         }
     }

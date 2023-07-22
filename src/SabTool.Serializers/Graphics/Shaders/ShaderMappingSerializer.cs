@@ -1,20 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-
-namespace SabTool.Serializers.Graphics.Shaders;
+﻿using System.Text;
 
 using SabTool.Data.Graphics.Shaders;
-using SabTool.Utils;
 using SabTool.Utils.Extensions;
 
+namespace SabTool.Serializers.Graphics.Shaders;
 public static class ShaderMappingSerializer
 {
     private static uint EndianSwap(uint value)
     {
-        var bytes = BitConverter.GetBytes(value);
+        byte[] bytes = BitConverter.GetBytes(value);
 
         Array.Reverse(bytes);
 
@@ -23,17 +17,17 @@ public static class ShaderMappingSerializer
 
     public static ShaderMapping DeserializeRaw(Stream stream)
     {
-        using var reader = new BinaryReader(stream, Encoding.UTF8, true);
+        using BinaryReader reader = new(stream, Encoding.UTF8, true);
 
         if (!reader.CheckHeaderString("WSTO"))
             throw new Exception("Invalid ShaderMapping header found!");
 
-        var mappings = new ShaderMapping();
+        ShaderMapping mappings = new();
 
-        var count = EndianSwap(reader.ReadUInt32());
-        for (var i = 0u; i < count; ++i)
+        uint count = EndianSwap(reader.ReadUInt32());
+        for (uint i = 0u; i < count; ++i)
         {
-            var mapping = new ShaderMappingData
+            ShaderMappingData mapping = new()
             {
                 Unk = new(EndianSwap(reader.ReadUInt32())),
                 Pass = new(EndianSwap(reader.ReadUInt32())),

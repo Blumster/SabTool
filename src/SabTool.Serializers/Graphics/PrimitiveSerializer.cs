@@ -1,25 +1,22 @@
-﻿using System;
-using System.IO;
-using System.Text;
+﻿using System.Text;
 
 using Newtonsoft.Json;
 
-namespace SabTool.Serializers.Graphics;
-
 using SabTool.Data.Graphics;
 
+namespace SabTool.Serializers.Graphics;
 public static class PrimitiveSerializer
 {
     public static Primitive DeserializeRaw(Stream stream, Mesh mesh)
     {
-        using var reader = new BinaryReader(stream, Encoding.UTF8, true);
+        using BinaryReader reader = new(stream, Encoding.UTF8, true);
 
-        var primitive = new Primitive
+        Primitive primitive = new()
         {
             Mesh = mesh
         };
 
-        var currentStart = stream.Position;
+        long currentStart = stream.Position;
 
         stream.Position += 0x4;
 
@@ -46,10 +43,9 @@ public static class PrimitiveSerializer
         primitive.NumVertex = reader.ReadInt32();
         primitive.NumIndices = reader.ReadInt32();
 
-        if (currentStart + 0x64 != stream.Position)
-            throw new Exception($"Under or orver read of the primitive part of the mesh asset! Pos: {stream.Position} | Expected: {currentStart + 0x64}");
-
-        return primitive;
+        return currentStart + 0x64 != stream.Position
+            ? throw new Exception($"Under or orver read of the primitive part of the mesh asset! Pos: {stream.Position} | Expected: {currentStart + 0x64}")
+            : primitive;
     }
 
     public static void SerializeRaw(Primitive primitive, Stream stream)
@@ -64,7 +60,7 @@ public static class PrimitiveSerializer
 
     public static void SerializeJSON(Primitive primitive, Stream stream)
     {
-        using var writer = new StreamWriter(stream, Encoding.UTF8, leaveOpen: true);
+        using StreamWriter writer = new(stream, Encoding.UTF8, leaveOpen: true);
 
         writer.Write(JsonConvert.SerializeObject(primitive, Formatting.Indented));
     }

@@ -1,33 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Linq;
+﻿using System.Globalization;
 using System.Numerics;
 using System.Text;
 
 using Newtonsoft.Json;
 
-using SharpGLTF.Schema2;
-
-namespace SabTool.Serializers.Misc;
-
 using SabTool.Data.Misc;
 using SabTool.Utils;
 using SabTool.Utils.Extensions;
 
+using SharpGLTF.Schema2;
+
+namespace SabTool.Serializers.Misc;
 public static class HeightmapSerializer
 {
     public static Heightmap DeserializeRaw(Stream stream)
     {
-        using var reader = new BinaryReader(stream, Encoding.UTF8, true);
+        using BinaryReader reader = new(stream, Encoding.UTF8, true);
 
         if (!reader.CheckHeaderString("HEI5", reversed: true))
             throw new Exception("Invalid HEI5 header found!");
 
-        var cellCount = reader.ReadInt32();
+        int cellCount = reader.ReadInt32();
 
-        var heightmap = new Heightmap()
+        Heightmap heightmap = new()
         {
             CellCountMaxX = reader.ReadInt32(),
             CellCountMaxY = reader.ReadInt32(),
@@ -40,16 +35,12 @@ public static class HeightmapSerializer
         // Reserve capacity for entries
         heightmap.Cells.Capacity = cellCount;
 
-        foreach (var cellIndex in Enumerable.Range(0, cellCount))
+        foreach (int cellIndex in Enumerable.Range(0, cellCount))
         {
             heightmap.Cells.Add(ReadHeightmapCell(reader));
         }
-        
-        if (stream.Position != stream.Length)
-        {
-            throw new Exception("Under reading HEI5 file!");
-        }
-        return heightmap;
+
+        return stream.Position != stream.Length ? throw new Exception("Under reading HEI5 file!") : heightmap;
     }
 
     public static HeightmapCellData ReadHeightmapCellData(BinaryReader reader)
@@ -72,9 +63,9 @@ public static class HeightmapSerializer
     {
         HeightmapCell cell = new()
         {
-            Data = ReadHeightmapCellData(reader)
+            Data = ReadHeightmapCellData(reader),
+            MinX = reader.ReadSingle()
         };
-        cell.MinX = reader.ReadSingle();
         if (reader.ReadSingle() != HeightmapCell.MinY)
         {
             throw new Exception("Unexpected MinY");
@@ -94,14 +85,14 @@ public static class HeightmapSerializer
         int modelCounter = 0;
 
         List<KeyValuePair<int, HeightmapCellData>> orderedEntries = packDictionary.ToList();
-        orderedEntries = orderedEntries.OrderBy(x => (((UInt32)x.Key) << 16) >> 16).ToList();
+        orderedEntries = orderedEntries.OrderBy(x => (((uint)x.Key) << 16) >> 16).ToList();
         foreach (KeyValuePair<int, HeightmapCellData> entry in orderedEntries)
         {
             HeightmapCellData cellData = entry.Value;
-            string highByte = (((UInt32)entry.Key) >> 16).ToString();
-            string realNumber = ((((UInt32)entry.Key) << 16) >> 16).ToString().PadLeft(6, '0').Substring(1);
+            string highByte = (((uint)entry.Key) >> 16).ToString();
+            string realNumber = ((((uint)entry.Key) << 16) >> 16).ToString().PadLeft(6, '0')[1..];
             string cellName = $"HCell_{realNumber}_{highByte}_{(entry.Key << 8) + 1}.pack{(isFranceChunkDictionary[entry.Key].Length == 0 ? string.Empty : "_France_Chunk" + isFranceChunkDictionary[entry.Key])}";
-            UInt32 originalValue = (((UInt32)entry.Key) << 8) + 1;
+            uint originalValue = (((uint)entry.Key) << 8) + 1;
             // Get values (original Value is Uint32)
             int x_block = ((int)originalValue & 0x03FE0000) >> 17;
             int z_block = ((int)originalValue & 0x0001FF00) >> 8;
@@ -116,19 +107,21 @@ public static class HeightmapSerializer
             }
             // Get resolution
             int resolution = (int)originalValue & 0x000000FF;
-            var primNode = node.CreateNode(cellName);
+            Node primNode = node.CreateNode(cellName);
 
-            var mesh = primNode.Mesh = model.CreateMesh();
+            Mesh mesh = primNode.Mesh = model.CreateMesh();
 
             // Get coordinates
-            List<Vector3> coordinates = new();
-            coordinates.Capacity = 10 * 10; // Always contains 10*10 coordinates
+            List<Vector3> coordinates = new()
+            {
+                Capacity = 10 * 10 // Always contains 10*10 coordinates
+            };
             foreach (int y_entry in Enumerable.Range(0, cellData.PointCountY))
             {
                 foreach (int x_entry in Enumerable.Range(0, cellData.PointCountX))
                 {
                     float x = (x_block * 60.0f) + (x_entry * (60.0f / 9));
-                    float y = Lerp(cellData.HeightRangeMin, cellData.HeightRangeMax, cellData.PointData[y_entry * cellData.PointCountY + x_entry] / 255.0f);
+                    float y = Lerp(cellData.HeightRangeMin, cellData.HeightRangeMax, cellData.PointData[(y_entry * cellData.PointCountY) + x_entry] / 255.0f);
                     float z = (z_block * 60.0f) + (y_entry * (60.0f / 9));
                     coordinates.Add(MatrixMath.ConvertDxToOpenGl(new Vector3(x, y, z)));
                 }
@@ -153,9 +146,9 @@ public static class HeightmapSerializer
                     triangleIndices.Add(firstVertexInFace + 1);
                 }
             }
-            var primitive = mesh.CreatePrimitive()
+            MeshPrimitive primitive = mesh.CreatePrimitive()
                 .WithVertexAccessor("POSITION", coordinates);
-            primitive.WithIndicesAccessor(PrimitiveType.TRIANGLES, triangleIndices)
+            _ = primitive.WithIndicesAccessor(PrimitiveType.TRIANGLES, triangleIndices)
                 .WithMaterial(material);
             modelCounter += 1;
         }
@@ -163,7 +156,7 @@ public static class HeightmapSerializer
 
     public static void SerializeRaw(Heightmap heightmap, Stream stream)
     {
-        using var writer = new BinaryWriter(stream, Encoding.UTF8, true);
+        using BinaryWriter writer = new(stream, Encoding.UTF8, true);
     }
 
     public static Heightmap? DeserializeJSON(Stream stream)
@@ -173,7 +166,7 @@ public static class HeightmapSerializer
 
     public static void SerializeJSON(Heightmap heightmap, Stream stream)
     {
-        using var writer = new StreamWriter(stream, Encoding.UTF8, leaveOpen: true);
+        using StreamWriter writer = new(stream, Encoding.UTF8, leaveOpen: true);
 
         writer.Write(JsonConvert.SerializeObject(heightmap, Formatting.Indented));
     }
@@ -181,7 +174,7 @@ public static class HeightmapSerializer
     public static void ExportPly(Heightmap heightmap, Stream stream)
     {
         CultureInfo enCi = CultureInfo.GetCultureInfo("en-US");
-        using var writer = new StreamWriter(stream, Encoding.ASCII);
+        using StreamWriter writer = new(stream, Encoding.ASCII);
 
         // Write ply header
         writer.Write("ply\nformat ascii 1.0\nelement vertex ");
@@ -191,7 +184,7 @@ public static class HeightmapSerializer
         writer.Write("property list uchar int vertex_index\nend_header\n");
 
         // Write vertex data
-        foreach (var cell in heightmap.Cells)
+        foreach (HeightmapCell? cell in heightmap.Cells)
         {
             foreach (int y_entry in Enumerable.Range(0, cell.Data.PointCountY))
             {
@@ -201,21 +194,21 @@ public static class HeightmapSerializer
                     float x = cell.MinX + (x_entry * (heightmap.CellSize / 9));
                     x *= -1;
                     float y = cell.MinZ + (y_entry * (heightmap.CellSize / 9));
-                    float z = Lerp(cell.Data.HeightRangeMin, cell.Data.HeightRangeMax, cell.Data.PointData[y_entry * cell.Data.PointCountY + x_entry] / 255.0f);
+                    float z = Lerp(cell.Data.HeightRangeMin, cell.Data.HeightRangeMax, cell.Data.PointData[(y_entry * cell.Data.PointCountY) + x_entry] / 255.0f);
                     writer.Write($"{x.ToString(enCi)} {y.ToString(enCi)} {z.ToString(enCi)}\n");
                 }
             }
         }
 
         // Write face data
-        var verticesPerCell = 10 * 10;
-        foreach (var cellIndex in Enumerable.Range(0, heightmap.Cells.Count))
+        int verticesPerCell = 10 * 10;
+        foreach (int cellIndex in Enumerable.Range(0, heightmap.Cells.Count))
         {
-            foreach (var y in Enumerable.Range(0, 9))
+            foreach (int y in Enumerable.Range(0, 9))
             {
-                foreach (var x in Enumerable.Range(0, 9))
+                foreach (int x in Enumerable.Range(0, 9))
                 {
-                    var firstVertexInFace = (cellIndex * verticesPerCell) + (10 * y) + x;
+                    int firstVertexInFace = (cellIndex * verticesPerCell) + (10 * y) + x;
                     writer.Write($"4 {firstVertexInFace + 1} {firstVertexInFace} {firstVertexInFace + 10} {firstVertexInFace + 11}\n");
                 }
             }
@@ -227,9 +220,9 @@ public static class HeightmapSerializer
         ModelRoot model = ModelRoot.CreateModel();
         Scene scene = model.UseScene("Heightmap");
 
-        var material = model.CreateMaterial("Default");
+        Material material = model.CreateMaterial("Default");
 
-        var node = scene.CreateNode("Heightmap");
+        Node node = scene.CreateNode("Heightmap");
 
         // Gltf doesn't support quads, the meshes are triangulated
         string filename;
@@ -252,7 +245,7 @@ public static class HeightmapSerializer
 
     private static float Lerp(float begin, float end, float factor)
     {
-        return (1.0f - factor) * begin + factor * end;
+        return ((1.0f - factor) * begin) + (factor * end);
     }
 
     private static void CreateGltfSingleMesh(Heightmap heightmap, Node node, ModelRoot model, SharpGLTF.Schema2.Material material)
@@ -265,8 +258,8 @@ public static class HeightmapSerializer
         {
             Capacity = heightmap.Cells.Count * 81 * 2 // 9*9 for each quad * 2 for triangles
         };
-        var primNode = node.CreateNode("HeightmapMerged");
-        var mesh = primNode.Mesh = model.CreateMesh();
+        Node primNode = node.CreateNode("HeightmapMerged");
+        Mesh mesh = primNode.Mesh = model.CreateMesh();
 
         foreach (HeightmapCell cell in heightmap.Cells)
         {
@@ -276,7 +269,7 @@ public static class HeightmapSerializer
                 foreach (int x_entry in Enumerable.Range(0, cell.Data.PointCountX))
                 {
                     float x = cell.MinX + (x_entry * (heightmap.CellSize / 9));
-                    float y = Lerp(cell.Data.HeightRangeMin, cell.Data.HeightRangeMax, cell.Data.PointData[y_entry * cell.Data.PointCountY + x_entry] / 255.0f);
+                    float y = Lerp(cell.Data.HeightRangeMin, cell.Data.HeightRangeMax, cell.Data.PointData[(y_entry * cell.Data.PointCountY) + x_entry] / 255.0f);
                     float z = cell.MinZ + (y_entry * (heightmap.CellSize / 9));
                     coordinates.Add(MatrixMath.ConvertDxToOpenGl(new Vector3(x, y, z)));
                 }
@@ -290,7 +283,7 @@ public static class HeightmapSerializer
             {
                 foreach (int x in Enumerable.Range(0, 9))
                 {
-                    int firstVertexInFace = (cellIndex * verticesPerCell) + (10 * y) + x;                    
+                    int firstVertexInFace = (cellIndex * verticesPerCell) + (10 * y) + x;
                     // First triangle of quad
                     triangleIndices.Add(firstVertexInFace + 1);
                     triangleIndices.Add(firstVertexInFace);
@@ -303,9 +296,9 @@ public static class HeightmapSerializer
             }
         }
 
-        var primitive = mesh.CreatePrimitive()
+        MeshPrimitive primitive = mesh.CreatePrimitive()
             .WithVertexAccessor("POSITION", coordinates);
-        primitive.WithIndicesAccessor(PrimitiveType.TRIANGLES, triangleIndices)
+        _ = primitive.WithIndicesAccessor(PrimitiveType.TRIANGLES, triangleIndices)
             .WithMaterial(material);
     }
 
@@ -315,26 +308,30 @@ public static class HeightmapSerializer
         foreach (HeightmapCell cell in heightmap.Cells)
         {
             string cellName = $"HCell_{modelCounter}";
-            var primNode = node.CreateNode(cellName);
+            Node primNode = node.CreateNode(cellName);
 
-            var mesh = primNode.Mesh = model.CreateMesh();
+            Mesh mesh = primNode.Mesh = model.CreateMesh();
 
             // Get coordinates
-            List<Vector3> coordinates = new();
-            coordinates.Capacity = 10 * 10; // Always contains 10*10 coordinates
+            List<Vector3> coordinates = new()
+            {
+                Capacity = 10 * 10 // Always contains 10*10 coordinates
+            };
             foreach (int y_entry in Enumerable.Range(0, cell.Data.PointCountY))
             {
                 foreach (int x_entry in Enumerable.Range(0, cell.Data.PointCountX))
                 {
                     float x = cell.MinX + (x_entry * (heightmap.CellSize / 9));
-                    float y = Lerp(cell.Data.HeightRangeMin, cell.Data.HeightRangeMax, cell.Data.PointData[y_entry * cell.Data.PointCountY + x_entry] / 255.0f);
+                    float y = Lerp(cell.Data.HeightRangeMin, cell.Data.HeightRangeMax, cell.Data.PointData[(y_entry * cell.Data.PointCountY) + x_entry] / 255.0f);
                     float z = cell.MinZ + (y_entry * (heightmap.CellSize / 9));
                     coordinates.Add(MatrixMath.ConvertDxToOpenGl(new Vector3(x, y, z)));
                 }
             }
             // Get indices
-            List<int> triangleIndices = new();
-            triangleIndices.Capacity = 81 * 2; // 9*9 for each quad * 2 for triangles
+            List<int> triangleIndices = new()
+            {
+                Capacity = 81 * 2 // 9*9 for each quad * 2 for triangles
+            };
             foreach (int y in Enumerable.Range(0, 9))
             {
                 foreach (int x in Enumerable.Range(0, 9))
@@ -350,9 +347,9 @@ public static class HeightmapSerializer
                     triangleIndices.Add(firstVertexInFace + 1);
                 }
             }
-            var primitive = mesh.CreatePrimitive()
+            MeshPrimitive primitive = mesh.CreatePrimitive()
                 .WithVertexAccessor("POSITION", coordinates);
-            primitive.WithIndicesAccessor(PrimitiveType.TRIANGLES, triangleIndices)
+            _ = primitive.WithIndicesAccessor(PrimitiveType.TRIANGLES, triangleIndices)
                 .WithMaterial(material);
             modelCounter += 1;
         }
@@ -365,9 +362,9 @@ public static class HeightmapSerializer
         Dictionary<int, string> dictionaryIsFrance_Chunk = new();
         foreach (string path in paths)
         {
-            FileInfo info = new FileInfo(path);
+            FileInfo info = new(path);
             using FileStream packStream = new(path, FileMode.Open, FileAccess.Read, FileShare.None);
-            using BinaryReader reader = new BinaryReader(packStream);
+            using BinaryReader reader = new(packStream);
 
             if (!reader.CheckHeaderString("SBLA", reversed: true))
                 throw new Exception("Invalid SBLA header found!");
@@ -394,7 +391,7 @@ public static class HeightmapSerializer
             {
                 continue;
             }
-            
+
             dictionaryEntries[(packNumber) >> 8] = ReadHeightmapCellData(reader); // "real" number
             reader.Close();
             packStream.Close();
@@ -405,20 +402,20 @@ public static class HeightmapSerializer
             if (valueOffset != -1)
             {
                 using FileStream packStream2 = new(path, FileMode.Open, FileAccess.Read, FileShare.None);
-                using BinaryReader reader2 = new BinaryReader(packStream2);
+                using BinaryReader reader2 = new(packStream2);
                 packStream2.Position = valueOffset + 12;
                 chunkNumber = Encoding.ASCII.GetString(reader2.ReadBytes(7));
             }
-            dictionaryIsFrance_Chunk[(packNumber) >> 8] = chunkNumber;       
+            dictionaryIsFrance_Chunk[(packNumber) >> 8] = chunkNumber;
         }
 
         // Export
         ModelRoot model = ModelRoot.CreateModel();
         Scene scene = model.UseScene("Heightmap");
 
-        var material = model.CreateMaterial("Default");
+        Material material = model.CreateMaterial("Default");
 
-        var node = scene.CreateNode("Heightmap");
+        Node node = scene.CreateNode("Heightmap");
 
         ExportHightmapCellData(dictionaryEntries, dictionaryIsFrance_Chunk, node, model, material);
 
@@ -443,7 +440,8 @@ public static class HeightmapSerializer
         }
         return -1;
     }
-    static bool IsMatch(byte[] array, int position, byte[] candidate)
+
+    private static bool IsMatch(byte[] array, int position, byte[] candidate)
     {
         if (candidate.Length > (array.Length - position))
             return false;
@@ -455,7 +453,7 @@ public static class HeightmapSerializer
         return true;
     }
 
-    static bool IsEmptyLocate(byte[] array, byte[] candidate)
+    private static bool IsEmptyLocate(byte[] array, byte[] candidate)
     {
         return array == null
             || candidate == null

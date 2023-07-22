@@ -1,16 +1,15 @@
 ﻿using System.Globalization;
 using System.Text.RegularExpressions;
 
-using ShellProgressBar;
-
-namespace SabTool.CLI.Commands;
-
 using SabTool.CLI.Base;
 using SabTool.Depot;
 using SabTool.Serializers.Megapacks;
 using SabTool.Serializers.Packs;
 using SabTool.Utils;
 
+using ShellProgressBar;
+
+namespace SabTool.CLI.Commands;
 public sealed class PackCategory : BaseCategory
 {
     public override string Key { get; } = "pack";
@@ -34,27 +33,27 @@ public sealed class PackCategory : BaseCategory
             }
 
             ResourceDepot.Instance.Initialize(arguments.ElementAt(0));
-            ResourceDepot.Instance.Load(Resource.Maps);
+            _ = ResourceDepot.Instance.Load(Resource.Maps);
 
-            var packsBaseDir = arguments.ElementAt(1);
-            var outputDir = arguments.ElementAt(2);
+            string packsBaseDir = arguments.ElementAt(1);
+            string outputDir = arguments.ElementAt(2);
             if (outputDir == null)
             {
                 Console.WriteLine("ERROR: No output directory is given!");
                 return false;
             }
 
-            Directory.CreateDirectory(outputDir);
+            _ = Directory.CreateDirectory(outputDir);
 
-            var consoleError = Console.Error;
+            TextWriter consoleError = Console.Error;
 
-            using var logWriter = new StreamWriter(new FileStream(Path.Combine(outputDir, "packlog.txt"), FileMode.Create, FileAccess.Write, FileShare.Read));
+            using StreamWriter logWriter = new(new FileStream(Path.Combine(outputDir, "packlog.txt"), FileMode.Create, FileAccess.Write, FileShare.Read));
 
             Console.SetError(logWriter);
 
-            var files = Directory.GetFiles(packsBaseDir, "*.*", SearchOption.AllDirectories);
+            string[] files = Directory.GetFiles(packsBaseDir, "*.*", SearchOption.AllDirectories);
 
-            var options = new ProgressBarOptions
+            ProgressBarOptions options = new()
             {
                 EnableTaskBarProgress = true,
                 ForegroundColor = ConsoleColor.White,
@@ -62,16 +61,16 @@ public sealed class PackCategory : BaseCategory
                 ProgressBarOnBottom = true
             };
 
-            var childOptions = new ProgressBarOptions
+            ProgressBarOptions childOptions = new()
             {
                 ForegroundColor = ConsoleColor.White,
                 CollapseWhenFinished = true,
                 ProgressBarOnBottom = true
             };
 
-            using var progressBar = new ProgressBar(files.Length, "Unpacking packs...", options);
+            using ProgressBar progressBar = new(files.Length, "Unpacking packs...", options);
 
-            foreach (var pack in files)
+            foreach (string pack in files)
             {
                 ProcessPack(pack, Path.Combine(outputDir, Path.GetDirectoryName(pack)![(packsBaseDir.Length + 1)..]), progressBar, childOptions);
 
@@ -87,16 +86,13 @@ public sealed class PackCategory : BaseCategory
         {
             Crc crc;
 
-            var fileName = Path.GetFileNameWithoutExtension(filePath);
+            string fileName = Path.GetFileNameWithoutExtension(filePath);
 
-            if (ChunkRegex.IsMatch(filePath.ToLowerInvariant()))
-                crc = new Crc(uint.Parse(fileName));
-            else if (fileName.StartsWith("0x"))
-                crc = new Crc(uint.Parse(fileName[2..], NumberStyles.HexNumber));
-            else
-                crc = new Crc(Hash.StringToHash(fileName));
+            crc = ChunkRegex.IsMatch(filePath.ToLowerInvariant())
+                ? new Crc(uint.Parse(fileName))
+                : fileName.StartsWith("0x") ? new Crc(uint.Parse(fileName[2..], NumberStyles.HexNumber)) : new Crc(Hash.StringToHash(fileName));
 
-            var streamBlock = ResourceDepot.Instance.GetStreamBlock(crc);
+            Data.Packs.StreamBlock? streamBlock = ResourceDepot.Instance.GetStreamBlock(crc);
             if (streamBlock == null)
             {
                 Console.WriteLine($"Could not find StreamBlock for {crc} ({filePath})");
@@ -106,11 +102,11 @@ public sealed class PackCategory : BaseCategory
             outputDir = Path.Combine(outputDir, Path.GetFileNameWithoutExtension(filePath));
             outputDir = outputDir.Replace(" ", "");
 
-            Directory.CreateDirectory(outputDir);
+            _ = Directory.CreateDirectory(outputDir);
 
-            using var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            using FileStream fs = new(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
 
-            using var child = progressBar.Spawn(streamBlock.EntryCounts.Select(c => (int)c).Sum(), filePath, childOptions);
+            using ChildProgressBar child = progressBar.Spawn(streamBlock.EntryCounts.Select(c => (int)c).Sum(), filePath, childOptions);
 
             PackSerializer.DeserializeRaw(fs, streamBlock);
 

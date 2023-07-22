@@ -1,10 +1,6 @@
-﻿using System;
-using System.IO;
-using System.Text;
+﻿using System.Text;
 
 using Newtonsoft.Json;
-
-namespace SabTool.Serializers.Packs;
 
 using SabTool.Data.Packs;
 using SabTool.Serializers.Json.Converters;
@@ -13,6 +9,7 @@ using SabTool.Serializers.Packs.Assets;
 using SabTool.Utils;
 using SabTool.Utils.Extensions;
 
+namespace SabTool.Serializers.Packs;
 public static class StreamBlockSerializer
 {
     [Flags]
@@ -24,9 +21,9 @@ public static class StreamBlockSerializer
 
     public static StreamBlock DeserializeFromMapRaw(Stream stream, SerializationFlags flags = SerializationFlags.None)
     {
-        using var reader = new BinaryReader(stream, Encoding.UTF8, true);
+        using BinaryReader reader = new(stream, Encoding.UTF8, true);
 
-        var streamBlock = DeserializeBaseBlock(stream);
+        StreamBlock streamBlock = DeserializeBaseBlock(stream);
 
         if (streamBlock.Index == 2 || (flags & SerializationFlags.EntriesForOnlyIndex2) == SerializationFlags.None)
         {
@@ -39,9 +36,9 @@ public static class StreamBlockSerializer
 
     public static StreamBlock DeserializeBaseBlock(Stream stream)
     {
-        using var reader = new BinaryReader(stream, Encoding.UTF8, true);
+        using BinaryReader reader = new(stream, Encoding.UTF8, true);
 
-        var streamBlock = new StreamBlock
+        StreamBlock streamBlock = new()
         {
             Id = new(reader.ReadUInt32()),
             FileName = reader.ReadStringWithMaxLength(reader.ReadInt16())
@@ -58,7 +55,7 @@ public static class StreamBlockSerializer
 
     public static void DeserializeHeader(StreamBlock streamBlock, Stream stream)
     {
-        using var reader = new BinaryReader(stream, Encoding.UTF8, true);
+        using BinaryReader reader = new(stream, Encoding.UTF8, true);
 
         streamBlock.HeaderEnd = reader.ReadUInt32();
         if (streamBlock.HeaderEnd > 0)
@@ -66,11 +63,11 @@ public static class StreamBlockSerializer
 
         streamBlock.HeaderEnd += 4;
 
-        var offInd = 0;
+        int offInd = 0;
 
         do
         {
-            var off = StreamBlock.OffIndices[offInd];
+            uint off = StreamBlock.OffIndices[offInd];
 
             if (streamBlock.EntryCounts[off] == 0)
             {
@@ -80,7 +77,7 @@ public static class StreamBlockSerializer
 
             streamBlock.Entries[off] = new StreamBlock.Entry[streamBlock.EntryCounts[off]];
 
-            for (var i = 0; i < streamBlock.EntryCounts[off]; ++i)
+            for (int i = 0; i < streamBlock.EntryCounts[off]; ++i)
                 streamBlock.Entries[off][i] = new StreamBlock.Entry(reader);
 
             streamBlock.HeaderEnd += 24 * streamBlock.EntryCounts[off];
@@ -94,13 +91,13 @@ public static class StreamBlockSerializer
 
     public static void ReadPayloads(StreamBlock streamBlock, Stream stream)
     {
-        using var reader = new BinaryReader(stream, Encoding.UTF8, true);
+        using BinaryReader reader = new(stream, Encoding.UTF8, true);
 
-        var offInd = 0;
+        int offInd = 0;
 
         do
         {
-            var off = StreamBlock.OffIndices[offInd];
+            uint off = StreamBlock.OffIndices[offInd];
 
             if (streamBlock.EntryCounts[off] == 0)
             {
@@ -108,9 +105,9 @@ public static class StreamBlockSerializer
                 continue;
             }
 
-            for (var i = 0; i < streamBlock.EntryCounts[off]; ++i)
+            for (int i = 0; i < streamBlock.EntryCounts[off]; ++i)
             {
-                var entry = streamBlock.Entries[off][i];
+                StreamBlock.Entry entry = streamBlock.Entries[off][i];
 
                 // TODO: should be align up after each other, but who knows...
                 //reader.BaseStream.Position = streamBlock.HeaderEnd + entry.Offset;
@@ -150,7 +147,7 @@ public static class StreamBlockSerializer
         {
             streamBlock.TextureInfoArray = new StreamBlock.TextureInfo[streamBlock.TextureCount];
 
-            for (var i = 0; i < streamBlock.TextureCount; ++i)
+            for (int i = 0; i < streamBlock.TextureCount; ++i)
             {
                 streamBlock.TextureInfoArray[i] = new StreamBlock.TextureInfo
                 {
@@ -167,7 +164,7 @@ public static class StreamBlockSerializer
         {
             streamBlock.TextureInfoArray2 = new StreamBlock.TextureInfo[streamBlock.TextureCount2];
 
-            for (var i = 0; i < streamBlock.TextureCount2; ++i)
+            for (int i = 0; i < streamBlock.TextureCount2; ++i)
             {
                 streamBlock.TextureInfoArray2[i] = new StreamBlock.TextureInfo
                 {
@@ -184,7 +181,7 @@ public static class StreamBlockSerializer
     {
         _ = reader.ReadInt32();
 
-        for (var i = 0; i < streamBlock.EntryCounts.Length; ++i)
+        for (int i = 0; i < streamBlock.EntryCounts.Length; ++i)
             streamBlock.EntryCounts[i] = reader.ReadUInt32();
 
         streamBlock.Count1ACFor1B0And1B4_1AC = reader.ReadUInt32();
@@ -193,7 +190,7 @@ public static class StreamBlockSerializer
             streamBlock.Array1B0 = new Crc[streamBlock.Count1ACFor1B0And1B4_1AC];
             streamBlock.Array1B4 = new byte[streamBlock.Count1ACFor1B0And1B4_1AC];
 
-            for (var i = 0; i < streamBlock.Count1ACFor1B0And1B4_1AC; ++i)
+            for (int i = 0; i < streamBlock.Count1ACFor1B0And1B4_1AC; ++i)
             {
                 streamBlock.Array1B0[i] = new(reader.ReadUInt32());
                 streamBlock.Array1B4[i] = 0;
@@ -201,14 +198,14 @@ public static class StreamBlockSerializer
         }
 
         streamBlock.PaletteCount = (ushort)reader.ReadInt32();
-        for (var i = 0; i < streamBlock.PaletteCount; ++i)
+        for (int i = 0; i < streamBlock.PaletteCount; ++i)
             streamBlock.Palettes[i] = new Crc(reader.ReadUInt32());
 
         streamBlock.FenceTreeCount = reader.ReadInt32();
-        for (var i = 0; i < streamBlock.FenceTreeCount; ++i)
+        for (int i = 0; i < streamBlock.FenceTreeCount; ++i)
         {
-            var crc = new Crc(reader.ReadUInt32());
-            var subCnt = reader.ReadInt32();
+            Crc crc = new(reader.ReadUInt32());
+            int subCnt = reader.ReadInt32();
 
             try
             {
@@ -233,20 +230,20 @@ public static class StreamBlockSerializer
 
     public static void SerializeJSON(StreamBlock streamBlock, Stream stream)
     {
-        using var writer = new StreamWriter(stream, Encoding.UTF8, leaveOpen: true);
+        using StreamWriter writer = new(stream, Encoding.UTF8, leaveOpen: true);
 
         writer.Write(JsonConvert.SerializeObject(streamBlock, Formatting.Indented, new CrcConverter()));
     }
 
     public static void Export(StreamBlock streamBlock, string outputPath, IProgress<string> progress)
     {
-        Directory.CreateDirectory(outputPath);
+        _ = Directory.CreateDirectory(outputPath);
 
-        var offInd = 0;
+        int offInd = 0;
 
         do
         {
-            var off = StreamBlock.OffIndices[offInd];
+            uint off = StreamBlock.OffIndices[offInd];
 
             if (streamBlock.EntryCounts[off] == 0)
             {
@@ -254,11 +251,11 @@ public static class StreamBlockSerializer
                 continue;
             }
 
-            for (var i = 0; i < streamBlock.EntryCounts[off]; ++i)
+            for (int i = 0; i < streamBlock.EntryCounts[off]; ++i)
             {
-                var entry = streamBlock.Entries[off][i];
+                StreamBlock.Entry entry = streamBlock.Entries[off][i];
 
-                var extension = "bin";
+                string extension = "bin";
 
                 try
                 {
@@ -267,7 +264,7 @@ public static class StreamBlockSerializer
                         case 0:
                             extension = "mesh-bin";
 
-                            var meshAsset = MeshAssetSerializer.DeserializeRaw(new MemoryStream(entry.Payload, false));
+                            Data.Packs.Assets.MeshAsset meshAsset = MeshAssetSerializer.DeserializeRaw(new MemoryStream(entry.Payload, false));
 
                             meshAsset.Export(outputPath);
 
@@ -277,7 +274,7 @@ public static class StreamBlockSerializer
                         case 1:
                             extension = "texture-bin";
 
-                            var textureAsset = TextureAssetSerializer.DeserializeRaw(new MemoryStream(entry.Payload, false), entry.Crc);
+                            Data.Packs.Assets.TextureAsset? textureAsset = TextureAssetSerializer.DeserializeRaw(new MemoryStream(entry.Payload, false), entry.Crc);
                             if (textureAsset is not null)
                             {
                                 textureAsset.Export(outputPath);
@@ -286,20 +283,20 @@ public static class StreamBlockSerializer
 
                                 continue;
                             }
-                            
+
                             break;
 
                         case 2:
                             extension = "physics-bin";
 
-                            var physicsAsset = PhysicsAssetSerializer.DeserializeRaw(entry);
+                            Data.Packs.Assets.PhysicsAsset? physicsAsset = PhysicsAssetSerializer.DeserializeRaw(entry);
                             if (physicsAsset is not null)
                             {
                                 physicsAsset.Export(outputPath);
 
                                 continue;
                             }
-                            
+
                             break;
 
                         case 3:
@@ -330,11 +327,11 @@ public static class StreamBlockSerializer
                         case 8:
                             extension = "wsd-bin";
 
-                            var dictOutPath = Path.Combine(outputPath, entry.UnkCrc.Value == 0 ? "objects.wsd.json" : $"{entry.UnkCrc.GetStringOrHexString()}.wsd.json");
+                            string dictOutPath = Path.Combine(outputPath, entry.UnkCrc.Value == 0 ? "objects.wsd.json" : $"{entry.UnkCrc.GetStringOrHexString()}.wsd.json");
 
-                            var dict = DictionarySerializer.DeserializeRaw(new MemoryStream(entry.Payload, false));
+                            Data.Misc.Dictionary dict = DictionarySerializer.DeserializeRaw(new MemoryStream(entry.Payload, false));
 
-                            using (var fs = new FileStream(dictOutPath, FileMode.Create, FileAccess.Write, FileShare.Read))
+                            using (FileStream fs = new(dictOutPath, FileMode.Create, FileAccess.Write, FileShare.Read))
                                 DictionarySerializer.SerializeJSON(dict, fs);
 
                             continue;
@@ -346,10 +343,10 @@ public static class StreamBlockSerializer
                     Console.Error.WriteLine(ex.ToString());
                 }
 
-                var outputFileName = $"{entry.Crc.GetStringOrHexString()}.{extension}";
-                var outputFilePath = Path.Combine(outputPath, outputFileName);
+                string outputFileName = $"{entry.Crc.GetStringOrHexString()}.{extension}";
+                string outputFilePath = Path.Combine(outputPath, outputFileName);
 
-                Directory.CreateDirectory(Path.GetDirectoryName(outputFilePath)!);
+                _ = Directory.CreateDirectory(Path.GetDirectoryName(outputFilePath)!);
 
                 File.WriteAllBytes(outputFilePath, entry.Payload);
 

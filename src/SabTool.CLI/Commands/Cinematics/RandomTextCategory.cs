@@ -1,9 +1,9 @@
-﻿namespace SabTool.CLI.Commands.Cinematics;
-
+﻿
 using SabTool.CLI.Base;
 using SabTool.Depot;
 using SabTool.Serializers.Cinematics;
 
+namespace SabTool.CLI.Commands.Cinematics;
 public sealed class RandomTextCategory : BaseCategory
 {
     public override string Key { get; } = "random-text";
@@ -26,24 +26,24 @@ public sealed class RandomTextCategory : BaseCategory
                 return false;
             }
 
-            var outputDirectory = arguments.ElementAt(1);
-            Directory.CreateDirectory(outputDirectory);
+            string outputDirectory = arguments.ElementAt(1);
+            _ = Directory.CreateDirectory(outputDirectory);
 
             ResourceDepot.Instance.Initialize(arguments.ElementAt(0));
-            ResourceDepot.Instance.Load(Resource.Cinematics);
+            _ = ResourceDepot.Instance.Load(Resource.Cinematics);
 
-            var outputFilePath = Path.Combine(outputDirectory, RandomTextRootPath, "random-texts.json");
+            string outputFilePath = Path.Combine(outputDirectory, RandomTextRootPath, "random-texts.json");
 
-            var outputFileDirectory = Path.GetDirectoryName(outputFilePath);
+            string? outputFileDirectory = Path.GetDirectoryName(outputFilePath);
             if (outputFileDirectory == null)
             {
                 Console.WriteLine("ERROR: Output directory is invalid!");
                 return false;
             }
 
-            Directory.CreateDirectory(outputFileDirectory);
+            _ = Directory.CreateDirectory(outputFileDirectory);
 
-            using var fs = new FileStream(outputFilePath, FileMode.Create, FileAccess.Write, FileShare.None);
+            using FileStream fs = new(outputFilePath, FileMode.Create, FileAccess.Write, FileShare.None);
 
             RandomTextSerializer.SerializeJSON(ResourceDepot.Instance.GetRandomTexts().ToList(), fs);
 

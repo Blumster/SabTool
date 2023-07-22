@@ -30,7 +30,7 @@ public sealed class VertexDeclaration
 
     public static List<VertexDeclaration> Build(byte[] flags, int[] formats, int arrayCount, byte index)
     {
-        var declarations = new List<VertexDeclaration>();
+        List<VertexDeclaration> declarations = new();
 
         if (arrayCount == 0)
         {
@@ -42,7 +42,7 @@ public sealed class VertexDeclaration
         short streamId = 0;
         for (; streamId < arrayCount; ++streamId)
         {
-            var format = formats[streamId];
+            int format = formats[streamId];
             short offset = 0;
 
             switch (format & 3)

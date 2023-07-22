@@ -1,7 +1,7 @@
-﻿namespace SabTool.Data.Blueprints;
-
+﻿
 using SabTool.Data.Misc;
 
+namespace SabTool.Data.Blueprints;
 public sealed class Blueprint
 {
     private const int NamePad = -30;
@@ -24,54 +24,51 @@ public sealed class Blueprint
 
     public string Dump()
     {
-        var sb = new StringBuilder();
-        sb.AppendLine($"Blueprint({Type}, {Name}):");
+        StringBuilder sb = new();
+        _ = sb.AppendLine($"Blueprint({Type}, {Name}):");
 
-        var allTypes = BlueprintFieldTypes.GetAllTypes(Type);
+        HashSet<BlueprintType> allTypes = BlueprintFieldTypes.GetAllTypes(Type);
         if (allTypes == null)
-            sb.AppendLine("Unknown blueprint type!");
+            _ = sb.AppendLine("Unknown blueprint type!");
 
-        foreach (var prop in Properties)
+        foreach (Property prop in Properties)
         {
-            var name = prop.Name.GetString();
+            string name = prop.Name.GetString();
             if (string.IsNullOrEmpty(name))
                 name = "UNKNOWN";
 
-            sb.Append($"[{prop.Name.GetHexString()}][{BlueprintFieldTypes.GetRealBlueprintType(Type, prop),NamePad}][{name,NamePad}]: ");
+            _ = sb.Append($"[{prop.Name.GetHexString()}][{BlueprintFieldTypes.GetRealBlueprintType(Type, prop),NamePad}][{name,NamePad}]: ");
 
             try
             {
-                var value = BlueprintFieldTypes.ReadProperty(Type, prop);
-                if (value is not null)
-                    sb.AppendLine(value.ToString());
-                else
-                    sb.AppendLine(FormatEmptyType(prop.Data));
+                object value = BlueprintFieldTypes.ReadProperty(Type, prop);
+                _ = value is not null ? sb.AppendLine(value.ToString()) : sb.AppendLine(FormatEmptyType(prop.Data));
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Exception while reading field {prop.Name} from type {BlueprintFieldTypes.GetRealBlueprintType(Type, prop)}!");
                 Console.WriteLine(ex);
 
-                sb.AppendLine(FormatEmptyType(prop.Data));
+                _ = sb.AppendLine(FormatEmptyType(prop.Data));
             }
-        }    
+        }
 
         return sb.ToString();
     }
 
     private static string FormatEmptyType(byte[] bytes)
     {
-        var bytesStr = BitConverter.ToString(bytes).Replace('-', ' ');
-        var guessStr = "";
+        string bytesStr = BitConverter.ToString(bytes).Replace('-', ' ');
+        string guessStr = "";
 
         if (bytes.Length >= 4)
         {
-            var intStr = bytes.Length >= 4 ? BitConverter.ToInt32(bytes, 0).ToString() : "";
-            var floatStr = bytes.Length >= 4 ? BitConverter.ToSingle(bytes, 0).ToString("0.00") : "";
-            var stringVal = Encoding.UTF8.GetString(bytes);
-            var crcVal = bytes.Length >= 4 ? new Crc(BitConverter.ToUInt32(bytes, 0)).ToString() : "";
+            string intStr = bytes.Length >= 4 ? BitConverter.ToInt32(bytes, 0).ToString() : "";
+            string floatStr = bytes.Length >= 4 ? BitConverter.ToSingle(bytes, 0).ToString("0.00") : "";
+            string stringVal = Encoding.UTF8.GetString(bytes);
+            string crcVal = bytes.Length >= 4 ? new Crc(BitConverter.ToUInt32(bytes, 0)).ToString() : "";
 
-            for (var i = 0; i < bytes.Length; ++i)
+            for (int i = 0; i < bytes.Length; ++i)
             {
                 // Don't check nulltermination
                 if (i == bytes.Length - 1 && bytes[i] == 0)

@@ -7,13 +7,13 @@ public sealed class SkeletonRemap
 
     public string DumpString(int indentCount = 0)
     {
-        var sb = new StringBuilder();
+        StringBuilder sb = new();
 
-        sb.Append(' ', indentCount).AppendLine($"{nameof(SkeletonRemap)}()");
-        sb.Append(' ', indentCount).AppendLine("{");
-        sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Bone)} = {Bone}");
-        sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Matrix4x4)} = {BasePose}");
-        sb.Append(' ', indentCount).AppendLine("}");
+        _ = sb.Append(' ', indentCount).AppendLine($"{nameof(SkeletonRemap)}()");
+        _ = sb.Append(' ', indentCount).AppendLine("{");
+        _ = sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Bone)} = {Bone}");
+        _ = sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Matrix4x4)} = {BasePose}");
+        _ = sb.Append(' ', indentCount).AppendLine("}");
 
         return sb.ToString();
     }

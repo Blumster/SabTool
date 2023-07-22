@@ -10,17 +10,14 @@ public sealed class GlobalMap
 
     public StreamBlock? GetDynamicBlock(Crc crc)
     {
-        if (DynamicBlocks.TryGetValue(crc, out StreamBlock res))
-            return res;
-
-        return null;
+        return DynamicBlocks.TryGetValue(crc, out StreamBlock res) ? res : null;
     }
 
     public StreamBlock? GetStaticBlock(Crc crc)
     {
-        for (var i = 0; i < StreamBlockArray.Length; ++i)
+        for (int i = 0; i < StreamBlockArray.Length; ++i)
         {
-            for (var j = 0; j < StreamBlockArray[i].Length; ++j)
+            for (int j = 0; j < StreamBlockArray[i].Length; ++j)
             {
                 if (StreamBlockArray[i][j].Id == crc)
                 {

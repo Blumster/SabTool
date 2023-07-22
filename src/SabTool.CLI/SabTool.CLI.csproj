@@ -1,11 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <Title>SabTool.CLI</Title>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
     <StartupObject>SabTool.CLI.Program</StartupObject>
-      <ImplicitUsings>enable</ImplicitUsings>
-      <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>

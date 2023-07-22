@@ -1,10 +1,9 @@
 ﻿using System.Diagnostics;
 
-namespace SabTool.CLI.Commands.Sounds;
-
 using SabTool.CLI.Base;
 using SabTool.Depot;
 
+namespace SabTool.CLI.Commands.Sounds;
 public sealed class SoundPackCategory : BaseCategory
 {
     public override string Key { get; } = "sound-pack";
@@ -27,44 +26,44 @@ public sealed class SoundPackCategory : BaseCategory
                 return false;
             }
 
-            var outputDirectory = arguments.ElementAt(1);
-            Directory.CreateDirectory(outputDirectory);
+            string outputDirectory = arguments.ElementAt(1);
+            _ = Directory.CreateDirectory(outputDirectory);
 
-            var ww2OggPath = arguments.ElementAt(2);
-            var ww2OggExePath = Path.Combine(ww2OggPath, "ww2ogg.exe");
+            string ww2OggPath = arguments.ElementAt(2);
+            string ww2OggExePath = Path.Combine(ww2OggPath, "ww2ogg.exe");
             if (!Directory.Exists(ww2OggPath) || !File.Exists(ww2OggExePath))
             {
                 Console.WriteLine("Invalid ww2ogg path!");
                 return false;
             }
 
-            var conv = false;
+            bool conv = false;
             if (arguments.Count() == 4)
                 conv = arguments.ElementAt(3) == "convert";
 
             ResourceDepot.Instance.Initialize(arguments.ElementAt(0));
-            ResourceDepot.Instance.Load(Resource.Sounds);
+            _ = ResourceDepot.Instance.Load(Resource.Sounds);
 
-            foreach (var soundPack in ResourceDepot.Instance.GetSoundPacks())
+            foreach (Data.Sounds.SoundPack soundPack in ResourceDepot.Instance.GetSoundPacks())
             {
-                var soundPackOutputDir = Path.Combine(outputDirectory, soundPack.FilePath);
-                Directory.CreateDirectory(soundPackOutputDir);
-                Directory.CreateDirectory(Path.Combine(soundPackOutputDir, "banks"));
-                Directory.CreateDirectory(Path.Combine(soundPackOutputDir, "oggs"));
+                string soundPackOutputDir = Path.Combine(outputDirectory, soundPack.FilePath);
+                _ = Directory.CreateDirectory(soundPackOutputDir);
+                _ = Directory.CreateDirectory(Path.Combine(soundPackOutputDir, "banks"));
+                _ = Directory.CreateDirectory(Path.Combine(soundPackOutputDir, "oggs"));
 
-                foreach (var bank in soundPack.SoundBanks)
+                foreach (Data.Sounds.SoundBank? bank in soundPack.SoundBanks)
                 {
-                    var bankName = bank.Id.GetStringOrHexString();
-                    var bankFilePath = Path.Combine(soundPackOutputDir, $"banks\\{bankName}.bnk");
+                    string bankName = bank.Id.GetStringOrHexString();
+                    string bankFilePath = Path.Combine(soundPackOutputDir, $"banks\\{bankName}.bnk");
 
-                    using var fs = new FileStream(bankFilePath, FileMode.Create, FileAccess.Write, FileShare.None);
+                    using FileStream fs = new(bankFilePath, FileMode.Create, FileAccess.Write, FileShare.None);
 
                     fs.Write(bank.Data, 0, bank.Data.Length);
                 }
 
-                foreach (var stream in soundPack.SoundStreams)
+                foreach (Data.Sounds.SoundStream? stream in soundPack.SoundStreams)
                 {
-                    var streamName = stream.Id.GetStringOrHexString();
+                    string streamName = stream.Id.GetStringOrHexString();
                     if (streamName.Contains('\\'))
                     {
                         Console.WriteLine($"Possible bad Crc for stream: {stream.Id}");
@@ -72,9 +71,9 @@ public sealed class SoundPackCategory : BaseCategory
                         streamName = stream.Id.GetHexString();
                     }
 
-                    var streamFilePath = Path.Combine(soundPackOutputDir, $"oggs\\{streamName}.wem");
+                    string streamFilePath = Path.Combine(soundPackOutputDir, $"oggs\\{streamName}.wem");
 
-                    using var fs = new FileStream(streamFilePath, FileMode.Create, FileAccess.Write, FileShare.None);
+                    using FileStream fs = new(streamFilePath, FileMode.Create, FileAccess.Write, FileShare.None);
 
                     fs.Write(stream.Data, 0, stream.Data.Length);
                     fs.Close();
@@ -82,14 +81,14 @@ public sealed class SoundPackCategory : BaseCategory
                     if (!conv)
                         continue;
 
-                    var info = new ProcessStartInfo
+                    ProcessStartInfo info = new()
                     {
                         WorkingDirectory = ww2OggPath,
                         FileName = ww2OggExePath,
                         Arguments = $"{streamFilePath} -o {Path.ChangeExtension(streamFilePath, "ogg")} --full-setup"
                     };
 
-                    Process.Start(info);
+                    _ = Process.Start(info);
                 }
             }
 

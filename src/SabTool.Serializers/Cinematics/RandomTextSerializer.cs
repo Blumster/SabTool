@@ -1,49 +1,45 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
+﻿using System.Text;
 
 using Newtonsoft.Json;
-
-namespace SabTool.Serializers.Cinematics;
 
 using SabTool.Data.Cinematics;
 using SabTool.Serializers.Json.Converters;
 using SabTool.Utils;
 
+namespace SabTool.Serializers.Cinematics;
 public static class RandomTextSerializer
 {
     private const int Version = 5;
 
     public static List<RandomText> DeserializeRaw(Stream stream)
     {
-        using var reader = new BinaryReader(stream, Encoding.UTF8, true);
+        using BinaryReader reader = new(stream, Encoding.UTF8, true);
 
-        var version = reader.ReadInt32();
+        int version = reader.ReadInt32();
         if (version != Version)
             throw new Exception($"Invalid version {version} for RandomText!");
 
-        var textCount = reader.ReadInt32();
-        var randomTexts = new List<RandomText>(textCount);
+        int textCount = reader.ReadInt32();
+        List<RandomText> randomTexts = new(textCount);
 
         _ = reader.ReadInt32();
 
         while (true)
         {
-            var tag = reader.ReadUInt32();
+            uint tag = reader.ReadUInt32();
             if (tag == 0x43454E44) // CEND
                 break;
 
             if (tag != 0x52545854) // RTXT
                 continue;
 
-            var randomText = new RandomText
+            RandomText randomText = new()
             {
                 Id = new(reader.ReadUInt32()),
                 Flags = RandomTextFlags.EqualProbability
             };
 
-            var previousProbability = 0.0f;
+            float previousProbability = 0.0f;
 
             while (true)
             {
@@ -54,8 +50,8 @@ public static class RandomTextSerializer
                 if (tag != 0x52414E44) // RAND
                     continue;
 
-                var text = new Crc(reader.ReadUInt32());
-                var probability = reader.ReadSingle();
+                Crc text = new(reader.ReadUInt32());
+                float probability = reader.ReadSingle();
 
                 if (randomText.NumTexts == 20)
                     continue;
@@ -89,7 +85,7 @@ public static class RandomTextSerializer
 
     public static void SerializeJSON(List<RandomText> randomTexts, Stream stream)
     {
-        using var writer = new StreamWriter(stream, Encoding.UTF8, leaveOpen: true);
+        using StreamWriter writer = new(stream, Encoding.UTF8, leaveOpen: true);
 
         writer.Write(JsonConvert.SerializeObject(randomTexts, Formatting.Indented, new CrcConverter()));
     }

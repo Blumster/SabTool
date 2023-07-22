@@ -10,7 +10,7 @@ public static class MatrixMath
     {
         // Blender import of gltf either doesn't work properly or the matrix above is wrong or wrongly applied
         // For now don't modify anything, but use it in your code so we can fix it later
-        return matrix;            
+        return matrix;
         // return matrix * DxToOpenGl;
     }
 

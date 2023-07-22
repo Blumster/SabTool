@@ -1,10 +1,9 @@
 ﻿using System.Text;
 
-namespace SabTool.CLI.Commands;
-
 using SabTool.CLI.Base;
 using SabTool.Depot;
 
+namespace SabTool.CLI.Commands;
 public sealed class MegapackCategory : BaseCategory
 {
     public override string Key => "megapack";
@@ -26,29 +25,29 @@ public sealed class MegapackCategory : BaseCategory
             }
 
             ResourceDepot.Instance.Initialize(arguments.ElementAt(0));
-            ResourceDepot.Instance.Load(Resource.Megapacks);
+            _ = ResourceDepot.Instance.Load(Resource.Megapacks);
 
-            var writer = Console.Out;
+            TextWriter writer = Console.Out;
 
             if (arguments.Count() == 2)
                 writer = new StreamWriter(arguments.ElementAt(1), false, Encoding.UTF8);
 
-            foreach (var megapackFile in ResourceDepot.Instance.GetMegapacks())
+            foreach (string megapackFile in ResourceDepot.Instance.GetMegapacks())
             {
                 writer.WriteLine($"Megapack: {megapackFile}");
 
-                foreach (var fileEntry in ResourceDepot.Instance.GetFileEntries(megapackFile))
+                foreach (Data.Packs.FileEntry fileEntry in ResourceDepot.Instance.GetFileEntries(megapackFile))
                     writer.WriteLine(fileEntry.ToPrettyString());
 
                 writer.WriteLine();
                 writer.WriteLine($"Mappings:");
 
-                foreach (var (crc1, crc2) in ResourceDepot.Instance.GetBlockPathToNameCrcs(megapackFile))
+                foreach ((Utils.Crc crc1, Utils.Crc crc2) in ResourceDepot.Instance.GetBlockPathToNameCrcs(megapackFile))
                     writer.WriteLine($"{crc1} -> {crc2}");
 
                 writer.WriteLine();
             }
-            
+
             writer.Flush();
 
             if (writer != Console.Out)
@@ -73,53 +72,53 @@ public sealed class MegapackCategory : BaseCategory
             }
 
             ResourceDepot.Instance.Initialize(arguments.ElementAt(0));
-            ResourceDepot.Instance.Load(Resource.Megapacks);
+            _ = ResourceDepot.Instance.Load(Resource.Megapacks);
 
-            var outputDir = arguments.ElementAt(1);
+            string outputDir = arguments.ElementAt(1);
 
-            Directory.CreateDirectory(outputDir);
+            _ = Directory.CreateDirectory(outputDir);
 
             string? fileToUnpack = null;
 
             if (arguments.Count() == 3)
                 fileToUnpack = arguments.ElementAt(2);
 
-            foreach (var megapackFile in ResourceDepot.Instance.GetMegapacks())
+            foreach (string megapackFile in ResourceDepot.Instance.GetMegapacks())
             {
                 if (!string.IsNullOrEmpty(fileToUnpack) && megapackFile != fileToUnpack)
                     continue;
 
                 Console.WriteLine($"Unpacking {megapackFile}...");
-                
-                var megapackOutputDir = Path.Combine(outputDir, megapackFile);
 
-                var i = 0;
+                string megapackOutputDir = Path.Combine(outputDir, megapackFile);
 
-                foreach (var fileEntry in ResourceDepot.Instance.GetFileEntries(megapackFile))
+                int i = 0;
+
+                foreach (Data.Packs.FileEntry fileEntry in ResourceDepot.Instance.GetFileEntries(megapackFile))
                 {
-                    var entryStream = ResourceDepot.Instance.GetPackStream(fileEntry.Path);
+                    MemoryStream? entryStream = ResourceDepot.Instance.GetPackStream(fileEntry.Path);
                     if (entryStream == null)
                     {
                         Console.WriteLine($"Unable to unpack {fileEntry.Path}, no data fround for it!");
                         continue;
                     }
 
-                    var realFilePath = fileEntry.Path.GetString();
+                    string realFilePath = fileEntry.Path.GetString();
                     if (string.IsNullOrEmpty(realFilePath))
                         realFilePath = $"{fileEntry.Name.GetStringOrHexString()}.pack"; // TODO: based on the streamblock, can be dynpack, palettepack or pack
 
-                    var outputFilePath = Path.Combine(megapackOutputDir, realFilePath);
+                    string outputFilePath = Path.Combine(megapackOutputDir, realFilePath);
 
-                    var outputFileDirectory = Path.GetDirectoryName(outputFilePath);
+                    string? outputFileDirectory = Path.GetDirectoryName(outputFilePath);
                     if (outputFileDirectory == null)
                     {
                         Console.WriteLine("ERROR: Output directory is invalid!");
                         return false;
                     }
 
-                    Directory.CreateDirectory(outputFileDirectory);
+                    _ = Directory.CreateDirectory(outputFileDirectory);
 
-                    using var fs = new FileStream(outputFilePath, FileMode.Create, FileAccess.Write, FileShare.None);
+                    using FileStream fs = new(outputFilePath, FileMode.Create, FileAccess.Write, FileShare.None);
 
                     entryStream.CopyTo(fs);
 

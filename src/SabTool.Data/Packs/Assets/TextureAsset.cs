@@ -14,7 +14,7 @@ public sealed class TextureAsset
 
     public static TextureAsset Import(string filePath)
     {
-        var name = Path.GetFileNameWithoutExtension(filePath);
+        string name = Path.GetFileNameWithoutExtension(filePath);
 
         return new TextureAsset(Hash.StringToHash(name))
         {

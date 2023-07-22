@@ -1,11 +1,8 @@
-﻿using System;
-using System.IO;
-using System.Text;
-
-namespace SabTool.Utils.Images;
+﻿using System.Text;
 
 using SabTool.Utils.Extensions;
 
+namespace SabTool.Utils.Images;
 public class DDSImage
 {
     public class Header
@@ -24,7 +21,7 @@ public class DDSImage
 
             public void Read(BinaryReader reader)
             {
-                var pixelFormatSize = reader.ReadUInt32();
+                uint pixelFormatSize = reader.ReadUInt32();
                 if (pixelFormatSize != PixelSize)
                     throw new Exception("Invalid Pixel Format size!");
 
@@ -58,9 +55,9 @@ public class DDSImage
             if (reader.ReadUInt32() != Magic)
                 throw new Exception("Invalid DDS header magic!");
 
-            var startOffset = reader.BaseStream.Position;
+            long startOffset = reader.BaseStream.Position;
 
-            var size = reader.ReadUInt32();
+            uint size = reader.ReadUInt32();
             if (size != Size)
                 throw new Exception("Invalid header size!");
 
@@ -88,7 +85,7 @@ public class DDSImage
         {
             writer.Write(Magic);
 
-            var startOffset = writer.BaseStream.Position;
+            long startOffset = writer.BaseStream.Position;
 
             writer.Write(Size);
             writer.Write(Flags);
@@ -127,7 +124,7 @@ public class DDSImage
 
     public static DDSImage ReadFrom(Stream stream)
     {
-        var image = new DDSImage();
+        DDSImage image = new();
 
         image.Read(stream);
 
@@ -136,7 +133,7 @@ public class DDSImage
 
     public void Read(Stream stream)
     {
-        using var reader = new BinaryReader(stream, Encoding.UTF8, true);
+        using BinaryReader reader = new(stream, Encoding.UTF8, true);
 
         Read(reader);
     }
@@ -148,7 +145,7 @@ public class DDSImage
 
     public void Write(Stream stream)
     {
-        using var writer = new BinaryWriter(stream, Encoding.UTF8, true);
+        using BinaryWriter writer = new(stream, Encoding.UTF8, true);
 
         Write(writer);
     }

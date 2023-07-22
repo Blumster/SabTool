@@ -1,8 +1,9 @@
-﻿using System;
-using System.IO;
-using System.Numerics;
-using System.Linq;
+﻿using System.Numerics;
 using System.Text;
+
+using SabTool.Data.Misc;
+using SabTool.Utils;
+using SabTool.Utils.Extensions;
 
 using SharpGLTF.Geometry;
 using SharpGLTF.Geometry.VertexTypes;
@@ -11,11 +12,6 @@ using SharpGLTF.Scenes;
 using SharpGLTF.Schema2;
 
 namespace SabTool.Serializers.Misc;
-
-using SabTool.Data.Misc;
-using SabTool.Utils;
-using SabTool.Utils.Extensions;
-
 public class WatercontrolSerializer
 {
     public static Watercontrol DeserializeRaw(Stream stream)
@@ -30,7 +26,7 @@ public class WatercontrolSerializer
         int pointCount = reader.ReadInt32();
 
         Watercontrol watercontrol = new();
-        
+
         foreach (int pointIndex in Enumerable.Range(0, pointCount))
         {
             WatercontrolPoint point = new()
@@ -61,11 +57,11 @@ public class WatercontrolSerializer
             string watercontrolPointName = point.Name.GetStringOrHexString();
             string watercontrolPointFullName = $"{watercontrolPointName}_{modelCounter}"; // Names are not unique in list
             MeshBuilder<VertexPosition> mesh = new(watercontrolPointFullName);
-            var primitive = mesh.UsePrimitive(material, 1);
-            primitive.AddPoint(new VertexPosition(0, 0, 0));
+            PrimitiveBuilder<MaterialBuilder, VertexPosition, VertexEmpty, VertexEmpty> primitive = mesh.UsePrimitive(material, 1);
+            _ = primitive.AddPoint(new VertexPosition(0, 0, 0));
             Matrix4x4 dxTransform = Matrix4x4.Identity;
             dxTransform.Translation = new Vector3(point.X, point.Y, point.Z);
-            scene.AddRigidMesh(mesh, MatrixMath.ConvertDxToOpenGl(dxTransform));
+            _ = scene.AddRigidMesh(mesh, MatrixMath.ConvertDxToOpenGl(dxTransform));
             modelCounter += 1;
         }
 

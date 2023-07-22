@@ -25,9 +25,8 @@ public sealed class LooseFile
 
     public override string ToString()
     {
-        if (string.IsNullOrEmpty(FilePath))
-            return $"LooseFile(Crc: 0x{Crc:X8}, Name: \"{Name}\", Offset: {DataOffset}, Size: {Size})";
-
-        return $"LooseFile(Crc: 0x{Crc:X8}, Name: \"{Name}\", FilePath: {FilePath})";
+        return string.IsNullOrEmpty(FilePath)
+            ? $"LooseFile(Crc: 0x{Crc:X8}, Name: \"{Name}\", Offset: {DataOffset}, Size: {Size})"
+            : $"LooseFile(Crc: 0x{Crc:X8}, Name: \"{Name}\", FilePath: {FilePath})";
     }
 }

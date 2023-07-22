@@ -1,21 +1,21 @@
-﻿namespace SabTool.CLI;
-
+﻿
 using SabTool.CLI.Base;
 using SabTool.Utils;
 
+namespace SabTool.CLI;
 public sealed class Program
 {
     public static void Main(string[] args)
     {
         Console.WriteLine("Loading Hashes...");
 
-        Hash.FNV32string("dummy, to statically init the Hash class", addToLookup: false);
+        _ = Hash.FNV32string("dummy, to statically init the Hash class", addToLookup: false);
 
         Console.WriteLine("Loaded hashes!");
 
         if (args.Length > 0 && args[1] == "exec")
         {
-            CommandParser.ExecuteCommand(args.Skip(1));
+            _ = CommandParser.ExecuteCommand(args.Skip(1));
             return;
         }
 
@@ -23,14 +23,14 @@ public sealed class Program
         {
             Console.Write("sab-tool> ");
 
-            var cmd = Console.ReadLine();
+            string? cmd = Console.ReadLine();
             if (cmd == null)
                 continue;
 
-            if (cmd == "exit" || cmd == "e")
+            if (cmd is "exit" or "e")
                 break;
 
-            CommandParser.ExecuteCommand(cmd);
+            _ = CommandParser.ExecuteCommand(cmd);
         }
     }
 }

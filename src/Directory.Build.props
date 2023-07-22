@@ -1,0 +1,47 @@
+<Project>
+
+  <PropertyGroup>
+    <VersionMajor>$([System.DateTime]::UtcNow.Year)</VersionMajor>
+    <VersionMinor>$([System.DateTime]::UtcNow.Month)</VersionMinor>
+    <VersionPatch>$([System.DateTime]::UtcNow.Day)</VersionPatch>
+    <VersionRevision>$([System.DateTime]::UtcNow.TimeOfDay.TotalMinutes.ToString("0"))</VersionRevision>
+    <VersionPrefix>$(VersionMajor).$(VersionMinor).$(VersionPatch).$(VersionRevision)</VersionPrefix>
+    <VersionSuffix Condition="'$(Configuration)'=='Debug'">Development</VersionSuffix>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <AnalysisMode>recommended</AnalysisMode>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <Deterministic>true</Deterministic>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <GeneratedAssemblyInfoFile>Properties\AssemblyInfo.cs</GeneratedAssemblyInfoFile>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <Nullable>enable</Nullable>
+    <TargetFramework>net6</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Product>SabTool</Product>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <DebugType>none</DebugType>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+    <DebugType>full</DebugType>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+
+</Project>

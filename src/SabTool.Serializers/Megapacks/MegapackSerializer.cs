@@ -1,38 +1,35 @@
-﻿using System;
-using System.IO;
-using System.Text;
+﻿using System.Text;
 
 using Newtonsoft.Json;
-
-namespace SabTool.Serializers.Megapacks;
 
 using SabTool.Data.Packs;
 using SabTool.Utils;
 using SabTool.Utils.Extensions;
 
+namespace SabTool.Serializers.Megapacks;
 public static class MegapackSerializer
 {
     public static Megapack DeserializeRaw(Stream stream)
     {
-        using var reader = new BinaryReader(stream, Encoding.UTF8, true);
+        using BinaryReader reader = new(stream, Encoding.UTF8, true);
 
         if (!reader.CheckHeaderString("MP00", reversed: true))
             throw new Exception("Invalid MegaPack header found!");
 
-        var megapack = new Megapack
+        Megapack megapack = new()
         {
             FileCount = reader.ReadUInt32()
         };
 
-        for (var i = 0; i < megapack.FileCount; ++i)
+        for (int i = 0; i < megapack.FileCount; ++i)
         {
-            var entry = DeserializeFileEntryRaw(reader);
+            FileEntry entry = DeserializeFileEntryRaw(reader);
 
             // Store the hashes
             if (!string.IsNullOrEmpty(entry.Name.GetString()))
             {
-                Hash.StringToHash($"global\\{entry.Name.GetString()}.dynpack");
-                Hash.StringToHash($"global\\{entry.Name.GetString()}.palettepack");
+                _ = Hash.StringToHash($"global\\{entry.Name.GetString()}.dynpack");
+                _ = Hash.StringToHash($"global\\{entry.Name.GetString()}.palettepack");
             }
 
             megapack.FileEntries.Add(entry.Path, entry);
@@ -40,7 +37,7 @@ public static class MegapackSerializer
 
         megapack.BlockPathToNameCrcs = new Tuple<Crc, Crc>[megapack.FileCount];
 
-        for (var i = 0; i < megapack.FileCount; ++i)
+        for (int i = 0; i < megapack.FileCount; ++i)
         {
             megapack.BlockPathToNameCrcs[i] = new(new(reader.ReadUInt32()), new(reader.ReadUInt32()));
 
@@ -50,7 +47,7 @@ public static class MegapackSerializer
                 continue;
             }
 
-            var entry = megapack.FileEntries[megapack.BlockPathToNameCrcs[i].Item1];
+            FileEntry entry = megapack.FileEntries[megapack.BlockPathToNameCrcs[i].Item1];
             if (entry.Path == megapack.BlockPathToNameCrcs[i].Item1 && entry.Name == megapack.BlockPathToNameCrcs[i].Item2)
             {
                 continue;
@@ -85,7 +82,7 @@ public static class MegapackSerializer
 
     public static void SerializeJSON(Megapack globalMegaFile, Stream stream)
     {
-        var writer = new StreamWriter(stream, Encoding.UTF8, leaveOpen: true);
+        StreamWriter writer = new(stream, Encoding.UTF8, leaveOpen: true);
 
         writer.Write(JsonConvert.SerializeObject(globalMegaFile));
     }

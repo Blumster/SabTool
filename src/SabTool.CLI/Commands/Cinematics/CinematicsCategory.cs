@@ -1,9 +1,9 @@
-﻿namespace SabTool.CLI.Commands.Cinematics;
-
+﻿
 using SabTool.CLI.Base;
 using SabTool.Depot;
 using SabTool.Serializers.Cinematics;
 
+namespace SabTool.CLI.Commands.Cinematics;
 public sealed class CinematicsCategory : BaseCategory
 {
     public override string Key { get; } = "cinematics";
@@ -27,25 +27,25 @@ public sealed class CinematicsCategory : BaseCategory
                 return false;
             }
 
-            var outputDirectory = arguments.ElementAt(1);
-            Directory.CreateDirectory(outputDirectory);
+            string outputDirectory = arguments.ElementAt(1);
+            _ = Directory.CreateDirectory(outputDirectory);
 
             ResourceDepot.Instance.Initialize(arguments.ElementAt(0));
-            ResourceDepot.Instance.Load(Resource.Cinematics);
+            _ = ResourceDepot.Instance.Load(Resource.Cinematics);
 
             // Main
-            var outputFilePath = Path.Combine(outputDirectory, CinematicsRootPath, "cinematics.json");
+            string outputFilePath = Path.Combine(outputDirectory, CinematicsRootPath, "cinematics.json");
 
-            var outputFileDirectory = Path.GetDirectoryName(outputFilePath);
+            string? outputFileDirectory = Path.GetDirectoryName(outputFilePath);
             if (outputFileDirectory == null)
             {
                 Console.WriteLine("ERROR: Output directory is invalid!");
                 return false;
             }
 
-            Directory.CreateDirectory(outputFileDirectory);
+            _ = Directory.CreateDirectory(outputFileDirectory);
 
-            using var fs = new FileStream(outputFilePath, FileMode.Create, FileAccess.Write, FileShare.None);
+            using FileStream fs = new(outputFilePath, FileMode.Create, FileAccess.Write, FileShare.None);
 
             CinematicsSerializer.SerializeJSON(ResourceDepot.Instance.GetCinematics().ToList(), fs);
 
@@ -59,9 +59,9 @@ public sealed class CinematicsCategory : BaseCategory
                 return false;
             }
 
-            Directory.CreateDirectory(outputFileDirectory);
+            _ = Directory.CreateDirectory(outputFileDirectory);
 
-            using var fsDLC = new FileStream(outputFilePath, FileMode.Create, FileAccess.Write, FileShare.None);
+            using FileStream fsDLC = new(outputFilePath, FileMode.Create, FileAccess.Write, FileShare.None);
 
             CinematicsSerializer.SerializeJSON(ResourceDepot.Instance.GetDLCCinematics().ToList(), fsDLC);
 

@@ -1,27 +1,24 @@
-﻿using System;
-using System.IO;
-using System.Text;
+﻿using System.Text;
 
 using Newtonsoft.Json;
-
-namespace SabTool.Serializers.Graphics;
 
 using SabTool.Data.Graphics;
 using SabTool.Serializers.Json.Converters;
 using SabTool.Utils;
 
+namespace SabTool.Serializers.Graphics;
 public static class SegmentSerializer
 {
     public static Segment DeserializeRaw(Stream stream, Mesh mesh)
     {
-        using var reader = new BinaryReader(stream, Encoding.UTF8, true);
+        using BinaryReader reader = new(stream, Encoding.UTF8, true);
 
-        var segment = new Segment()
+        Segment segment = new()
         {
             Mesh = mesh
         };
 
-        var currentStart = stream.Position;
+        long currentStart = stream.Position;
 
         segment.PrimitiveIndex = reader.ReadInt32();
 
@@ -33,10 +30,9 @@ public static class SegmentSerializer
         segment.BoneIndex = reader.ReadInt16();
         segment.Flags = reader.ReadInt16();
 
-        if (currentStart + 0x10 != stream.Position)
-            throw new Exception($"Under or orver read of the Segment part of the mesh asset! Pos: {stream.Position} | Expected: {currentStart + 0x10}");
-
-        return segment;
+        return currentStart + 0x10 != stream.Position
+            ? throw new Exception($"Under or orver read of the Segment part of the mesh asset! Pos: {stream.Position} | Expected: {currentStart + 0x10}")
+            : segment;
     }
 
     public static void SerializeRaw(Segment segment, Stream stream)
@@ -51,7 +47,7 @@ public static class SegmentSerializer
 
     public static void SerializeJSON(Segment segment, Stream stream)
     {
-        using var writer = new StreamWriter(stream, Encoding.UTF8, leaveOpen: true);
+        using StreamWriter writer = new(stream, Encoding.UTF8, leaveOpen: true);
 
         writer.Write(JsonConvert.SerializeObject(segment, Formatting.Indented, new CrcConverter()));
     }

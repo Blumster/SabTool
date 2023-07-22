@@ -1,9 +1,9 @@
-﻿namespace SabTool.CLI.Commands.Cinematics;
-
+﻿
 using SabTool.CLI.Base;
 using SabTool.Depot;
 using SabTool.Serializers.Cinematics;
 
+namespace SabTool.CLI.Commands.Cinematics;
 public sealed class DialogCategory : BaseCategory
 {
     public override string Key { get; } = "dialog";
@@ -26,33 +26,33 @@ public sealed class DialogCategory : BaseCategory
                 return false;
             }
 
-            var outputDirectory = arguments.ElementAt(1);
-            Directory.CreateDirectory(outputDirectory);
+            string outputDirectory = arguments.ElementAt(1);
+            _ = Directory.CreateDirectory(outputDirectory);
 
             string? language = null;
             if (arguments.Count() == 3)
                 language = arguments.ElementAt(2);
 
             ResourceDepot.Instance.Initialize(arguments.ElementAt(0));
-            ResourceDepot.Instance.Load(Resource.Cinematics);
+            _ = ResourceDepot.Instance.Load(Resource.Cinematics);
 
-            foreach (var entry in ResourceDepot.Instance.GetDialogs())
+            foreach (KeyValuePair<string, Data.Cinematics.Dialog> entry in ResourceDepot.Instance.GetDialogs())
             {
                 if (!string.IsNullOrEmpty(language) && language.ToLowerInvariant() != entry.Key.ToLowerInvariant())
                     continue;
 
-                var outputFilePath = Path.Combine(outputDirectory, DialogRootPath, $@"{entry.Key}\dialogs.json");
+                string outputFilePath = Path.Combine(outputDirectory, DialogRootPath, $@"{entry.Key}\dialogs.json");
 
-                var outputFileDirectory = Path.GetDirectoryName(outputFilePath);
+                string? outputFileDirectory = Path.GetDirectoryName(outputFilePath);
                 if (outputFileDirectory == null)
                 {
                     Console.WriteLine("ERROR: Output directory is invalid!");
                     return false;
                 }
 
-                Directory.CreateDirectory(outputFileDirectory);
+                _ = Directory.CreateDirectory(outputFileDirectory);
 
-                using var fs = new FileStream(outputFilePath, FileMode.Create, FileAccess.Write, FileShare.None);
+                using FileStream fs = new(outputFilePath, FileMode.Create, FileAccess.Write, FileShare.None);
 
                 DialogSerializer.SerializeJSON(entry.Value, fs);
             }

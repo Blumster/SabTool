@@ -1,23 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
+﻿using System.Text;
 
 using Newtonsoft.Json;
-
-namespace SabTool.Serializers.Sounds;
 
 using SabTool.Data.Sounds;
 using SabTool.Serializers.Json.Converters;
 using SabTool.Utils.Extensions;
 
+namespace SabTool.Serializers.Sounds;
 public static class SoundPackSerializer
 {
     public static SoundPack DeserializeRaw(Stream stream)
     {
-        using var reader = new BinaryReader(stream, Encoding.UTF8, true);
+        using BinaryReader reader = new(stream, Encoding.UTF8, true);
 
-        var soundPack = new SoundPack
+        SoundPack soundPack = new()
         {
             Tag = reader.ReadHeaderString(4, reversed: true),
             Align = reader.ReadInt32(),
@@ -31,26 +27,26 @@ public static class SoundPackSerializer
         if (soundPack.Tag != "PCK1")
             throw new Exception($"Invalid Sound Bank tag {soundPack.Tag}!");
 
-        var banks = new List<SoundPack.Entry>();
-        var streams = new List<SoundPack.Entry>();
+        List<SoundPack.Entry> banks = new();
+        List<SoundPack.Entry> streams = new();
 
         if (stream.Position != soundPack.BankEntriesOffset)
             throw new Exception("Invalid position for SoundBank entries!");
 
-        for (var i = 0; i < soundPack.NumBanks; ++i)
+        for (int i = 0; i < soundPack.NumBanks; ++i)
             banks.Add(new SoundPack.Entry(new(reader.ReadUInt32()), reader.ReadInt32(), reader.ReadInt32()));
 
         if (stream.Position != soundPack.StreamEntriesOffset)
             throw new Exception("Invalid position for SoundStream entries!");
 
-        for (var i = 0; i < soundPack.NumStreams; ++i)
+        for (int i = 0; i < soundPack.NumStreams; ++i)
             streams.Add(new SoundPack.Entry(new(reader.ReadUInt32()), reader.ReadInt32(), reader.ReadInt32()));
 
-        foreach (var entry in banks)
+        foreach (SoundPack.Entry entry in banks)
         {
             stream.Position = entry.Offset;
 
-            var bank = DeserializeBank(reader, entry.Size);
+            SoundBank bank = DeserializeBank(reader, entry.Size);
             bank.Id = entry.Id;
 
             soundPack.SoundBanks.Add(bank);
@@ -59,11 +55,11 @@ public static class SoundPackSerializer
                 throw new Exception("Under or overreading SoundBank!");
         }
 
-        foreach (var entry in streams)
+        foreach (SoundPack.Entry entry in streams)
         {
             stream.Position = entry.Offset;
 
-            var soundStream = DeserializeStream(reader, entry.Size);
+            SoundStream soundStream = DeserializeStream(reader, entry.Size);
             soundStream.Id = entry.Id;
 
             soundPack.SoundStreams.Add(soundStream);
@@ -77,7 +73,7 @@ public static class SoundPackSerializer
 
     private static SoundBank DeserializeBank(BinaryReader reader, int size)
     {
-        var bank = new SoundBank
+        SoundBank bank = new()
         {
             Data = reader.ReadBytes(size)
         };
@@ -89,7 +85,7 @@ public static class SoundPackSerializer
 
     private static SoundStream DeserializeStream(BinaryReader reader, int size)
     {
-        var stream = new SoundStream
+        SoundStream stream = new()
         {
             Data = reader.ReadBytes(size)
         };
@@ -109,7 +105,7 @@ public static class SoundPackSerializer
 
     public static void SerializeJSON(SoundPack soundPack, Stream stream)
     {
-        using var writer = new StreamWriter(stream, Encoding.UTF8, leaveOpen: true);
+        using StreamWriter writer = new(stream, Encoding.UTF8, leaveOpen: true);
 
         writer.Write(JsonConvert.SerializeObject(soundPack, Formatting.Indented, new CrcConverter()));
     }

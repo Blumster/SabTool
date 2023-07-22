@@ -1,10 +1,9 @@
-﻿namespace SabTool.CLI.Commands;
-
+﻿
 using SabTool.CLI.Base;
 using SabTool.Depot;
 using SabTool.Serializers.Misc;
-using SabTool.Utils;
 
+namespace SabTool.CLI.Commands;
 public sealed class MiscCategory : BaseCategory
 {
     public override string Key => "misc";
@@ -26,13 +25,13 @@ public sealed class MiscCategory : BaseCategory
             }
 
             ResourceDepot.Instance.Initialize(arguments.ElementAt(0));
-            ResourceDepot.Instance.Load(Resource.Misc);
+            _ = ResourceDepot.Instance.Load(Resource.Misc);
 
-            var outputFolder = arguments.ElementAt(1);
+            string outputFolder = arguments.ElementAt(1);
 
-            Directory.CreateDirectory(outputFolder);
+            _ = Directory.CreateDirectory(outputFolder);
 
-            using var outFile = new FileStream(Path.Combine(outputFolder, "heightmap.json"), FileMode.Create, FileAccess.Write, FileShare.None);
+            using FileStream outFile = new(Path.Combine(outputFolder, "heightmap.json"), FileMode.Create, FileAccess.Write, FileShare.None);
 
             HeightmapSerializer.SerializeJSON(ResourceDepot.Instance.Heightmap!, outFile);
 
@@ -55,11 +54,11 @@ public sealed class MiscCategory : BaseCategory
             }
 
             ResourceDepot.Instance.Initialize(arguments.ElementAt(0));
-            ResourceDepot.Instance.Load(Resource.Misc);
+            _ = ResourceDepot.Instance.Load(Resource.Misc);
 
-            var outputFolder = arguments.ElementAt(1);
+            string outputFolder = arguments.ElementAt(1);
 
-            Directory.CreateDirectory(outputFolder);
+            _ = Directory.CreateDirectory(outputFolder);
 
             WaterflowSerializer.ExportGltf(ResourceDepot.Instance.Waterflow!, outputFolder);
 
@@ -82,11 +81,11 @@ public sealed class MiscCategory : BaseCategory
             }
 
             ResourceDepot.Instance.Initialize(arguments.ElementAt(0));
-            ResourceDepot.Instance.Load(Resource.Misc);
+            _ = ResourceDepot.Instance.Load(Resource.Misc);
 
-            var outputFolder = arguments.ElementAt(1);
+            string outputFolder = arguments.ElementAt(1);
 
-            Directory.CreateDirectory(outputFolder);
+            _ = Directory.CreateDirectory(outputFolder);
 
             WatercontrolSerializer.ExportGltf(ResourceDepot.Instance.Watercontrol!, outputFolder);
 
@@ -109,11 +108,11 @@ public sealed class MiscCategory : BaseCategory
             }
 
             ResourceDepot.Instance.Initialize(arguments.ElementAt(0));
-            ResourceDepot.Instance.Load(Resource.Misc);
+            _ = ResourceDepot.Instance.Load(Resource.Misc);
 
-            var outputFolder = arguments.ElementAt(1);
+            string outputFolder = arguments.ElementAt(1);
 
-            Directory.CreateDirectory(outputFolder);
+            _ = Directory.CreateDirectory(outputFolder);
 
             FreeplaySerializer.ExportGltf(ResourceDepot.Instance.Freeplay!, outputFolder);
 
@@ -136,13 +135,13 @@ public sealed class MiscCategory : BaseCategory
             }
 
             ResourceDepot.Instance.Initialize(arguments.ElementAt(0));
-            ResourceDepot.Instance.Load(Resource.Misc);
+            _ = ResourceDepot.Instance.Load(Resource.Misc);
 
-            var outputFolder = arguments.ElementAt(1);
+            string outputFolder = arguments.ElementAt(1);
 
-            Directory.CreateDirectory(outputFolder);
+            _ = Directory.CreateDirectory(outputFolder);
 
-            using var outFile = new FileStream(Path.Combine(outputFolder, "heightmap.ply"), FileMode.Create, FileAccess.Write, FileShare.None);
+            using FileStream outFile = new(Path.Combine(outputFolder, "heightmap.ply"), FileMode.Create, FileAccess.Write, FileShare.None);
 
             HeightmapSerializer.ExportPly(ResourceDepot.Instance.Heightmap!, outFile);
 
@@ -165,11 +164,11 @@ public sealed class MiscCategory : BaseCategory
             }
 
             ResourceDepot.Instance.Initialize(arguments.ElementAt(0));
-            ResourceDepot.Instance.Load(Resource.Misc);
+            _ = ResourceDepot.Instance.Load(Resource.Misc);
 
-            var outputFolder = arguments.ElementAt(1);
+            string outputFolder = arguments.ElementAt(1);
 
-            Directory.CreateDirectory(outputFolder);
+            _ = Directory.CreateDirectory(outputFolder);
 
             WaterplanesSerializer.ExportGltf(ResourceDepot.Instance.WaterQuads!, outputFolder);
             return true;
@@ -191,11 +190,11 @@ public sealed class MiscCategory : BaseCategory
             }
 
             ResourceDepot.Instance.Initialize(arguments.ElementAt(0));
-            ResourceDepot.Instance.Load(Resource.Misc);
+            _ = ResourceDepot.Instance.Load(Resource.Misc);
 
-            var outputFolder = arguments.ElementAt(1);
+            string outputFolder = arguments.ElementAt(1);
 
-            Directory.CreateDirectory(outputFolder);
+            _ = Directory.CreateDirectory(outputFolder);
 
             HeightmapSerializer.ExportGltf(ResourceDepot.Instance.Heightmap!, outputFolder, false);
             return true;
@@ -217,11 +216,11 @@ public sealed class MiscCategory : BaseCategory
             }
 
             ResourceDepot.Instance.Initialize(arguments.ElementAt(0));
-            ResourceDepot.Instance.Load(Resource.Misc);
+            _ = ResourceDepot.Instance.Load(Resource.Misc);
 
-            var outputFolder = arguments.ElementAt(1);
+            string outputFolder = arguments.ElementAt(1);
 
-            Directory.CreateDirectory(outputFolder);
+            _ = Directory.CreateDirectory(outputFolder);
 
             HeightmapSerializer.ExportGltf(ResourceDepot.Instance.Heightmap!, outputFolder, true);
             return true;
@@ -242,9 +241,9 @@ public sealed class MiscCategory : BaseCategory
                 return false;
             }
 
-            var outputFolder = arguments.ElementAt(1);
+            string outputFolder = arguments.ElementAt(1);
 
-            Directory.CreateDirectory(outputFolder);
+            _ = Directory.CreateDirectory(outputFolder);
 
             HeightmapSerializer.ExportAllCellsInPacks(arguments.ElementAt(0), outputFolder);
             return true;
@@ -266,14 +265,14 @@ public sealed class MiscCategory : BaseCategory
             }
 
             ResourceDepot.Instance.Initialize(arguments.ElementAt(0));
-            ResourceDepot.Instance.Load(Resource.Misc);
+            _ = ResourceDepot.Instance.Load(Resource.Misc);
 
-            var outputFolder = arguments.ElementAt(1);
+            string outputFolder = arguments.ElementAt(1);
 
-            Directory.CreateDirectory(outputFolder);
+            _ = Directory.CreateDirectory(outputFolder);
 
             RailwaySerializer.ExportGltfSplinePoints(ResourceDepot.Instance.Railway!, outputFolder);
             return true;
         }
-    }   
+    }
 }

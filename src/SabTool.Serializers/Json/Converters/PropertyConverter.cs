@@ -1,11 +1,8 @@
-﻿using System;
-
-using Newtonsoft.Json;
-
-namespace SabTool.Serializers.Json.Converters;
+﻿using Newtonsoft.Json;
 
 using SabTool.Data.Misc;
 
+namespace SabTool.Serializers.Json.Converters;
 internal class PropertyConverter : JsonConverter<Property>
 {
     public override Property? ReadJson(JsonReader reader, Type objectType, Property? existingValue, bool hasExistingValue, JsonSerializer serializer)
@@ -21,8 +18,8 @@ internal class PropertyConverter : JsonConverter<Property>
             return;
         }
 
-        var data = DictionaryPropertyTypes.ConvertData(value.Name, value.Data);
-        
+        object? data = DictionaryPropertyTypes.ConvertData(value.Name, value.Data);
+
         serializer.Serialize(writer, data ?? BitConverter.ToString(value.Data));
     }
 }

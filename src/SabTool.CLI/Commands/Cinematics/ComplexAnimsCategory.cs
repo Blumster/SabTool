@@ -1,9 +1,9 @@
-﻿namespace SabTool.CLI.Commands.Cinematics;
-
+﻿
 using SabTool.CLI.Base;
 using SabTool.Depot;
 using SabTool.Serializers.Cinematics;
 
+namespace SabTool.CLI.Commands.Cinematics;
 public sealed class ComplexAnimsCategory : BaseCategory
 {
     public override string Key { get; } = "complex-anims";
@@ -26,18 +26,18 @@ public sealed class ComplexAnimsCategory : BaseCategory
                 return false;
             }
 
-            var outputDirectory = arguments.ElementAt(1);
-            Directory.CreateDirectory(outputDirectory);
+            string outputDirectory = arguments.ElementAt(1);
+            _ = Directory.CreateDirectory(outputDirectory);
 
             ResourceDepot.Instance.Initialize(arguments.ElementAt(0));
-            ResourceDepot.Instance.Load(Resource.Cinematics);
+            _ = ResourceDepot.Instance.Load(Resource.Cinematics);
 
-            var outputFilePath = Path.Combine(outputDirectory, ComplexAnimsRootPath, "complex-anims.json");
+            string outputFilePath = Path.Combine(outputDirectory, ComplexAnimsRootPath, "complex-anims.json");
 
-            var outputFileDirectory = Path.GetDirectoryName(outputFilePath)!;
-            Directory.CreateDirectory(outputFileDirectory);
+            string outputFileDirectory = Path.GetDirectoryName(outputFilePath)!;
+            _ = Directory.CreateDirectory(outputFileDirectory);
 
-            using var fs = new FileStream(outputFilePath, FileMode.Create, FileAccess.Write, FileShare.None);
+            using FileStream fs = new(outputFilePath, FileMode.Create, FileAccess.Write, FileShare.None);
 
             ComplexAnimsSerializer.SerializeJSON(ResourceDepot.Instance.GetComplexAnimStructures().ToList(), fs);
 

@@ -3,12 +3,12 @@
 [Flags]
 public enum ConversationFlags
 {
-    Subtitle   = 0x01,
-    Sound3D    = 0x02,
+    Subtitle = 0x01,
+    Sound3D = 0x02,
     RandomLine = 0x04,
-    Journal    = 0x08,
-    Car        = 0x10,
-    Unk20      = 0x20,
+    Journal = 0x08,
+    Car = 0x10,
+    Unk20 = 0x20,
 }
 
 public sealed class ConversationStructure

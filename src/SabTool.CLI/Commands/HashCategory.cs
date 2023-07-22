@@ -1,10 +1,10 @@
 ﻿using System.Globalization;
 using System.Text.RegularExpressions;
 
-namespace SabTool.CLI.Commands;
+using SabTool.CLI.Base;
+using SabTool.Utils;
 
-using Base;
-using Utils;
+namespace SabTool.CLI.Commands;
 
 public sealed class HashCategory : BaseCategory
 {
@@ -53,27 +53,27 @@ public sealed class HashCategory : BaseCategory
 
         public override bool Execute(IEnumerable<string> arguments)
         {
-            if (arguments.Count() < 1)
+            if (!arguments.Any())
             {
                 Console.WriteLine("ERROR: Not enough arguments given!");
                 return false;
             }
 
-            var filePath = arguments.ElementAt(0);
+            string filePath = arguments.ElementAt(0);
             if (!File.Exists(filePath))
             {
                 Console.WriteLine("ERROR: Invalid file path given!");
                 return false;
             }
 
-            var txt = File.ReadAllText(filePath);
+            string txt = File.ReadAllText(filePath);
 
-            var regex = new Regex("\"0x([0-9A-Z]{8})\"");
+            Regex regex = new("\"0x([0-9A-Z]{8})\"");
 
             txt = regex.Replace(txt, m =>
             {
-                var num = uint.Parse(m.Groups[1].Value, NumberStyles.AllowHexSpecifier);
-                var str = Hash.HashToString(num);
+                uint num = uint.Parse(m.Groups[1].Value, NumberStyles.AllowHexSpecifier);
+                string str = Hash.HashToString(num);
 
                 return str != null ? $"\"{str}\"" : $"\"0x{num:X8}\"";
             });
@@ -92,13 +92,13 @@ public sealed class HashCategory : BaseCategory
 
         public override bool Execute(IEnumerable<string> arguments)
         {
-            if (arguments.Count() < 1)
+            if (!arguments.Any())
             {
                 Console.WriteLine("ERROR: Not enough arguments given!");
                 return false;
             }
 
-            var hashStr = arguments.ElementAt(0);
+            string hashStr = arguments.ElementAt(0);
             if (hashStr.StartsWith("0x"))
                 hashStr = hashStr[2..];
 
@@ -108,7 +108,7 @@ public sealed class HashCategory : BaseCategory
                 return false;
             }
 
-            var value = Hash.HashToString(hash);
+            string value = Hash.HashToString(hash);
 
             if (value != null)
             {
@@ -120,7 +120,7 @@ public sealed class HashCategory : BaseCategory
             }
 
             Console.WriteLine();
-            
+
             return true;
         }
     }
@@ -139,9 +139,9 @@ public sealed class HashCategory : BaseCategory
                 return false;
             }
 
-            var lenStr = arguments.ElementAt(0);
+            string lenStr = arguments.ElementAt(0);
 
-            var hashStr = arguments.ElementAt(1);
+            string hashStr = arguments.ElementAt(1);
             if (hashStr.StartsWith("0x"))
                 hashStr = hashStr[2..];
 
@@ -171,9 +171,9 @@ public sealed class HashCategory : BaseCategory
                 return false;
             }
 
-            var lenStr = arguments.ElementAt(0);
+            string lenStr = arguments.ElementAt(0);
 
-            if (int.TryParse(lenStr, out var length))
+            if (int.TryParse(lenStr, out int length))
                 Hash.BruteforceMissing(length, arguments.Count() == 2, 5);
 
             Console.WriteLine("ERROR: Invalid length argument given!");
@@ -189,16 +189,16 @@ public sealed class HashCategory : BaseCategory
 
         public override bool Execute(IEnumerable<string> arguments)
         {
-            for (var i = 0u; i < 100u; ++i)
+            for (uint i = 0u; i < 100u; ++i)
             {
-                for (var j = 0u; j < 8u; ++j)
+                for (uint j = 0u; j < 8u; ++j)
                 {
-                    var start = i * (uint)Math.Pow(10, j);
-                    var end = (i + 1) * (uint)Math.Pow(10, j);
+                    uint start = i * (uint)Math.Pow(10, j);
+                    uint end = (i + 1) * (uint)Math.Pow(10, j);
 
-                    for (var k = start; k < end; ++k)
+                    for (uint k = start; k < end; ++k)
                     {
-                        Hash.FNV32string($@"France\{i}\{k}.pack");
+                        _ = Hash.FNV32string($@"France\{i}\{k}.pack");
                     }
                 }
             }
@@ -229,29 +229,29 @@ public sealed class HashCategory : BaseCategory
 
         public override bool Execute(IEnumerable<string> arguments)
         {
-            if (arguments.Count() < 1)
+            if (!arguments.Any())
             {
                 Console.WriteLine("ERROR: Not enough arguments given!");
                 return false;
             }
 
-            var inputFilePath = arguments.ElementAt(0);
+            string inputFilePath = arguments.ElementAt(0);
             if (!File.Exists(inputFilePath))
             {
                 Console.WriteLine("ERROR: Non-existant input file given!");
                 return false;
             }
 
-            var outFilePath = Path.Join(Path.GetDirectoryName(inputFilePath), $"{Path.GetFileNameWithoutExtension(inputFilePath)}-hash{Path.GetExtension(inputFilePath)}");
+            string outFilePath = Path.Join(Path.GetDirectoryName(inputFilePath), $"{Path.GetFileNameWithoutExtension(inputFilePath)}-hash{Path.GetExtension(inputFilePath)}");
 
             if (arguments.Count() == 2)
             {
                 outFilePath = arguments.ElementAt(1);
             }
 
-            var lines = File.ReadAllLines(inputFilePath);
+            string[] lines = File.ReadAllLines(inputFilePath);
 
-            for (var i = 0; i < lines.Length; ++i)
+            for (int i = 0; i < lines.Length; ++i)
             {
                 lines[i] = $"0x{Hash.FNV32string(lines[i]):X8}:{lines[i]}";
             }
@@ -272,37 +272,37 @@ public sealed class HashCategory : BaseCategory
 
         public override bool Execute(IEnumerable<string> arguments)
         {
-            if (arguments.Count() < 1)
+            if (!arguments.Any())
             {
                 Console.WriteLine("ERROR: Not enough arguments given!");
                 return false;
             }
 
-            var inputDirPath = arguments.ElementAt(0);
+            string inputDirPath = arguments.ElementAt(0);
             if (!Directory.Exists(inputDirPath))
             {
                 Console.WriteLine("ERROR: Non-existant input directory given!");
                 return false;
             }
 
-            var ext = "*";
+            string ext = "*";
             if (arguments.Count() == 2)
                 ext = arguments.ElementAt(1);
 
-            foreach (var file in Directory.EnumerateFiles(inputDirPath, $"*.{ext}", SearchOption.AllDirectories))
+            foreach (string file in Directory.EnumerateFiles(inputDirPath, $"*.{ext}", SearchOption.AllDirectories))
             {
-                var content = File.ReadAllText(file);
+                string content = File.ReadAllText(file);
 
-                var matches = StringRegex.Matches(content);
+                MatchCollection matches = StringRegex.Matches(content);
                 foreach (Match match in matches)
                 {
                     if (!match.Success || string.IsNullOrEmpty(match.Groups[1].Value))
                         continue;
 
-                    var str = match.Groups[1].Value;
+                    string str = match.Groups[1].Value;
                     str = str.Replace(@"\\", @"\");
 
-                    Hash.FNV32string(str);
+                    _ = Hash.FNV32string(str);
                 }
             }
 

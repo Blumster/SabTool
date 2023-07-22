@@ -1,33 +1,30 @@
-﻿using System;
-using System.IO;
-using System.Text;
+﻿using System.Text;
 
 using Newtonsoft.Json;
-
-namespace SabTool.Serializers.Megapacks;
 
 using SabTool.Data.Packs;
 using SabTool.Serializers.Json.Converters;
 using SabTool.Serializers.Packs;
 using SabTool.Utils.Extensions;
 
+namespace SabTool.Serializers.Megapacks;
 public static class GlobalMapSerializer
 {
     public static GlobalMap DeserializeRaw(Stream stream)
     {
-        using var reader = new BinaryReader(stream, Encoding.UTF8, true);
+        using BinaryReader reader = new(stream, Encoding.UTF8, true);
 
-        var globalMap = new GlobalMap();
+        GlobalMap globalMap = new();
 
         if (!reader.CheckHeaderString("MAP6", reversed: true))
             throw new Exception("Invalid global Map header found!");
 
-        var mapFileNameWithoutExtension = Path.GetFileNameWithoutExtension("global.map");
+        string mapFileNameWithoutExtension = Path.GetFileNameWithoutExtension("global.map");
 
         globalMap.NumTotalBlocks = reader.ReadUInt32();
 
-        var streamBlockArrayIdx = 0;
-        var itrCount = 0u;
+        int streamBlockArrayIdx = 0;
+        uint itrCount = 0u;
 
         do
         {
@@ -42,19 +39,19 @@ public static class GlobalMapSerializer
                 continue;
             }
 
-            var i = 0;
+            int i = 0;
             uint unkFlagStuff = ((itrCount + 1) & 7) << 10;
 
             do
             {
-                var streamBlock = StreamBlockSerializer.DeserializeBaseBlock(reader.BaseStream);
+                StreamBlock streamBlock = StreamBlockSerializer.DeserializeBaseBlock(reader.BaseStream);
 
                 streamBlock.Midpoint = new(0.0f, 0.0f, 0.0f);
                 streamBlock.Extents[0] = new(-10000.0f, -10000.0f, -10000.0f);
                 streamBlock.Extents[1] = new(10000.0f, 10000.0f, 10000.0f);
                 streamBlock.FieldC0 = BitConverter.ToSingle(BitConverter.GetBytes(0xFFFFFFFF), 0);
                 streamBlock.FileName = $"{mapFileNameWithoutExtension}\\{streamBlock.FileName}{itrCount}";
-                streamBlock.Flags = (unkFlagStuff | streamBlock.Flags & 0xFFFFE3FF) & 0xFFFFFF3F;
+                streamBlock.Flags = (unkFlagStuff | (streamBlock.Flags & 0xFFFFE3FF)) & 0xFFFFFF3F;
 
                 StreamBlockSerializer.ReadTextureInfo(streamBlock, reader);
                 StreamBlockSerializer.ReadEntries(streamBlock, reader);
@@ -84,12 +81,12 @@ public static class GlobalMapSerializer
         if (count <= 0)
             return;
 
-        for (var i = 0; i < count; ++i)
+        for (int i = 0; i < count; ++i)
         {
-            var streamBlock = StreamBlockSerializer.DeserializeBaseBlock(reader.BaseStream);
+            StreamBlock streamBlock = StreamBlockSerializer.DeserializeBaseBlock(reader.BaseStream);
 
             if (removeExisting && globalMap.DynamicBlocks.ContainsKey(streamBlock.Id))
-                globalMap.DynamicBlocks.Remove(streamBlock.Id);
+                _ = globalMap.DynamicBlocks.Remove(streamBlock.Id);
 
             streamBlock.Flags |= 8;
             streamBlock.FileName = $"{mapFileNameWithoutExtension}\\{streamBlock.FileName}";
@@ -121,7 +118,7 @@ public static class GlobalMapSerializer
 
     public static void SerializeJSON(GlobalMap globalMap, Stream stream)
     {
-        using var writer = new StreamWriter(stream, Encoding.UTF8, leaveOpen: true);
+        using StreamWriter writer = new(stream, Encoding.UTF8, leaveOpen: true);
 
         writer.Write(JsonConvert.SerializeObject(globalMap, Formatting.Indented, new CrcConverter()));
     }

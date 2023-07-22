@@ -1,8 +1,8 @@
-﻿namespace SabTool.Depot;
-
+﻿
 using SabTool.Data.Graphics.Shaders;
 using SabTool.Serializers.Graphics.Shaders;
 
+namespace SabTool.Depot;
 public sealed partial class ResourceDepot
 {
     private const string ShadersFileName = "France.shaders";
@@ -12,7 +12,7 @@ public sealed partial class ResourceDepot
     {
         try
         {
-            var shadersFile = GetLooseFile(ShadersFileName) ?? throw new Exception($"{ShadersFileName} is missing from {LooseFilesFileName}!");
+            MemoryStream shadersFile = GetLooseFile(ShadersFileName) ?? throw new Exception($"{ShadersFileName} is missing from {LooseFilesFileName}!");
 
             Console.WriteLine($"Loading Shaders from {ShadersFileName}...");
 
@@ -31,7 +31,7 @@ public sealed partial class ResourceDepot
     public IEnumerable<Shader> GetPixelShaders()
     {
         if (!IsResourceLoaded(Resource.Shaders))
-            Load(Resource.Shaders);
+            _ = Load(Resource.Shaders);
 
         return ShaderContainer!.PixelShaders;
     }
@@ -39,7 +39,7 @@ public sealed partial class ResourceDepot
     public IEnumerable<Shader> GetVertexShaders()
     {
         if (!IsResourceLoaded(Resource.Shaders))
-            Load(Resource.Shaders);
+            _ = Load(Resource.Shaders);
 
         return ShaderContainer!.VertexShaders;
     }

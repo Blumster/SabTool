@@ -1,9 +1,9 @@
-﻿namespace SabTool.CLI.Commands.Cinematics;
-
+﻿
 using SabTool.CLI.Base;
 using SabTool.Depot;
 using SabTool.Serializers.Cinematics;
 
+namespace SabTool.CLI.Commands.Cinematics;
 public sealed class ConversationsCategory : BaseCategory
 {
     public override string Key { get; } = "conversations";
@@ -27,19 +27,19 @@ public sealed class ConversationsCategory : BaseCategory
                 return false;
             }
 
-            var outputDirectory = arguments.ElementAt(1);
-            Directory.CreateDirectory(outputDirectory);
+            string outputDirectory = arguments.ElementAt(1);
+            _ = Directory.CreateDirectory(outputDirectory);
 
             ResourceDepot.Instance.Initialize(arguments.ElementAt(0));
-            ResourceDepot.Instance.Load(Resource.Cinematics);
+            _ = ResourceDepot.Instance.Load(Resource.Cinematics);
 
             // Main
-            var outputFilePath = Path.Combine(outputDirectory, ConversationsRootPath, "Conversations.json");
+            string outputFilePath = Path.Combine(outputDirectory, ConversationsRootPath, "Conversations.json");
 
-            var outputFileDirectory = Path.GetDirectoryName(outputFilePath)!;
-            Directory.CreateDirectory(outputFileDirectory);
+            string outputFileDirectory = Path.GetDirectoryName(outputFilePath)!;
+            _ = Directory.CreateDirectory(outputFileDirectory);
 
-            using var fs = new FileStream(outputFilePath, FileMode.Create, FileAccess.Write, FileShare.None);
+            using FileStream fs = new(outputFilePath, FileMode.Create, FileAccess.Write, FileShare.None);
 
             ConversationsSerializer.SerializeJSON(ResourceDepot.Instance.GetConversations().ToList(), fs);
 
@@ -47,9 +47,9 @@ public sealed class ConversationsCategory : BaseCategory
             outputFilePath = Path.Combine(outputDirectory, ConversationsRootPathDLC, "Conversations.json");
 
             outputFileDirectory = Path.GetDirectoryName(outputFilePath)!;
-            Directory.CreateDirectory(outputFileDirectory);
+            _ = Directory.CreateDirectory(outputFileDirectory);
 
-            using var fsDLC = new FileStream(outputFilePath, FileMode.Create, FileAccess.Write, FileShare.None);
+            using FileStream fsDLC = new(outputFilePath, FileMode.Create, FileAccess.Write, FileShare.None);
 
             ConversationsSerializer.SerializeJSON(ResourceDepot.Instance.GetDLCConversations().ToList(), fsDLC);
 

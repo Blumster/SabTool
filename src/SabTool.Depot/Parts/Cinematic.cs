@@ -1,8 +1,8 @@
-﻿namespace SabTool.Depot;
-
+﻿
 using SabTool.Data.Cinematics;
 using SabTool.Serializers.Cinematics;
 
+namespace SabTool.Depot;
 public sealed partial class ResourceDepot
 {
     private const string DialogTextFileName = "GameText.dlg";
@@ -38,17 +38,17 @@ public sealed partial class ResourceDepot
     {
         Console.WriteLine("  Loading Dialogs...");
 
-        var dialogPath = GetGamePath(@"Cinematics\Dialog");
+        string dialogPath = GetGamePath(@"Cinematics\Dialog");
 
-        foreach (var folder in Directory.GetDirectories(dialogPath))
+        foreach (string folder in Directory.GetDirectories(dialogPath))
         {
-            var dialogFilePath = Path.Combine(folder, DialogTextFileName);
+            string dialogFilePath = Path.Combine(folder, DialogTextFileName);
             if (!File.Exists(dialogFilePath))
                 continue;
 
-            var language = new DirectoryInfo(folder).Name;
+            string language = new DirectoryInfo(folder).Name;
 
-            using var fs = new FileStream(dialogFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            using FileStream fs = new(dialogFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
 
             Dialogs.Add(language, DialogSerializer.DeserialzieRaw(fs));
         }
@@ -60,7 +60,7 @@ public sealed partial class ResourceDepot
     {
         Console.WriteLine("  Loading Conversations...");
 
-        using var conversationsStream = GetLooseFile(@"Cinematics\Conversations\Conversations.cnvpack") ?? throw new Exception("Conversations cnvpack is missing from the loosefiles!");
+        using MemoryStream conversationsStream = GetLooseFile(@"Cinematics\Conversations\Conversations.cnvpack") ?? throw new Exception("Conversations cnvpack is missing from the loosefiles!");
 
         Conversations = ConversationsSerializer.DeserializeRaw(conversationsStream);
 
@@ -71,9 +71,9 @@ public sealed partial class ResourceDepot
     {
         Console.WriteLine("  Loading DLC Conversations...");
 
-        var conversationsFilePath = GetGamePath(@"DLC\01\Cinematics\Conversations\Conversations.cnvpack");
+        string conversationsFilePath = GetGamePath(@"DLC\01\Cinematics\Conversations\Conversations.cnvpack");
 
-        using var fs = new FileStream(conversationsFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+        using FileStream fs = new(conversationsFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
 
         DLCConversations = ConversationsSerializer.DeserializeRaw(fs);
 
@@ -84,9 +84,9 @@ public sealed partial class ResourceDepot
     {
         Console.WriteLine("  Loading ComplexAnims...");
 
-        var complexAnimsFilePath = GetGamePath(@"Cinematics\ComplexAnimations\ComplexAnims.cxa");
+        string complexAnimsFilePath = GetGamePath(@"Cinematics\ComplexAnimations\ComplexAnims.cxa");
 
-        using var fs = new FileStream(complexAnimsFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+        using FileStream fs = new(complexAnimsFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
 
         ComplexAnims = ComplexAnimsSerializer.DeserializeRaw(fs);
 
@@ -97,7 +97,7 @@ public sealed partial class ResourceDepot
     {
         Console.WriteLine("  Loading Cinematics...");
 
-        using var cinematicsStream = GetLooseFile(@"Cinematics\Cinematics.cinpack") ?? throw new Exception("Cinematics cinpack is missing from the loose files!");
+        using MemoryStream cinematicsStream = GetLooseFile(@"Cinematics\Cinematics.cinpack") ?? throw new Exception("Cinematics cinpack is missing from the loose files!");
 
         Cinematics = CinematicsSerializer.DeserializeRaw(cinematicsStream);
 
@@ -108,9 +108,9 @@ public sealed partial class ResourceDepot
     {
         Console.WriteLine("  Loading DLC Cinematics...");
 
-        var complexAnimsFilePath = GetGamePath(@"DLC\01\Cinematics\Cinematics.cinpack");
+        string complexAnimsFilePath = GetGamePath(@"DLC\01\Cinematics\Cinematics.cinpack");
 
-        using var fs = new FileStream(complexAnimsFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+        using FileStream fs = new(complexAnimsFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
 
         DLCCinematics = CinematicsSerializer.DeserializeRaw(fs);
 
@@ -121,9 +121,9 @@ public sealed partial class ResourceDepot
     {
         Console.WriteLine("  Loading Random Texts...");
 
-        var randomTextsFilePath = GetGamePath(@"Cinematics\Dialog\Random\RandomText.rnd");
+        string randomTextsFilePath = GetGamePath(@"Cinematics\Dialog\Random\RandomText.rnd");
 
-        using var fs = new FileStream(randomTextsFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+        using FileStream fs = new(randomTextsFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
 
         RandomTexts = RandomTextSerializer.DeserializeRaw(fs);
 
@@ -133,16 +133,16 @@ public sealed partial class ResourceDepot
     public IEnumerable<KeyValuePair<string, Dialog>> GetDialogs()
     {
         if (!IsResourceLoaded(Resource.Cinematics))
-            Load(Resource.Cinematics);
+            _ = Load(Resource.Cinematics);
 
-        foreach (var dialog in Dialogs)
+        foreach (KeyValuePair<string, Dialog> dialog in Dialogs)
             yield return dialog;
     }
 
     public IEnumerable<ConversationStructure> GetConversations()
     {
         if (!IsResourceLoaded(Resource.Cinematics))
-            Load(Resource.Cinematics);
+            _ = Load(Resource.Cinematics);
 
         return Conversations!;
     }
@@ -150,7 +150,7 @@ public sealed partial class ResourceDepot
     public IEnumerable<ConversationStructure> GetDLCConversations()
     {
         if (!IsResourceLoaded(Resource.Cinematics))
-            Load(Resource.Cinematics);
+            _ = Load(Resource.Cinematics);
 
         return DLCConversations!;
     }
@@ -158,7 +158,7 @@ public sealed partial class ResourceDepot
     public IEnumerable<ComplexAnimStructure> GetComplexAnimStructures()
     {
         if (!IsResourceLoaded(Resource.Cinematics))
-            Load(Resource.Cinematics);
+            _ = Load(Resource.Cinematics);
 
         return ComplexAnims!;
     }
@@ -166,7 +166,7 @@ public sealed partial class ResourceDepot
     public IEnumerable<Cinematic> GetCinematics()
     {
         if (!IsResourceLoaded(Resource.Cinematics))
-            Load(Resource.Cinematics);
+            _ = Load(Resource.Cinematics);
 
         return Cinematics!;
     }
@@ -174,7 +174,7 @@ public sealed partial class ResourceDepot
     public IEnumerable<Cinematic> GetDLCCinematics()
     {
         if (!IsResourceLoaded(Resource.Cinematics))
-            Load(Resource.Cinematics);
+            _ = Load(Resource.Cinematics);
 
         return DLCCinematics!;
     }
@@ -182,7 +182,7 @@ public sealed partial class ResourceDepot
     public IEnumerable<RandomText> GetRandomTexts()
     {
         if (!IsResourceLoaded(Resource.Cinematics))
-            Load(Resource.Cinematics);
+            _ = Load(Resource.Cinematics);
 
         return RandomTexts!;
     }

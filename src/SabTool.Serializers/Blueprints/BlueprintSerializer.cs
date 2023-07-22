@@ -1,47 +1,43 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
+﻿using System.Diagnostics;
 using System.Text;
 
 using Newtonsoft.Json;
-
-namespace SabTool.Serializers.Blueprints;
 
 using SabTool.Data.Blueprints;
 using SabTool.Serializers.Misc;
 using SabTool.Utils;
 using SabTool.Utils.Extensions;
 
+namespace SabTool.Serializers.Blueprints;
 public static class BlueprintSerializer
 {
     public static List<Blueprint> DeserializeRaw(Stream stream)
     {
-        using var reader = new BinaryReader(stream, Encoding.UTF8, true);
+        using BinaryReader reader = new(stream, Encoding.UTF8, true);
 
         if (!reader.CheckHeaderString("BLUA", reversed: true))
             throw new Exception("Invalid Blueprint header found!");
 
-        var blueprintCount = reader.ReadInt32();
+        int blueprintCount = reader.ReadInt32();
 
-        var blueprints = new List<Blueprint>(blueprintCount);
+        List<Blueprint> blueprints = new(blueprintCount);
 
-        for (var i = 0; i < blueprintCount; ++i)
+        for (int i = 0; i < blueprintCount; ++i)
         {
-            var bpSize = reader.ReadInt32();
+            int bpSize = reader.ReadInt32();
 
-            var bpStartPosition = reader.BaseStream.Position;
+            long bpStartPosition = reader.BaseStream.Position;
 
-            var unknown = reader.ReadInt32();
-            var innerCount = reader.ReadInt32();
+            int unknown = reader.ReadInt32();
+            int innerCount = reader.ReadInt32();
 
-            for (var j = 0; j < innerCount; ++j)
+            for (int j = 0; j < innerCount; ++j)
             {
-                var name = reader.ReadStringWithMaxLength(reader.ReadInt32());
-                var type = reader.ReadStringWithMaxLength(reader.ReadInt32());
-                var propertyCount = reader.ReadInt32();
+                string name = reader.ReadStringWithMaxLength(reader.ReadInt32());
+                string type = reader.ReadStringWithMaxLength(reader.ReadInt32());
+                int propertyCount = reader.ReadInt32();
 
-                var properites = PropertySerializer.DeserializeMultipleRaw(reader, propertyCount);
+                List<Data.Misc.Property> properites = PropertySerializer.DeserializeMultipleRaw(reader, propertyCount);
 
                 if (!Enum.IsDefined(typeof(BlueprintType), Hash.StringToHash(type)))
                     throw new Exception($"Unknown BlueprintType encountered: {type}!");
@@ -58,23 +54,23 @@ public static class BlueprintSerializer
 
     public static void SerializeRaw(List<Blueprint> blueprints, Stream stream)
     {
-        using var writer = new BinaryWriter(stream);
+        using BinaryWriter writer = new(stream);
         writer.WriteHeaderString("BLUA", reversed: true);
 
         writer.Write(blueprints.Count);
 
-        foreach (var blueprint in blueprints)
+        foreach (Blueprint blueprint in blueprints)
         {
-            var templateSize = 0; // TODO
+            int templateSize = 0; // TODO
 
             writer.Write(templateSize);
 
-            var bpStartPosition = writer.BaseStream.Position;
+            long bpStartPosition = writer.BaseStream.Position;
 
             writer.Write(0);
             writer.Write(blueprint.Properties.Count);
 
-            foreach (var prop in blueprint.Properties)
+            foreach (Data.Misc.Property? prop in blueprint.Properties)
             {
 
             }
@@ -83,14 +79,14 @@ public static class BlueprintSerializer
 
     public static List<Blueprint> DeserialzieJSON(Stream stream)
     {
-        var blueprints = new List<Blueprint>();
+        List<Blueprint> blueprints = new();
 
         return blueprints;
     }
 
     public static void SerializeJSON(List<Blueprint> blueprints, Stream stream)
     {
-        using var writer = new StreamWriter(stream, Encoding.UTF8, leaveOpen: true);
+        using StreamWriter writer = new(stream, Encoding.UTF8, leaveOpen: true);
 
         writer.Write(JsonConvert.SerializeObject(blueprints));
     }

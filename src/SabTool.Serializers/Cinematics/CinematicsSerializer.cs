@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Numerics;
+﻿using System.Numerics;
 using System.Text;
 
 using Newtonsoft.Json;
-
-namespace SabTool.Serializers.Cinematics;
 
 using SabTool.Data.Cinematics;
 using SabTool.Data.Cinematics.CinematicElements;
@@ -14,6 +9,7 @@ using SabTool.Serializers.Json.Converters;
 using SabTool.Utils;
 using SabTool.Utils.Extensions;
 
+namespace SabTool.Serializers.Cinematics;
 public static class CinematicsSerializer
 {
     private const int Version = 12;
@@ -22,23 +18,23 @@ public static class CinematicsSerializer
 
     public static List<Cinematic> DeserializeRaw(Stream stream)
     {
-        using var reader = new BinaryReader(stream, Encoding.UTF8, true);
+        using BinaryReader reader = new(stream, Encoding.UTF8, true);
 
-        var version = reader.ReadInt32();
+        int version = reader.ReadInt32();
         if (version != Version)
             throw new Exception($"Invalid version {version} for Cinematics!");
 
-        var cinematicCount = reader.ReadInt32();
+        int cinematicCount = reader.ReadInt32();
 
-        var entries = new List<CinematicEntry>(cinematicCount);
-        var cinematics = new List<Cinematic>(cinematicCount);
+        List<CinematicEntry> entries = new(cinematicCount);
+        List<Cinematic> cinematics = new(cinematicCount);
 
-        for (var i = 0; i < cinematicCount; ++i)
+        for (int i = 0; i < cinematicCount; ++i)
         {
             entries.Add(new CinematicEntry(new(reader.ReadUInt32()), reader.ReadInt32(), reader.ReadBoolean()));
         }
 
-        foreach (var entry in entries)
+        foreach (CinematicEntry entry in entries)
         {
             stream.Position = entry.Offset;
 
@@ -50,17 +46,17 @@ public static class CinematicsSerializer
 
     private static Cinematic DeserializeCinematic(BinaryReader reader, Crc name)
     {
-        var version = reader.ReadInt16();
+        short version = reader.ReadInt16();
         if (version != Version)
             throw new Exception($"Invalid version {version} for Cinematic!");
 
-        var cinematic = new Cinematic(name);
+        Cinematic cinematic = new(name);
 
-        var isStreaming = -1;
+        int isStreaming = -1;
 
         while (true)
         {
-            var elementTag = reader.ReadUInt32();
+            uint elementTag = reader.ReadUInt32();
 
             if (elementTag == 0x43454E44) // CEND TODO
             {
@@ -78,7 +74,7 @@ public static class CinematicsSerializer
                     break;
 
                 case 0xD98B7848: // Hash("MotionBlur")
-                    var motionBlur = new CinemaMotionBlur()
+                    CinemaMotionBlur motionBlur = new()
                     {
                         StartTime = reader.ReadSingle(),
                         EndTime = reader.ReadSingle(),
@@ -92,7 +88,7 @@ public static class CinematicsSerializer
                     break;
 
                 case 0xD0B107BB: // Hash("Sound3D")
-                    var sound3D = new CinemaSound3D()
+                    CinemaSound3D sound3D = new()
                     {
                         StartTime = reader.ReadSingle(),
                         EndTime = reader.ReadSingle(),
@@ -102,7 +98,7 @@ public static class CinematicsSerializer
                     };
 
                     // Store hash
-                    Hash.FNV32string(sound3D.SoundName);
+                    _ = Hash.FNV32string(sound3D.SoundName);
 
                     cinematic.Elements.Add(sound3D);
 
@@ -112,7 +108,7 @@ public static class CinematicsSerializer
                     break;
 
                 case 0xE6CE9B69: // Hash("Subtitle")
-                    var subtitle = new CinemaSubtitle
+                    CinemaSubtitle subtitle = new()
                     {
                         StartTime = reader.ReadSingle(),
                         EndTime = reader.ReadSingle(),
@@ -125,7 +121,7 @@ public static class CinematicsSerializer
 
                     cinematic.Elements.Add(subtitle);
 
-                    var tag = reader.ReadUInt32();
+                    uint tag = reader.ReadUInt32();
                     if (tag != 0x53545246) // STRF
                     {
                         reader.BaseStream.Position -= 4;
@@ -136,7 +132,7 @@ public static class CinematicsSerializer
                     break;
 
                 case 0xF49470BA: // Hash("Rumble")
-                    var rumble = new CinemaRumble
+                    CinemaRumble rumble = new()
                     {
                         StartTime = reader.ReadSingle(),
                         EndTime = reader.ReadSingle(),
@@ -152,7 +148,7 @@ public static class CinematicsSerializer
                     break;
 
                 case 0xEBB11A67: // Hash("SetDamageState")
-                    var damageState = new CinemaDamageState
+                    CinemaDamageState damageState = new()
                     {
                         EndTime = reader.ReadSingle(),
                         UnkCrc1 = new(reader.ReadUInt32()),
@@ -167,7 +163,7 @@ public static class CinematicsSerializer
                     break;
 
                 case 0xB4D9B99B: // Hash("AttachObject")
-                    var attachObject = new CinemaAttachObject
+                    CinemaAttachObject attachObject = new()
                     {
                         Unk = reader.ReadSingle(),
                         EndTime = reader.ReadSingle(),
@@ -185,14 +181,14 @@ public static class CinematicsSerializer
                     break;
 
                 case 0x9CC86FE3: // Hash("FlashMovie")
-                    var flashMovie = new CinemaFlashMovie
+                    CinemaFlashMovie flashMovie = new()
                     {
                         EndTime = reader.ReadSingle(),
                         Name = reader.ReadStringWithMaxLength(reader.ReadInt16())
                     };
 
                     // Store hash
-                    Hash.FNV32string(flashMovie.Name);
+                    _ = Hash.FNV32string(flashMovie.Name);
 
                     cinematic.Elements.Add(flashMovie);
 
@@ -202,7 +198,7 @@ public static class CinematicsSerializer
                     break;
 
                 case 0xA9DED8D5: // Hash("BinkMovie")
-                    var binkMovie = new CinemaBinkMovie
+                    CinemaBinkMovie binkMovie = new()
                     {
                         EndTime = reader.ReadSingle(),
                         Name = reader.ReadStringWithMaxLength(reader.ReadInt16())
@@ -211,14 +207,14 @@ public static class CinematicsSerializer
                     cinematic.Field1F5 |= 0x20;
 
                     // Store hash
-                    Hash.FNV32string(binkMovie.Name);
+                    _ = Hash.FNV32string(binkMovie.Name);
 
                     cinematic.Elements.Add(binkMovie);
 
                     if (cinematic.Duration < binkMovie.EndTime)
                         cinematic.Duration = binkMovie.EndTime + 0.01f;
 
-                    var tag2 = reader.ReadUInt32();
+                    uint tag2 = reader.ReadUInt32();
                     if (tag2 != 0x50415553) // PAUS
                     {
                         reader.BaseStream.Position -= 4;
@@ -229,7 +225,7 @@ public static class CinematicsSerializer
                     break;
 
                 case 0x9F8BCA10: // Hash("SoundBank")
-                    var soundBank = new CinemaSoundBank
+                    CinemaSoundBank soundBank = new()
                     {
                         Unk = reader.ReadSingle(),
                         EndTime = reader.ReadSingle(),
@@ -237,7 +233,7 @@ public static class CinematicsSerializer
                     };
 
                     // Store hash
-                    Hash.FNV32string(soundBank.Name);
+                    _ = Hash.FNV32string(soundBank.Name);
 
                     if (soundBank.Unk <= 0.0f)
                     {
@@ -257,7 +253,7 @@ public static class CinematicsSerializer
                     break;
 
                 case 0x9990EDD9: // Hash("UseAttractionPoint")
-                    var attractionPt = new CinemaAttractionPt
+                    CinemaAttractionPt attractionPt = new()
                     {
                         EndTime = reader.ReadSingle(),
                         UnkCrc1 = new(reader.ReadUInt32()),
@@ -272,7 +268,7 @@ public static class CinematicsSerializer
                     break;
 
                 case 0x86BF6C5B: // Hash("FX")
-                    var fx = new CinemaFX
+                    CinemaFX fx = new()
                     {
                         EndTime = reader.ReadSingle(),
                         UnkCrc1 = new(reader.ReadUInt32()),
@@ -288,7 +284,7 @@ public static class CinematicsSerializer
                     break;
 
                 case 0x7BBE9A2B: // Hash("SetMusicState")
-                    var musicState = new CinemaMusicState
+                    CinemaMusicState musicState = new()
                     {
                         EndTime = reader.ReadSingle(),
                         Unk = reader.ReadInt16() != 0
@@ -302,14 +298,14 @@ public static class CinematicsSerializer
                     break;
 
                 case 0x84B625DC: // Hash("LoadBlock")
-                    var loadBLock = new CinemaLoadBlock
+                    CinemaLoadBlock loadBLock = new()
                     {
                         EndTime = reader.ReadSingle(),
                         Name = reader.ReadStringWithMaxLength(reader.ReadInt16())
                     };
-                    
+
                     // Store hash
-                    Hash.FNV32string(loadBLock.Name);
+                    _ = Hash.FNV32string(loadBLock.Name);
 
                     cinematic.Elements.Add(loadBLock);
 
@@ -319,7 +315,7 @@ public static class CinematicsSerializer
                     break;
 
                 case 0x8D1B88C3: // Hash("PlayAnimation")
-                    var animation = new CinemaAnimation
+                    CinemaAnimation animation = new()
                     {
                         UnkFloat1 = reader.ReadSingle(),
                         UnkFloat2 = reader.ReadSingle(),
@@ -330,7 +326,7 @@ public static class CinematicsSerializer
                     };
 
                     // Store hash
-                    Hash.FNV32string(animation.Name);
+                    _ = Hash.FNV32string(animation.Name);
 
                     cinematic.Elements.Add(animation);
 
@@ -353,7 +349,7 @@ public static class CinematicsSerializer
                     break;
 
                 case 0x6FEEF89F: // Hash("") - CinemaLight
-                    var light = new CinemaLight
+                    CinemaLight light = new()
                     {
                         EndTime = reader.ReadSingle(),
                         UnkBool1 = reader.ReadInt16() != 0,
@@ -369,7 +365,7 @@ public static class CinematicsSerializer
                     break;
 
                 case 0x7213E378: // Hash("FaceFX")
-                    var faceFx = new CinemaFaceFX
+                    CinemaFaceFX faceFx = new()
                     {
                         UnkFloat1 = reader.ReadSingle(),
                         UnkFloat2 = reader.ReadSingle(),
@@ -397,7 +393,7 @@ public static class CinematicsSerializer
                 case 0x6D17D447: // Hash("<UNKNOWN>")
                     cinematic.UnkSubs ??= new Cinematic.UnkSub[25];
 
-                    var crc = new Crc(reader.ReadUInt32());
+                    Crc crc = new(reader.ReadUInt32());
 
                     if (cinematic.UnkSubCount < 25)
                     {
@@ -415,7 +411,7 @@ public static class CinematicsSerializer
                     break;
 
                 case 0x6A8F7467: // Hash("CameraSpline")
-                    var splineCamera = new CinemaSplineCamera
+                    CinemaSplineCamera splineCamera = new()
                     {
                         UnkFloat = reader.ReadSingle(),
                         EndTime = reader.ReadSingle(),
@@ -433,7 +429,7 @@ public static class CinematicsSerializer
                     break;
 
                 case 0x427CC1F8: // Hash("Sound2D")
-                    var sound2D = new CinemaSound2D
+                    CinemaSound2D sound2D = new()
                     {
                         UnkFloat = reader.ReadSingle(),
                         EndTime = reader.ReadSingle(),
@@ -442,7 +438,7 @@ public static class CinematicsSerializer
                     };
 
                     // Store hash
-                    Hash.FNV32string(sound2D.Name);
+                    _ = Hash.FNV32string(sound2D.Name);
 
                     cinematic.Elements.Add(sound2D);
 
@@ -452,7 +448,7 @@ public static class CinematicsSerializer
                     break;
 
                 case 0x3F0B90FC: // Hash("Teleport")
-                    var teleport = new CinemaTeleport
+                    CinemaTeleport teleport = new()
                     {
                         EndTime = reader.ReadSingle(),
                         UnkCrc1 = new(reader.ReadUInt32()),
@@ -464,7 +460,7 @@ public static class CinematicsSerializer
                     if (cinematic.Duration < teleport.EndTime)
                         cinematic.Duration = teleport.EndTime;
 
-                    var tag3 = reader.ReadUInt32();
+                    uint tag3 = reader.ReadUInt32();
                     if (tag3 == 0x534B4950) // SKIP
                     {
                         teleport.Flags &= 0xFD;
@@ -482,7 +478,7 @@ public static class CinematicsSerializer
                     break;
 
                 case 0x412D1576: // Hash("CameraShake")
-                    var cameraShake = new CinemaCameraShake
+                    CinemaCameraShake cameraShake = new()
                     {
                         EndTime = reader.ReadSingle(),
                         UnkCrc = new(reader.ReadUInt32()),
@@ -499,7 +495,7 @@ public static class CinematicsSerializer
                     break;
 
                 case 0x3C7A73EB: // Hash("MoveObject")
-                    var obj = new CinemaObject
+                    CinemaObject obj = new()
                     {
                         UnkFloat1 = reader.ReadSingle(),
                         EndTime = reader.ReadSingle(),
@@ -522,8 +518,8 @@ public static class CinematicsSerializer
                     cinematic.Field1AC &= 0xFE;
                     cinematic.Field1F7 |= 0x1E;
 
-                    var tag4 = reader.ReadUInt32();
-                    if (tag4 == 0x54524E32 || tag4 == 0x54524E33) // TRN2 || TRN3
+                    uint tag4 = reader.ReadUInt32();
+                    if (tag4 is 0x54524E32 or 0x54524E33) // TRN2 || TRN3
                     {
                         if (reader.ReadInt32() != 0)
                         {
@@ -534,7 +530,7 @@ public static class CinematicsSerializer
                             cinematic.Field1AC &= 0xFD;
                         }
 
-                        var speedCrc = new Crc(reader.ReadUInt32());
+                        Crc speedCrc = new(reader.ReadUInt32());
                         cinematic.Field19C = cinematic.Field198 = speedCrc.Value == Hash.StringToHash("Fast") ? 0.3f : 0.6f;
 
                         if (reader.ReadInt32() != 0)
@@ -645,7 +641,7 @@ public static class CinematicsSerializer
 
                         cinematic.Field194 = reader.ReadInt32();
 
-                        var speedCrc = new Crc(reader.ReadUInt32());
+                        Crc speedCrc = new(reader.ReadUInt32());
                         cinematic.Field1A0 = cinematic.Field1A4 = cinematic.Field19C = cinematic.Field198 = speedCrc.Value == Hash.StringToHash("Fast") ? 0.3f : 0.6f;
 
                         cinematic.Field1A8 = reader.ReadSingle();
@@ -653,7 +649,7 @@ public static class CinematicsSerializer
                     break;
 
                 case 0x3B743523: // Hash("Streaming")
-                    var streaming = new CinemaStreaming
+                    CinemaStreaming streaming = new()
                     {
                         EndTime = reader.ReadSingle(),
                         Enable = reader.ReadInt16() == 1
@@ -673,7 +669,7 @@ public static class CinematicsSerializer
                     break;
 
                 case 0x2B941A68: // Hash("ShadowQuality")
-                    var shadowQuality = new CinemaShadowQuality
+                    CinemaShadowQuality shadowQuality = new()
                     {
                         EndTime = reader.ReadSingle(),
                         Quality = new(reader.ReadUInt32())
@@ -687,7 +683,7 @@ public static class CinematicsSerializer
                     break;
 
                 case 0x16930AFE: // Hash("Explosion")
-                    var explosion = new CinemaExplosion
+                    CinemaExplosion explosion = new()
                     {
                         EndTime = reader.ReadSingle(),
                         UnkCrc1 = new(reader.ReadUInt32()),
@@ -702,7 +698,7 @@ public static class CinematicsSerializer
                     break;
 
                 case 0x5586466: // Hash("BloodSplatter")
-                    var bloodSplatter = new CinemaBloodSplatter
+                    CinemaBloodSplatter bloodSplatter = new()
                     {
                         StartTime = reader.ReadSingle(),
                         EndTime = reader.ReadSingle(),
@@ -719,7 +715,7 @@ public static class CinematicsSerializer
                     break;
 
                 case 0x12902319: // Hash("ObjectMotionBlur")
-                    var objectMotionBlur = new CinemaObjectMotionBlur
+                    CinemaObjectMotionBlur objectMotionBlur = new()
                     {
                         StartTime = reader.ReadSingle(),
                         EndTime = reader.ReadSingle(),
@@ -731,7 +727,7 @@ public static class CinematicsSerializer
                     if (cinematic.Duration < objectMotionBlur.EndTime)
                         cinematic.Duration = objectMotionBlur.EndTime;
 
-                    var tag5 = reader.ReadUInt32();
+                    uint tag5 = reader.ReadUInt32();
                     if (tag5 == 0x41504C59) // APLY
                     {
                         objectMotionBlur.Flags |= 0x1;
@@ -746,7 +742,7 @@ public static class CinematicsSerializer
                     break;
 
                 case 0x1BD88DB7: // Hash("AnimateObject")
-                    var animateObject = new CinemaAnimateObject
+                    CinemaAnimateObject animateObject = new()
                     {
                         UnkFloat1 = reader.ReadSingle(),
                         UnkFloat2 = reader.ReadSingle(),
@@ -757,7 +753,7 @@ public static class CinematicsSerializer
                     };
 
                     // Store hash
-                    Hash.FNV32string(animateObject.Name);
+                    _ = Hash.FNV32string(animateObject.Name);
 
                     cinematic.Elements.Add(animateObject);
 
@@ -773,7 +769,7 @@ public static class CinematicsSerializer
                     break;
 
                 case 0x60D1BB07: // Hash("UnloadBlock")
-                    var unloadBlock = new CinemaUnloadBlock
+                    CinemaUnloadBlock unloadBlock = new()
                     {
                         EndTime = reader.ReadSingle(),
                         UnkCrc = new(reader.ReadUInt32()),
@@ -791,7 +787,7 @@ public static class CinematicsSerializer
                     break;
 
                 case 0x6090527C: // Hash("CameraXSI")
-                    var cameraXSI = new CinemaXSICamera
+                    CinemaXSICamera cameraXSI = new()
                     {
                         UnkFloat1 = reader.ReadSingle(),
                         EndTime = reader.ReadSingle(),
@@ -801,11 +797,11 @@ public static class CinematicsSerializer
                         cinematic.Duration = cameraXSI.EndTime;
 
                     cameraXSI.Subs = new CinemaXSICamera.Sub[reader.ReadInt32()];
-                    for (var i = 0; i < cameraXSI.Subs.Length; ++i)
+                    for (int i = 0; i < cameraXSI.Subs.Length; ++i)
                     {
                         while (true)
                         {
-                            var tag6 = reader.ReadUInt32();
+                            uint tag6 = reader.ReadUInt32();
                             if (tag6 == 0x4B454E44) // KEND
                                 break;
 
@@ -842,7 +838,7 @@ public static class CinematicsSerializer
                     break;
 
                 case 0x65C52B0F: // Hash("PlayConvLine")
-                    var convLine = new CinemaConvLine
+                    CinemaConvLine convLine = new()
                     {
                         EndTime = reader.ReadSingle(),
                         UnkInt1 = reader.ReadInt32(),
@@ -857,7 +853,7 @@ public static class CinematicsSerializer
                     break;
 
                 case 0x66364EDB: // Hash("LODDistance")
-                    var LODDistance = new CinemaLODDistance
+                    CinemaLODDistance LODDistance = new()
                     {
                         StartTime = reader.ReadSingle(),
                         EndTime = reader.ReadSingle(),
@@ -873,7 +869,7 @@ public static class CinematicsSerializer
                     break;
 
                 case 0x55377182: // Hash("PlayConversation")
-                    var conversation = new CinemaConversation
+                    CinemaConversation conversation = new()
                     {
                         EndTime = reader.ReadSingle(),
                         UnkCrc = new(reader.ReadUInt32())
@@ -887,7 +883,7 @@ public static class CinematicsSerializer
                     break;
 
                 case 0x4B39ED5C: // Hash("TimeScale")
-                    var timeScale = new CinemaTimeScale
+                    CinemaTimeScale timeScale = new()
                     {
                         StartTime = reader.ReadSingle(),
                         EndTime = reader.ReadSingle(),
@@ -902,14 +898,14 @@ public static class CinematicsSerializer
                     break;
 
                 case 0x4D7649EC: // Hash("LuaScript")
-                    var script = new CinemaScript
+                    CinemaScript script = new()
                     {
                         EndTime = reader.ReadSingle(),
                         Script = reader.ReadStringWithMaxLength(reader.ReadInt16()),
                     };
 
                     // Store hash
-                    Hash.FNV32string(script.Script);
+                    _ = Hash.FNV32string(script.Script);
 
                     if (reader.ReadInt16() != 0)
                         script.Flags |= 0x2;
@@ -921,7 +917,7 @@ public static class CinematicsSerializer
                     if (cinematic.Duration < script.EndTime)
                         cinematic.Duration = script.EndTime;
 
-                    var tag7 = reader.ReadUInt32();
+                    uint tag7 = reader.ReadUInt32();
                     if (tag7 == 0x4C434D44) // LCMD
                     {
                         script.Flags |= 0x4;
@@ -932,7 +928,7 @@ public static class CinematicsSerializer
                     break;
 
                 case 0x4A09E56C: // Hash("Camera")
-                    var camera = new CinemaCamera
+                    CinemaCamera camera = new()
                     {
                         StartTime = reader.ReadSingle(),
                         EndTime = reader.ReadSingle(),
@@ -941,7 +937,7 @@ public static class CinematicsSerializer
                         UnkCrc3 = new(reader.ReadUInt32()),
                         UnkCrc4 = new(reader.ReadUInt32())
                     };
-                    
+
                     cinematic.Elements.Add(camera);
                     cinematic.Field1F4 |= 0x40;
 
@@ -954,7 +950,7 @@ public static class CinematicsSerializer
                     break;
 
                 case 0x486725BB: // Hash("Fade")
-                    var fade = new CinemaFade
+                    CinemaFade fade = new()
                     {
                         StartTime = reader.ReadSingle(),
                         EndTime = reader.ReadSingle(),
@@ -965,12 +961,12 @@ public static class CinematicsSerializer
                     if (cinematic.Duration < fade.StartTime)
                         cinematic.Duration = fade.StartTime;
 
-                    var methodCrc = reader.ReadUInt32();
+                    uint methodCrc = reader.ReadUInt32();
 
-                    var opacity = 0.0f;
-                    var hasOpacity = false;
+                    float opacity = 0.0f;
+                    bool hasOpacity = false;
 
-                    var tag8 = reader.ReadUInt32();
+                    uint tag8 = reader.ReadUInt32();
                     if (tag8 == 0x4F504143) // OPAC
                     {
                         hasOpacity = true;
@@ -985,25 +981,11 @@ public static class CinematicsSerializer
                     switch (methodCrc)
                     {
                         case 0x17A2F7BA:
-                            if (hasOpacity)
-                            {
-                                fade.UnkInt = (uint)(byte)(255.0f * opacity) << 24;
-                            }
-                            else
-                            {
-                                fade.UnkInt = 0x00000000;
-                            }
+                            fade.UnkInt = hasOpacity ? (uint)(byte)(255.0f * opacity) << 24 : 0x00000000;
                             break;
 
                         case 0x9EBA1E81:
-                            if (hasOpacity)
-                            {
-                                fade.UnkInt = 0x00FFFFFF | ((uint)(byte)(255.0f * opacity) << 24);
-                            }
-                            else
-                            {
-                                fade.UnkInt = 0xFFFFFFFF;
-                            }
+                            fade.UnkInt = hasOpacity ? 0x00FFFFFF | ((uint)(byte)(255.0f * opacity) << 24) : 0xFFFFFFFF;
                             break;
 
                         case 0xDEDDFB47:
@@ -1018,17 +1000,10 @@ public static class CinematicsSerializer
                             break;
 
                         default:
-                            if (hasOpacity)
-                            {
-                                fade.UnkInt = 0x00FFFFFFu | ((uint)(byte)(255.0f * opacity) << 24);
-                            }
-                            else
-                            {
-                                fade.UnkInt = 0x00FFFFFF;
-                            }
+                            fade.UnkInt = hasOpacity ? 0x00FFFFFFu | ((uint)(byte)(255.0f * opacity) << 24) : 0x00FFFFFF;
                             break;
                     }
-                    
+
                     break;
             }
         }
@@ -1063,7 +1038,7 @@ public static class CinematicsSerializer
 
     public static void SerializeJSON(List<Cinematic> cinematics, Stream stream)
     {
-        using var writer = new StreamWriter(stream, Encoding.UTF8, leaveOpen: true);
+        using StreamWriter writer = new(stream, Encoding.UTF8, leaveOpen: true);
 
         writer.Write(JsonConvert.SerializeObject(cinematics, Formatting.Indented, new CrcConverter()));
     }

@@ -1,13 +1,11 @@
-﻿using System;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Text.RegularExpressions;
 
 using Newtonsoft.Json;
 
-namespace SabTool.Serializers.Json.Converters;
-
 using SabTool.Utils;
 
+namespace SabTool.Serializers.Json.Converters;
 internal class CrcConverter : JsonConverter<Crc>
 {
     private static readonly Regex CrcMatchRegex = new(@"^0x([0-9A-F]{8})\s*\([^)]*\)$", RegexOptions.Compiled);
@@ -21,11 +19,11 @@ internal class CrcConverter : JsonConverter<Crc>
 
     public override Crc? ReadJson(JsonReader reader, Type objectType, Crc? existingValue, bool hasExistingValue, JsonSerializer serializer)
     {
-        var value = reader.ReadAsString()!;
-        var match = CrcMatchRegex.Match(value);
+        string value = reader.ReadAsString()!;
+        Match match = CrcMatchRegex.Match(value);
         if (match.Success)
         {
-            var hexString = match.Groups[1].Value;
+            string hexString = match.Groups[1].Value;
 
             if (uint.TryParse(hexString, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out uint crc))
                 return new Crc(crc);

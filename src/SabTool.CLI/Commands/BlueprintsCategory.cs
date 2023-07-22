@@ -1,9 +1,9 @@
-﻿namespace SabTool.CLI.Commands;
-
+﻿
 using SabTool.CLI.Base;
 using SabTool.Depot;
 using SabTool.Serializers.Blueprints;
 
+namespace SabTool.CLI.Commands;
 public sealed class BlueprintsCategory : BaseCategory
 {
     public override string Key => "blueprints";
@@ -25,15 +25,15 @@ public sealed class BlueprintsCategory : BaseCategory
             }
 
             ResourceDepot.Instance.Initialize(arguments.ElementAt(0));
-            ResourceDepot.Instance.Load(Resource.Blueprints);
+            _ = ResourceDepot.Instance.Load(Resource.Blueprints);
 
-            var outputDir = arguments.ElementAt(1);
+            string outputDir = arguments.ElementAt(1);
 
-            Directory.CreateDirectory(outputDir);
+            _ = Directory.CreateDirectory(outputDir);
 
-            var blueprints = ResourceDepot.Instance.GetAllBlueprints().ToList();
+            List<Data.Blueprints.Blueprint> blueprints = ResourceDepot.Instance.GetAllBlueprints().ToList();
 
-            using var outFileStream = new FileStream(Path.Combine(outputDir, "blueprints.json"), FileMode.Create, FileAccess.Write, FileShare.None);
+            using FileStream outFileStream = new(Path.Combine(outputDir, "blueprints.json"), FileMode.Create, FileAccess.Write, FileShare.None);
 
             BlueprintSerializer.SerializeJSON(blueprints, outFileStream);
 
@@ -68,12 +68,12 @@ public sealed class BlueprintsCategory : BaseCategory
             }
 
             ResourceDepot.Instance.Initialize(arguments.ElementAt(0));
-            ResourceDepot.Instance.Load(Resource.Blueprints);
+            _ = ResourceDepot.Instance.Load(Resource.Blueprints);
 
-            var outputFilePath = arguments.Count() > 1 ? arguments.ElementAt(1) : null;
+            string? outputFilePath = arguments.Count() > 1 ? arguments.ElementAt(1) : null;
 
-            var writer = Console.Out;
-            var outputToFile = false;
+            TextWriter writer = Console.Out;
+            bool outputToFile = false;
 
             if (outputFilePath != null)
             {
@@ -81,9 +81,9 @@ public sealed class BlueprintsCategory : BaseCategory
                 outputToFile = true;
             }
 
-            var blueprints = ResourceDepot.Instance.GetAllBlueprints();
+            IEnumerable<Data.Blueprints.Blueprint> blueprints = ResourceDepot.Instance.GetAllBlueprints();
 
-            foreach (var blueprint in blueprints)
+            foreach (Data.Blueprints.Blueprint blueprint in blueprints)
                 writer.WriteLine(blueprint.Dump());
 
             if (writer != null && outputToFile)

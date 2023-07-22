@@ -4,7 +4,7 @@
 public enum ConversationLineFlags
 {
     Interrupt = 0x01,
-    CInt      = 0x02
+    CInt = 0x02
 }
 
 public sealed class ConversationLineStructure

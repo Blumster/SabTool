@@ -1,27 +1,23 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
+﻿using System.Text;
 
 using Newtonsoft.Json;
-
-namespace SabTool.Serializers.Packs;
 
 using SabTool.Data.Packs;
 using SabTool.Serializers.Json.Converters;
 using SabTool.Utils;
 
+namespace SabTool.Serializers.Packs;
 public static class PaletteBlockSerializer
 {
     public static PaletteBlock DeserializeRaw(Stream stream)
     {
-        using var reader = new BinaryReader(stream, Encoding.UTF8, true);
+        using BinaryReader reader = new(stream, Encoding.UTF8, true);
 
-        var startOff = stream.Position;
+        long startOff = stream.Position;
 
-        var streamBlock = StreamBlockSerializer.DeserializeFromMapRaw(stream, StreamBlockSerializer.SerializationFlags.EntriesForOnlyIndex2);
+        StreamBlock streamBlock = StreamBlockSerializer.DeserializeFromMapRaw(stream, StreamBlockSerializer.SerializationFlags.EntriesForOnlyIndex2);
 
-        var paletteBlock = new PaletteBlock
+        PaletteBlock paletteBlock = new()
         {
             Crc = streamBlock.Id,
             X = streamBlock.Extents[0].X,
@@ -29,11 +25,11 @@ public static class PaletteBlockSerializer
             Index = streamBlock.Index
         };
 
-        var paletteSet = new HashSet<Crc>();
+        HashSet<Crc> paletteSet = new();
 
-        for (var i = 0; i < streamBlock.PaletteCount; ++i)
+        for (int i = 0; i < streamBlock.PaletteCount; ++i)
         {
-            paletteSet.Add(streamBlock.Palettes[i]);
+            _ = paletteSet.Add(streamBlock.Palettes[i]);
         }
 
         paletteBlock.Palettes = paletteSet.ToList();
@@ -53,7 +49,7 @@ public static class PaletteBlockSerializer
 
     public static void SerializeJSON(PaletteBlock paletteBlock, Stream stream)
     {
-        using var writer = new StreamWriter(stream, Encoding.UTF8, leaveOpen: true);
+        using StreamWriter writer = new(stream, Encoding.UTF8, leaveOpen: true);
 
         writer.Write(JsonConvert.SerializeObject(paletteBlock, Formatting.Indented, new CrcConverter()));
     }

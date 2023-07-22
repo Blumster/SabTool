@@ -1,23 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿namespace SabTool.Utils.Misc;
 
-namespace SabTool.Utils.Misc
+public sealed class Singleton<T> where T : new()
 {
-    public class Singleton<T> where T : new()
-    {
-        private static readonly Lazy<T> _lazyInstance = new Lazy<T>(() => new T());
+    private static readonly Lazy<T> LazyInstance = new(() => new T());
 
-        public static T Instance
-        {
-            get
-            {
-                return _lazyInstance.Value;
-            }
-        }
+    private Singleton()
+    { }
 
-        protected Singleton()
-        {
-        }
-    }
+    public static T Instance
+        => LazyInstance.Value;
 }

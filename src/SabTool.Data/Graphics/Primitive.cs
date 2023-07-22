@@ -25,18 +25,18 @@ public sealed class Primitive
         if (index >= VertexHolder.ArrayCount)
             throw new ArgumentOutOfRangeException(nameof(index));
 
-        var vertices = new List<Vector2>();
-        for (var i = 0; i < VertexHolder.Counts[index]; ++i)
+        List<Vector2> vertices = new();
+        for (int i = 0; i < VertexHolder.Counts[index]; ++i)
         {
-            foreach (var vDecl in VertexHolder.Decl1)
+            foreach (VertexDeclaration vDecl in VertexHolder.Decl1)
             {
                 if (vDecl.Type == VDType.Unused || vDecl.Usage != usage || (usageIndex != -1 && usageIndex != vDecl.UsageIndex))
                     continue;
 
-                var arr = VertexHolder.Vertices[index];
-                var off = VertexHolder.Sizes[index] * i + vDecl.Offset;
+                byte[] arr = VertexHolder.Vertices[index];
+                int off = (VertexHolder.Sizes[index] * i) + vDecl.Offset;
 
-                var vertex = vDecl.Type switch
+                Vector2 vertex = vDecl.Type switch
                 {
                     VDType.Float1 => new Vector2(BitConverter.ToSingle(arr, off), 0.0f),
                     VDType.Float2 => new Vector2(BitConverter.ToSingle(arr, off), BitConverter.ToSingle(arr, off + 4)),
@@ -59,18 +59,18 @@ public sealed class Primitive
         if (index >= VertexHolder.ArrayCount)
             throw new ArgumentOutOfRangeException(nameof(index));
 
-        var vertices = new List<Vector3>();
-        for (var i = 0; i < VertexHolder.Counts[index]; ++i)
+        List<Vector3> vertices = new();
+        for (int i = 0; i < VertexHolder.Counts[index]; ++i)
         {
-            foreach (var vDecl in VertexHolder.Decl1)
+            foreach (VertexDeclaration vDecl in VertexHolder.Decl1)
             {
                 if (vDecl.Type == VDType.Unused || vDecl.Usage != usage || (usageIndex != -1 && usageIndex != vDecl.UsageIndex))
                     continue;
 
-                var arr = VertexHolder.Vertices[index];
-                var off = VertexHolder.Sizes[index] * i + vDecl.Offset;
+                byte[] arr = VertexHolder.Vertices[index];
+                int off = (VertexHolder.Sizes[index] * i) + vDecl.Offset;
 
-                var vertex = vDecl.Type switch
+                Vector3 vertex = vDecl.Type switch
                 {
                     VDType.Float1 => new Vector3(BitConverter.ToSingle(arr, off), 0.0f, 0.0f),
                     VDType.Float2 => new Vector3(BitConverter.ToSingle(arr, off), BitConverter.ToSingle(arr, off + 4), 0.0f),
@@ -97,18 +97,18 @@ public sealed class Primitive
         if (index >= VertexHolder.ArrayCount)
             throw new ArgumentOutOfRangeException(nameof(index));
 
-        var vertices = new List<Vector4>();
-        for (var i = 0; i < VertexHolder.Counts[index]; ++i)
+        List<Vector4> vertices = new();
+        for (int i = 0; i < VertexHolder.Counts[index]; ++i)
         {
-            foreach (var vDecl in VertexHolder.Decl1)
+            foreach (VertexDeclaration vDecl in VertexHolder.Decl1)
             {
                 if (vDecl.Type == VDType.Unused || vDecl.Usage != usage || (usageIndex != -1 && usageIndex != vDecl.UsageIndex))
                     continue;
 
-                var arr = VertexHolder.Vertices[index];
-                var off = VertexHolder.Sizes[index] * i + vDecl.Offset;
+                byte[] arr = VertexHolder.Vertices[index];
+                int off = (VertexHolder.Sizes[index] * i) + vDecl.Offset;
 
-                var vertex = vDecl.Type switch
+                Vector4 vertex = vDecl.Type switch
                 {
                     VDType.Float1 => new Vector4(BitConverter.ToSingle(arr, off), 0.0f, 0.0f, 1.0f),
                     VDType.Float2 => new Vector4(BitConverter.ToSingle(arr, off), BitConverter.ToSingle(arr, off + 4), 0.0f, 1.0f),
@@ -141,12 +141,12 @@ public sealed class Primitive
         if (index >= VertexHolder.ArrayCount)
             throw new ArgumentOutOfRangeException(nameof(index));
 
-        var indices = new List<int>();
+        List<int> indices = new();
 
-        var is16Bit = VertexHolder.ArrayCount <= 1;
-        var off = IndexStartOffset * (is16Bit ? 2 : 4);
+        bool is16Bit = VertexHolder.ArrayCount <= 1;
+        int off = IndexStartOffset * (is16Bit ? 2 : 4);
 
-        for (var i = 0; i < NumIndices; ++i)
+        for (int i = 0; i < NumIndices; ++i)
         {
             if (is16Bit)
             {
@@ -167,25 +167,25 @@ public sealed class Primitive
 
     public string DumpString(int indentCount = 0)
     {
-        var sb = new StringBuilder();
+        StringBuilder sb = new();
 
-        sb.Append(' ', indentCount).AppendLine($"{nameof(Primitive)}()");
-        sb.Append(' ', indentCount).AppendLine("{");
-        sb.Append(' ', indentCount + 2).AppendLine($"{nameof(ShadowIndex)} = {ShadowIndex}");
-        sb.Append(' ', indentCount + 2).AppendLine($"{nameof(VertexHolderIndex)} = {VertexHolderIndex}");
-        sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Float30)} = {Float30}");
-        sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Float34)} = {Float34}");
-        sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Float38)} = {Float38}");
-        sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Int3C)} = {Int3C}");
-        sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Float40)} = {Float40}");
-        sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Float44)} = {Float44}");
-        sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Float48)} = {Float48}");
-        sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Int4C)} = {Int4C}");
-        sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Int54)} = {Int54}");
-        sb.Append(' ', indentCount + 2).AppendLine($"{nameof(IndexStartOffset)} = {IndexStartOffset}");
-        sb.Append(' ', indentCount + 2).AppendLine($"{nameof(NumVertex)} = {NumVertex}");
-        sb.Append(' ', indentCount + 2).AppendLine($"{nameof(NumIndices)} = {NumIndices}");
-        sb.Append(' ', indentCount).AppendLine("}");
+        _ = sb.Append(' ', indentCount).AppendLine($"{nameof(Primitive)}()");
+        _ = sb.Append(' ', indentCount).AppendLine("{");
+        _ = sb.Append(' ', indentCount + 2).AppendLine($"{nameof(ShadowIndex)} = {ShadowIndex}");
+        _ = sb.Append(' ', indentCount + 2).AppendLine($"{nameof(VertexHolderIndex)} = {VertexHolderIndex}");
+        _ = sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Float30)} = {Float30}");
+        _ = sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Float34)} = {Float34}");
+        _ = sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Float38)} = {Float38}");
+        _ = sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Int3C)} = {Int3C}");
+        _ = sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Float40)} = {Float40}");
+        _ = sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Float44)} = {Float44}");
+        _ = sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Float48)} = {Float48}");
+        _ = sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Int4C)} = {Int4C}");
+        _ = sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Int54)} = {Int54}");
+        _ = sb.Append(' ', indentCount + 2).AppendLine($"{nameof(IndexStartOffset)} = {IndexStartOffset}");
+        _ = sb.Append(' ', indentCount + 2).AppendLine($"{nameof(NumVertex)} = {NumVertex}");
+        _ = sb.Append(' ', indentCount + 2).AppendLine($"{nameof(NumIndices)} = {NumIndices}");
+        _ = sb.Append(' ', indentCount).AppendLine("}");
 
         return sb.ToString();
     }

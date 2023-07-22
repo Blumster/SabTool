@@ -1,11 +1,8 @@
-﻿using System;
-
-using Newtonsoft.Json;
-
-namespace SabTool.Serializers.Json.Converters;
+﻿using Newtonsoft.Json;
 
 using SabTool.Data.Misc;
 
+namespace SabTool.Serializers.Json.Converters;
 internal class DictionaryConverter : JsonConverter<Dictionary>
 {
     public override Dictionary? ReadJson(JsonReader reader, Type objectType, Dictionary? existingValue, bool hasExistingValue, JsonSerializer serializer)
@@ -29,7 +26,7 @@ internal class DictionaryConverter : JsonConverter<Dictionary>
         writer.WritePropertyName(nameof(value.Objects));
         writer.WriteStartObject();
 
-        foreach (var obj in value.Objects)
+        foreach (DictionaryObject? obj in value.Objects)
         {
             writer.WritePropertyName(obj.Name.GetStringOrHexString());
 

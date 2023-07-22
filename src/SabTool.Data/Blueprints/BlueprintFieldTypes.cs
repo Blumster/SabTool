@@ -1,11 +1,9 @@
 ﻿using System.Drawing;
 
-namespace SabTool.Data.Blueprints;
-
 using SabTool.Data.Lua;
 using SabTool.Data.Misc;
-using SabTool.Utils;
 
+namespace SabTool.Data.Blueprints;
 public static class BlueprintFieldTypes
 {
     private static Dictionary<Type, Func<byte[], int, bool, object?>> Readers { get; } = new();
@@ -16,10 +14,9 @@ public static class BlueprintFieldTypes
         {
             return (data, off, skipCheck) =>
             {
-                if (!skipCheck && data.Length != expectedSize)
-                    throw new Exception($"Data is expected to be of size {expectedSize}, but found size: {data?.Length ?? -1}");
-
-                return reader(data, off);
+                return !skipCheck && data.Length != expectedSize
+                    ? throw new Exception($"Data is expected to be of size {expectedSize}, but found size: {data?.Length ?? -1}")
+                    : reader(data, off);
             };
         }
 
@@ -41,7 +38,7 @@ public static class BlueprintFieldTypes
         Readers.Add(typeof(Color), ReaderWithSizeCheck(4, (data, off) => Color.FromArgb(data[off + 3], data[off], data[off + 1], data[off + 2])));
         Readers.Add(typeof(LuaParam), (data, off, _) =>
         {
-            using var reader = new BinaryReader(new MemoryStream(data, off, data.Length - off, false));
+            using BinaryReader reader = new(new MemoryStream(data, off, data.Length - off, false));
 
             return new LuaParam(reader);
         });
@@ -50,42 +47,36 @@ public static class BlueprintFieldTypes
             if (data.Length == 0)
                 return string.Empty;
 
-            var str = Encoding.UTF8.GetString(data, off, data.Length - off);
+            string str = Encoding.UTF8.GetString(data, off, data.Length - off);
 
-            var nullTerminatorIndex = str.IndexOf('\0');
-            if (nullTerminatorIndex == -1)
-                return str;
-
-            if (nullTerminatorIndex == 0)
-                return string.Empty;
-
-            return str[..nullTerminatorIndex];
+            int nullTerminatorIndex = str.IndexOf('\0');
+            return nullTerminatorIndex == -1 ? str : nullTerminatorIndex == 0 ? string.Empty : (object)str[..nullTerminatorIndex];
         });
 
-        var toAdd = new HashSet<BlueprintType>();
+        HashSet<BlueprintType> toAdd = new();
 
         while (true)
         {
-            var didSomething = false;
+            bool didSomething = false;
 
-            foreach (var entry in Parents)
+            foreach (KeyValuePair<BlueprintType, HashSet<BlueprintType>> entry in Parents)
             {
-                entry.Value.Add(BlueprintType.Common);
-                entry.Value.Add(BlueprintType.Unknown);
+                _ = entry.Value.Add(BlueprintType.Common);
+                _ = entry.Value.Add(BlueprintType.Unknown);
 
-                foreach (var parent in entry.Value)
+                foreach (BlueprintType parent in entry.Value)
                 {
                     if (!Parents.ContainsKey(parent))
                         continue;
 
-                    foreach (var parentVal in Parents[parent])
-                        toAdd.Add(parentVal);
+                    foreach (BlueprintType parentVal in Parents[parent])
+                        _ = toAdd.Add(parentVal);
                 }
 
-                var startCount = entry.Value.Count;
+                int startCount = entry.Value.Count;
 
-                foreach (var newEntry in toAdd)
-                    entry.Value.Add(newEntry);
+                foreach (BlueprintType newEntry in toAdd)
+                    _ = entry.Value.Add(newEntry);
 
                 toAdd.Clear();
 
@@ -110,27 +101,27 @@ public static class BlueprintFieldTypes
 
     public static object? ReadProperty(BlueprintType blueprintType, Property prop)
     {
-        var realBlueprintType = GetRealBlueprintType(blueprintType, prop);
+        BlueprintType realBlueprintType = GetRealBlueprintType(blueprintType, prop);
 
-        var key = (realBlueprintType, prop.Name.Value);
+        (BlueprintType realBlueprintType, uint Value) key = (realBlueprintType, prop.Name.Value);
 
-        if (PropertyTypes.TryGetValue(key, out var propType))
+        if (PropertyTypes.TryGetValue(key, out Type propType))
         {
             if (propType is null)
                 throw new Exception($"Encountered null type for key: ({key.realBlueprintType}, 0x{key.Value:X8})!");
 
             if (propType.IsArray)
             {
-                var readType = propType.GetElementType();
+                Type readType = propType.GetElementType();
 
-                var elementSize = GetTypeSize(readType);
+                int elementSize = GetTypeSize(readType);
                 if (elementSize == -1)
                     throw new Exception($"Type {readType} cannot be read as an array!");
 
-                var elementCount = prop.Data.Length / elementSize;
-                var array = Array.CreateInstance(readType, elementCount);
+                int elementCount = prop.Data.Length / elementSize;
+                Array array = Array.CreateInstance(readType, elementCount);
 
-                for (var i = 0; i < elementCount; ++i)
+                for (int i = 0; i < elementCount; ++i)
                     array.SetValue(ReadTypedValue(readType, prop.Data, true, i * elementSize), i);
 
                 return array;
@@ -144,16 +135,16 @@ public static class BlueprintFieldTypes
 
     public static HashSet<BlueprintType>? GetAllTypes(BlueprintType type)
     {
-        return Parents.TryGetValue(type, out var allTypes) ? allTypes : null;
+        return Parents.TryGetValue(type, out HashSet<BlueprintType> allTypes) ? allTypes : null;
     }
 
     public static BlueprintType GetRealBlueprintType(BlueprintType blueprintType, Property prop)
     {
         if (!PropertyTypes.ContainsKey((blueprintType, prop.Name.Value)))
         {
-            var allTypes = GetAllTypes(blueprintType);
+            HashSet<BlueprintType> allTypes = GetAllTypes(blueprintType);
 
-            foreach (var parentType in allTypes)
+            foreach (BlueprintType parentType in allTypes)
                 if (PropertyTypes.ContainsKey(new(parentType, prop.Name.Value)))
                     return parentType;
         }
@@ -161,7 +152,7 @@ public static class BlueprintFieldTypes
         return blueprintType;
     }
 
-    private static object? ReadTypedValue(Type type, byte[] data, bool skipCheck = false, int off = 0) => Readers.TryGetValue(type, out var readerFunc) ? readerFunc(data, off, skipCheck) : null;
+    private static object? ReadTypedValue(Type type, byte[] data, bool skipCheck = false, int off = 0) => Readers.TryGetValue(type, out Func<byte[], int, bool, object> readerFunc) ? readerFunc(data, off, skipCheck) : null;
 
     #region Data
     private static Dictionary<BlueprintType, HashSet<BlueprintType>> Parents { get; } = new()

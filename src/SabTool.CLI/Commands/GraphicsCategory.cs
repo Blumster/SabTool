@@ -1,8 +1,8 @@
-﻿namespace SabTool.CLI.Commands;
-
+﻿
 using SabTool.CLI.Base;
 using SabTool.CLI.Commands.Graphics;
 
+namespace SabTool.CLI.Commands;
 public sealed class GraphicsCategory : BaseCategory
 {
     public override string Key => "graphics";

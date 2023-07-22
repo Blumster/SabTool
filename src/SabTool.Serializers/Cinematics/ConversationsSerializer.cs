@@ -1,46 +1,42 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
+﻿using System.Text;
 
 using Newtonsoft.Json;
-
-namespace SabTool.Serializers.Cinematics;
 
 using SabTool.Data.Cinematics;
 using SabTool.Serializers.Json.Converters;
 using SabTool.Utils;
 using SabTool.Utils.Extensions;
 
+namespace SabTool.Serializers.Cinematics;
 public static class ConversationsSerializer
 {
     private const int Version = 10;
 
     public static List<ConversationStructure> DeserializeRaw(Stream stream)
     {
-        using var reader = new BinaryReader(stream, Encoding.UTF8, true);
+        using BinaryReader reader = new(stream, Encoding.UTF8, true);
 
-        var version = reader.ReadInt32();
+        int version = reader.ReadInt32();
         if (version != Version)
             throw new Exception($"Invalid version {version} for Conversations!");
 
-        var count = reader.ReadInt32();
+        int count = reader.ReadInt32();
 
-        var structures = new List<ConversationStructure>(count);
+        List<ConversationStructure> structures = new(count);
 
-        for (var i = 0; i < count; ++i)
+        for (int i = 0; i < count; ++i)
         {
-            var size = reader.ReadInt32();
-            var startPosition = stream.Position;
+            int size = reader.ReadInt32();
+            long startPosition = stream.Position;
 
-            var ver2 = reader.ReadInt16();
+            short ver2 = reader.ReadInt16();
             if (ver2 != 10)
             {
                 stream.Position = startPosition + size;
                 continue;
             }
 
-            var conversation = new ConversationStructure
+            ConversationStructure conversation = new()
             {
                 Name = new(reader.ReadUInt32())
             };
@@ -62,18 +58,18 @@ public static class ConversationsSerializer
 
     private static bool DeserializeConversation(BinaryReader reader, ConversationStructure conversation)
     {
-        var numLines = reader.ReadInt16();
+        short numLines = reader.ReadInt16();
         if (numLines == 0)
             return false;
 
         conversation.Lines = new ConversationLineStructure[numLines];
 
-        var numNextLines = reader.ReadInt16();
+        short numNextLines = reader.ReadInt16();
         conversation.NextLines = new(numNextLines);
 
         while (true)
         {
-            var tag = reader.ReadUInt32();
+            uint tag = reader.ReadUInt32();
             if (tag == 0x43454E44) // CEND
                 break;
 
@@ -106,21 +102,21 @@ public static class ConversationsSerializer
                     conversation.Script[1] = reader.ReadStringWithMaxLength(reader.ReadInt16());
 
                     // Store hash if missing
-                    Hash.FNV32string(conversation.Script[1]);
+                    _ = Hash.FNV32string(conversation.Script[1]);
                     break;
 
                 case 0x53424E4B: // SBNK
                     conversation.SoundBank = reader.ReadStringWithMaxLength(reader.ReadInt16());
 
                     // Store hash if missing
-                    Hash.FNV32string(conversation.SoundBank);
+                    _ = Hash.FNV32string(conversation.SoundBank);
                     break;
 
                 case 0x53435230: // SCR0
                     conversation.Script[0] = reader.ReadStringWithMaxLength(reader.ReadInt16());
 
                     // Store hash if missing
-                    Hash.FNV32string(conversation.Script[0]);
+                    _ = Hash.FNV32string(conversation.Script[0]);
                     break;
 
                 case 0x524E444C: // RNDL
@@ -136,7 +132,7 @@ public static class ConversationsSerializer
                     break;
 
                 case 0x4C494E45: // LINE
-                    var idx = reader.ReadInt16();
+                    short idx = reader.ReadInt16();
 
                     if (conversation.Lines[idx] != null)
                         throw new Exception("Line is being reloaded?");
@@ -152,9 +148,9 @@ public static class ConversationsSerializer
                     break;
 
                 case 0x48545854: // HTXT
-                    var humanCrc = new Crc(reader.ReadUInt32());
+                    Crc humanCrc = new(reader.ReadUInt32());
 
-                    if (conversation.Humans.TryGetValue(humanCrc, out var human))
+                    if (conversation.Humans.TryGetValue(humanCrc, out ConversationStructure.Human? human))
                         human.Float1 = reader.ReadSingle();
 
                     break;
@@ -164,7 +160,7 @@ public static class ConversationsSerializer
                     break;
 
                 case 0x484D4135: // HMA5
-                    var human5Key = new Crc(reader.ReadUInt32());
+                    Crc human5Key = new(reader.ReadUInt32());
 
                     conversation.Humans.Add(human5Key, new ConversationStructure.Human("HMA5")
                     {
@@ -175,7 +171,7 @@ public static class ConversationsSerializer
                     break;
 
                 case 0x484D4133: // HMA3
-                    var human3Key = new Crc(reader.ReadUInt32());
+                    Crc human3Key = new(reader.ReadUInt32());
 
                     conversation.Humans.Add(human3Key, new ConversationStructure.Human("HMA3")
                     {
@@ -187,7 +183,7 @@ public static class ConversationsSerializer
                     break;
 
                 case 0x484D4134: // HMA4
-                    var human4Key = new Crc(reader.ReadUInt32());
+                    Crc human4Key = new(reader.ReadUInt32());
 
                     conversation.Humans.Add(human4Key, new ConversationStructure.Human("HMA4")
                     {
@@ -198,7 +194,7 @@ public static class ConversationsSerializer
                     break;
 
                 case 0x484D4132: // HMA2
-                    var human2Key = new Crc(reader.ReadUInt32());
+                    Crc human2Key = new(reader.ReadUInt32());
 
                     conversation.Humans.Add(human2Key, new ConversationStructure.Human("HMA2")
                     {
@@ -235,7 +231,7 @@ public static class ConversationsSerializer
 
         while (true)
         {
-            var tag = reader.ReadUInt32();
+            uint tag = reader.ReadUInt32();
             if (tag == 0x43454E44) // CEND
                 break;
 
@@ -261,14 +257,14 @@ public static class ConversationsSerializer
                     line.Script[1] = reader.ReadStringWithMaxLength(reader.ReadInt16());
 
                     // Store hash if missing
-                    Hash.FNV32string(line.Script[1]);
+                    _ = Hash.FNV32string(line.Script[1]);
                     break;
 
                 case 0x53435230: // SCR0
                     line.Script[0] = reader.ReadStringWithMaxLength(reader.ReadInt16());
 
                     // Store hash if missing
-                    Hash.FNV32string(line.Script[0]);
+                    _ = Hash.FNV32string(line.Script[0]);
                     break;
 
                 case 0x4E414D45: // NAME
@@ -280,7 +276,7 @@ public static class ConversationsSerializer
                     break;
 
                 case 0x4C494E45: // LINE
-                    var idx = reader.ReadInt16();
+                    short idx = reader.ReadInt16();
 
                     if (conversation.Lines[idx] != null)
                         throw new Exception("Line is being reloaded?");
@@ -300,7 +296,7 @@ public static class ConversationsSerializer
                     break;
 
                 case 0x494E464F: // INFO
-                    var infoKey = new Crc(reader.ReadUInt32());
+                    Crc infoKey = new(reader.ReadUInt32());
 
                     line.Humans.Add(infoKey, new ConversationLineStructure.Human("INFO")
                     {
@@ -311,9 +307,9 @@ public static class ConversationsSerializer
                     break;
 
                 case 0x494E4633: // INF3
-                    var inf3Key = new Crc(reader.ReadUInt32());
+                    Crc inf3Key = new(reader.ReadUInt32());
 
-                    var inf3Human = new ConversationLineStructure.Human("INF3")
+                    ConversationLineStructure.Human inf3Human = new("INF3")
                     {
                         Crc1 = new(reader.ReadUInt32()),
                         Crc2 = new(reader.ReadUInt32()),
@@ -329,9 +325,9 @@ public static class ConversationsSerializer
                     break;
 
                 case 0x494E4634: // INF4
-                    var inf4Key = new Crc(reader.ReadUInt32());
+                    Crc inf4Key = new(reader.ReadUInt32());
 
-                    var inf4Human = new ConversationLineStructure.Human("INF4")
+                    ConversationLineStructure.Human inf4Human = new("INF4")
                     {
                         Crc1 = new(reader.ReadUInt32()),
                         Crc2 = new(reader.ReadUInt32()),
@@ -347,9 +343,9 @@ public static class ConversationsSerializer
                     break;
 
                 case 0x494E4632: // INF2
-                    var inf2Key = new Crc(reader.ReadUInt32());
+                    Crc inf2Key = new(reader.ReadUInt32());
 
-                    var inf2Human = new ConversationLineStructure.Human("INF2")
+                    ConversationLineStructure.Human inf2Human = new("INF2")
                     {
                         Crc1 = new(reader.ReadUInt32()),
                         Crc2 = new(reader.ReadUInt32()),
@@ -377,7 +373,7 @@ public static class ConversationsSerializer
                         line.ConditionText = reader.ReadStringWithMaxLength(reader.ReadInt16());
 
                         // Store hash if missing
-                        Hash.FNV32string(line.ConditionText);
+                        _ = Hash.FNV32string(line.ConditionText);
                     }
 
                     break;
@@ -403,7 +399,7 @@ public static class ConversationsSerializer
 
     public static void SerializeJSON(List<ConversationStructure> structures, Stream stream)
     {
-        using var writer = new StreamWriter(stream, Encoding.UTF8, leaveOpen: true);
+        using StreamWriter writer = new(stream, Encoding.UTF8, leaveOpen: true);
 
         writer.Write(JsonConvert.SerializeObject(structures, Formatting.Indented, new CrcConverter()));
     }

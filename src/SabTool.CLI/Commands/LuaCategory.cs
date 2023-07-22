@@ -1,10 +1,9 @@
 ﻿using System.Text;
 
-namespace SabTool.CLI.Commands;
-
 using SabTool.CLI.Base;
 using SabTool.Depot;
 
+namespace SabTool.CLI.Commands;
 public sealed class LuaCategory : BaseCategory
 {
     public override string Key { get; } = "lua";
@@ -25,17 +24,17 @@ public sealed class LuaCategory : BaseCategory
                 return false;
             }
 
-            var outputDirectory = arguments.ElementAt(1);
-            Directory.CreateDirectory(outputDirectory);
+            string outputDirectory = arguments.ElementAt(1);
+            _ = Directory.CreateDirectory(outputDirectory);
 
             ResourceDepot.Instance.Initialize(arguments.ElementAt(0));
-            ResourceDepot.Instance.Load(Resource.Lua);
+            _ = ResourceDepot.Instance.Load(Resource.Lua);
 
-            foreach (var entry in ResourceDepot.Instance.GetLuaEntries())
+            foreach (Data.Lua.LuaPackage.Entry entry in ResourceDepot.Instance.GetLuaEntries())
             {
-                var outputPath = string.Empty;
+                string outputPath = string.Empty;
 
-                var path = entry.PathCRC.GetString();
+                string path = entry.PathCRC.GetString();
 
                 if (!string.IsNullOrEmpty(path))
                 {
@@ -44,8 +43,8 @@ public sealed class LuaCategory : BaseCategory
                 else
                 {
                     // todo: make this more generic?
-                    var sourceLen = BitConverter.ToInt32(entry.Data, 12);
-                    var source = Encoding.UTF8.GetString(entry.Data, 17, sourceLen - 2);
+                    int sourceLen = BitConverter.ToInt32(entry.Data, 12);
+                    string source = Encoding.UTF8.GetString(entry.Data, 17, sourceLen - 2);
                     if (source.StartsWith(@"D:\projects\WildStar\pov\BinCommon\"))
                     {
                         outputPath = @$"{outputDirectory}\{source[35..]}c";
@@ -54,9 +53,9 @@ public sealed class LuaCategory : BaseCategory
 
                 if (!string.IsNullOrEmpty(outputPath))
                 {
-                    var folder = Path.GetDirectoryName(outputPath);
+                    string? folder = Path.GetDirectoryName(outputPath);
                     if (!Directory.Exists(folder))
-                        Directory.CreateDirectory(folder!);
+                        _ = Directory.CreateDirectory(folder!);
 
                     File.WriteAllBytes(outputPath, entry.Data);
                 }

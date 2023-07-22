@@ -2,13 +2,12 @@
 using System.Reflection;
 using System.Text;
 
-namespace SabTool.CLI.Base;
-
 using SabTool.Utils.Extensions;
 
+namespace SabTool.CLI.Base;
 public static class CommandParser
 {
-    const string CommandNamespace = "SabTool.CLI.Commands";
+    private const string CommandNamespace = "SabTool.CLI.Commands";
 
     private static readonly Dictionary<string, ICommand> _commands = new();
 
@@ -16,7 +15,7 @@ public static class CommandParser
     {
         static bool filter(Type a) => a.Namespace == CommandNamespace && a.IsClass && !a.IsNested && a.GetInterfaces().Contains(typeof(ICommand));
 
-        foreach (var type in Assembly.GetExecutingAssembly().GetTypes().Where(filter))
+        foreach (Type? type in Assembly.GetExecutingAssembly().GetTypes().Where(filter))
         {
             if (Activator.CreateInstance(type) is not ICommand newInstance)
             {
@@ -78,7 +77,7 @@ public static class CommandParser
     {
         Console.WriteLine();
 
-        var commandKey = commandParts.FirstOrDefault();
+        string? commandKey = commandParts.FirstOrDefault();
         if (commandKey == null || !_commands.ContainsKey(commandKey))
         {
             Console.WriteLine("ERROR: Unknown command!");
@@ -86,9 +85,9 @@ public static class CommandParser
             Console.WriteLine("Available commands:");
             Console.Write("<");
 
-            var first = true;
+            bool first = true;
 
-            foreach (var command in _commands)
+            foreach (KeyValuePair<string, ICommand> command in _commands)
             {
                 // Don't list the shortcuts
                 if (command.Key == command.Value.Shortcut)
@@ -110,7 +109,7 @@ public static class CommandParser
             return false;
         }
 
-        var res = false;
+        bool res = false;
 
         // If the application is being debugged, let the exception fall through to the debugger to check it
         if (Debugger.IsAttached)
@@ -134,7 +133,7 @@ public static class CommandParser
             Console.WriteLine();
             Console.WriteLine("Command could not be ran! Usage:");
 
-            var sb = new StringBuilder();
+            StringBuilder sb = new();
             _commands[commandKey].BuildUsage(sb, commandParts.Skip(1));
 
             Console.WriteLine(sb.ToString().Trim());
