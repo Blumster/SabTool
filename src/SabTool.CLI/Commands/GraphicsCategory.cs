@@ -13,6 +13,6 @@ public sealed class GraphicsCategory : BaseCategory
 
     public override void Setup()
     {
-        SetupWithTypes(typeof(MaterialCategory), typeof(ShaderCategory), typeof(ShaderMappingCategory));
+        SetupWithTypes(typeof(AnimationCategory), typeof(MaterialCategory), typeof(ShaderCategory), typeof(ShaderMappingCategory));
     }
 }
