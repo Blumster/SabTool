@@ -2,5 +2,10 @@
 
 public sealed class AnimationsContainer
 {
-    public List<AnimationPack> AnimationPacks { get; } = new();
+    public AnimationPack AnimationPack { get; set; }
+    public AnimationHavokData HavokData { get; set; }
+    public uint BlendBoneException { get; set; }
+    public AnimationIntervalPack IntervalPack { get; set; }
+    public AnimationSequencePack SequencePack { get; set; }
+    public AnimationTransitionContainer TransitionContainer { get; set; }
 }

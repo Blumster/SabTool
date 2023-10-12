@@ -14,7 +14,7 @@ public static class AnimationPackSerializer
         using var reader = new BinaryReader(stream, Encoding.UTF8, true);
 
         if (!reader.CheckHeaderString("ANIM", reversed: true))
-            throw new Exception("Invalid AP0L header found!");
+            throw new Exception("Invalid ANIM header found!");
 
         var animationPack = new AnimationPack();
 
