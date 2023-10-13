@@ -57,9 +57,9 @@ public static class AnimationSerializer
         var count = reader.ReadInt32();
 
         if (unk1 == 0)
-            indices.BoneIndex.AddRange(reader.ReadConstArray(count, reader.ReadUInt32));
+            indices.BoneIndex.AddRange(reader.ReadConstArray(count, reader.ReadInt32));
         else
-            indices.TrackBone.AddRange(reader.ReadConstArray(count, reader.ReadUInt32));
+            indices.TrackBone.AddRange(reader.ReadConstArray(count, () => new Crc(reader.ReadUInt32())));
 
         return indices;
     }

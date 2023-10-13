@@ -16,8 +16,8 @@ public sealed class AnimationSequenceInstruction
 {
     public AnimationInstructionType Type { get; set; }
     public int LoopIndex { get; set; }
-    public List<uint> Animations { get; } = new();
-    public List<uint> Tags { get; } = new();
+    public List<Crc> Animations { get; } = new();
+    public List<Crc> Tags { get; } = new();
 }
 
 public sealed class AnimationSequenceData

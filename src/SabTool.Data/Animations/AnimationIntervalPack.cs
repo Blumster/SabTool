@@ -7,8 +7,8 @@ public sealed class AnimationIntervalPack
 
 public sealed class AnimationInterval
 {
-    public uint UnkType { get; set; }
+    public Crc UnkType { get; set; }
     public ushort BeginFrame { get; set; }
     public ushort EndFrame { get; set; }
-    public List<uint> Animations { get; } = new();
+    public List<Crc> Animations { get; } = new();
 }

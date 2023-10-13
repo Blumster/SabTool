@@ -56,11 +56,11 @@ public static class AnimationSequencePackSerializer
 
         var animationCount = reader.ReadUInt32();
         for (var i = 0u; i < animationCount; ++i)
-            sequenceInstr.Animations.Add(reader.ReadUInt32());
+            sequenceInstr.Animations.Add(new(reader.ReadUInt32()));
 
         var tagCount = reader.ReadUInt32();
         for (var i = 0u; i < tagCount; ++i)
-            sequenceInstr.Tags.Add(reader.ReadUInt32());
+            sequenceInstr.Tags.Add(new(reader.ReadUInt32()));
 
         return sequenceInstr;
     }

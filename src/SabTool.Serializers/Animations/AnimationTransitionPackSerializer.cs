@@ -5,7 +5,9 @@ using System.Text;
 namespace SabTool.Serializers.Animations;
 
 using SabTool.Data.Animations;
+using SabTool.Utils;
 using SabTool.Utils.Extensions;
+using SharpGLTF.Schema2;
 
 public static class AnimationTransitionPackSerializer
 {
@@ -54,7 +56,7 @@ public static class AnimationTransitionPackSerializer
             ToSequenceName = new(reader.ReadUInt32()),
             ToSequenceTag = new(reader.ReadUInt32()),
             Threshold = reader.ReadSingle(),
-            Type = (TransitionType)reader.ReadUInt32(),
+            Type = new(reader.ReadUInt32()),
             Value = reader.ReadSingle(),
             SequenceCrc = new(reader.ReadUInt32())
         };
@@ -65,7 +67,11 @@ public static class AnimationTransitionPackSerializer
         transition.NextType = (TransitionType)reader.ReadUInt32();
         transition.NextValue = reader.ReadSingle();
         transition.NextSequenceIndex = reader.ReadUInt32();
-        transition.DebugName = reader.ReadUTF8StringOn(reader.ReadInt32());
+        transition.DebugName = reader.ReadUTF8StringOn(reader.ReadInt16());
+
+        // Force hashes, maybe some missing ones can be found
+        Hash.FNV32string(transition.DebugName);
+        Hash.StringToHash(transition.DebugName);
 
         return transition;
     }

@@ -23,8 +23,8 @@ public sealed class Animation
 
 public sealed class AnimationBoneIndices
 {
-    public List<uint> TrackBone { get; } = new();
-    public List<uint> BoneIndex { get; } = new();
+    public List<Crc> TrackBone { get; } = new();
+    public List<int> BoneIndex { get; } = new();
 }
 
 public sealed class AnimationEvent

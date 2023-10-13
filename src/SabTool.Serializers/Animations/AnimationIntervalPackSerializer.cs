@@ -16,14 +16,14 @@ public static class AnimationIntervalPackSerializer
         if (!reader.CheckHeaderString("INTV", reversed: true))
             throw new Exception("Invalid INTV header found!");
 
-        var animationPack = new AnimationIntervalPack();
+        var intervalPack = new AnimationIntervalPack();
 
         var intervalCount = reader.ReadUInt32();
 
         for (var i = 0u; i < intervalCount; ++i)
-            animationPack.Intervals.Add(DeserializeIntervalRaw(stream));
+            intervalPack.Intervals.Add(DeserializeIntervalRaw(stream));
 
-        return animationPack;
+        return intervalPack;
     }
 
     public static AnimationInterval DeserializeIntervalRaw(Stream stream)
@@ -32,7 +32,7 @@ public static class AnimationIntervalPackSerializer
 
         var interval = new AnimationInterval
         {
-            UnkType = reader.ReadUInt32(),
+            UnkType = new(reader.ReadUInt32()),
             BeginFrame = reader.ReadUInt16(),
             EndFrame = reader.ReadUInt16()
         };
@@ -40,7 +40,7 @@ public static class AnimationIntervalPackSerializer
         var animationCount = reader.ReadUInt32();
 
         for (var i = 0u; i < animationCount; ++i)
-            interval.Animations.Add(reader.ReadUInt32());
+            interval.Animations.Add(new(reader.ReadUInt32()));
 
         return interval;
     }
