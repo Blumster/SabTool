@@ -17,7 +17,7 @@ public sealed class AnimationTransition
     public Crc ToSequenceName { get; set; }
     public Crc ToSequenceTag { get; set; }
     public float Threshold { get; set; }
-    public Crc Type { get; set; }
+    public float UnkFloat { get; set; }
     public float Value { get; set; }
     public Crc SequenceCrc { get; set; }
     public AnimationTransitionSequence Sequence { get; set; }

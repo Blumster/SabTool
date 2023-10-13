@@ -31,8 +31,8 @@ public sealed class AnimationCategory : BaseCategory
 
             Directory.CreateDirectory(outputDir);
 
-            using var fs = new FileStream(Path.Combine(outputDir, "animation-pack-dump.txt"), FileMode.Create, FileAccess.Write, FileShare.None);
-            using var fs2 = new FileStream(Path.Combine(outputDir, "animation-pack-dlc-dump.txt"), FileMode.Create, FileAccess.Write, FileShare.None);
+            using var fs = new FileStream(Path.Combine(outputDir, "animation-pack-dump.json"), FileMode.Create, FileAccess.Write, FileShare.None);
+            using var fs2 = new FileStream(Path.Combine(outputDir, "animation-pack-dlc-dump.json"), FileMode.Create, FileAccess.Write, FileShare.None);
 
             AnimationsContainerSerializer.SerializeJSON(ResourceDepot.Instance.AnimationsContainer, fs);
             AnimationsContainerSerializer.SerializeJSON(ResourceDepot.Instance.DLCAnimationsContainer, fs2);

@@ -10,7 +10,6 @@ using SabTool.Data.Animations;
 using SabTool.Serializers.Json.Converters;
 using SabTool.Utils;
 using SabTool.Utils.Extensions;
-using System.Collections.Generic;
 
 public static class AnimationsContainerSerializer
 {
@@ -55,7 +54,42 @@ public static class AnimationsContainerSerializer
         container.BankPack = DeserializeBankPackRaw(reader);
 
         DeserializeAddonRaw(reader, container);
-        DeserializeAlphasRaw(reader, container);
+        DeserializeAlphabeticalRaw(reader, container);
+        DeserializeSSPRaw(reader, isDlc, container);
+
+        var unkCount = reader.ReadUInt32();
+        for (var i = 0; i < unkCount; ++i)
+        {
+            container.Unk3s.Add(new AnimationUnk3
+            {
+                Name = new(reader.ReadUInt32()),
+                Count = reader.ReadUInt32(),
+                Index = reader.ReadUInt32()
+            });
+        }
+
+        var unkCount2 = reader.ReadUInt32();
+        var unkCount3 = reader.ReadUInt32();
+
+        for (var i = 0; i < unkCount; ++i)
+        {
+            container.Unk4s1.Add(new AnimationUnk4
+            {
+                Unk1 = reader.ReadUInt32(),
+                Size = reader.ReadInt32(),
+                Offset = reader.ReadInt32()
+            });
+        }
+
+        for (var i = 0; i < unkCount; ++i)
+        {
+            container.Unk4s2.Add(new AnimationUnk4
+            {
+                Unk1 = reader.ReadUInt32(),
+                Size = reader.ReadInt32(),
+                Offset = reader.ReadInt32()
+            });
+        }
 
         return container;
     }
@@ -136,14 +170,47 @@ public static class AnimationsContainerSerializer
         }
     }
 
-    private static void DeserializeAlphasRaw(BinaryReader reader, AnimationsContainer container)
+    private static void DeserializeAlphabeticalRaw(BinaryReader reader, AnimationsContainer container)
     {
         if (!reader.CheckHeaderString("ALPH", reversed: true))
             throw new Exception("Invalid ALPH header found!");
 
-        var unkCount = reader.ReadUInt32();
-        for (var i = 0u; i < unkCount; ++i)
-            container.Alphas.Add(new(reader.ReadUInt32()));
+        var sequenceCount = reader.ReadUInt32();
+        for (var i = 0u; i < sequenceCount; ++i)
+            container.AlphabeticalSequences.Add(new(reader.ReadUInt32()));
+
+        var animationCount = reader.ReadUInt32();
+        for (var i = 0u; i < animationCount; ++i)
+            container.AlphabeticalAnimations.Add(new(reader.ReadUInt32()));
+    }
+
+    private static void DeserializeSSPRaw(BinaryReader reader, bool isDlc, AnimationsContainer container)
+    {
+        if (!reader.CheckHeaderString("SSP0", reversed: true))
+            throw new Exception("Invalid SSP0 header found!");
+
+        if (!isDlc)
+        {
+            var unkCount = reader.ReadUInt32();
+            for (var i = 0u; i < unkCount; ++i)
+            {
+                container.SSP0Unks.Add(new AnimationSSP0Unk
+                {
+                    Name = new(reader.ReadUInt32()),
+                    Unk = reader.ReadConstArray(16, () => new Crc(reader.ReadUInt32()))
+                });
+            }
+        }
+
+        var unkCount2 = reader.ReadUInt32();
+        for (var i = 0u; i < unkCount2; ++i)
+        {
+            container.SSP0Unk2s.Add(new AnimationSSP0Unk2
+            {
+                Name = new(reader.ReadUInt32()),
+                Unk = reader.ReadUInt32()
+            });
+        }
     }
 
     public static void SerializeJSON(AnimationsContainer container, Stream stream)

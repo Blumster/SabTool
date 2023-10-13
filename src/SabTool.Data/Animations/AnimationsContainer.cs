@@ -12,7 +12,13 @@ public sealed class AnimationsContainer
     public float[][][] DistData { get; set; }
     public AnimationBankPack BankPack { get; set; }
     public List<AnimationAddon1> Addon1 { get; } = new();
-    public List<Crc> Alphas { get; } = new();
+    public List<Crc> AlphabeticalSequences { get; } = new();
+    public List<Crc> AlphabeticalAnimations { get; } = new();
+    public List<AnimationSSP0Unk> SSP0Unks { get; } = new();
+    public List<AnimationSSP0Unk2> SSP0Unk2s { get; } = new();
+    public List<AnimationUnk3> Unk3s { get; } = new();
+    public List<AnimationUnk4> Unk4s1 { get; } = new();
+    public List<AnimationUnk4> Unk4s2 { get; } = new();
 
     public AnimationsContainer()
     {
@@ -61,4 +67,30 @@ public sealed class AnimationAddon1
     public Crc Unk1 { get; set; }
     public Crc Unk2 { get; set; }
     public uint Unk3 { get; set; }
+}
+
+public sealed class AnimationSSP0Unk
+{
+    public Crc Name { get; set; }
+    public Crc[] Unk { get; set; }
+}
+
+public sealed class AnimationSSP0Unk2
+{
+    public Crc Name { get; set; }
+    public uint Unk { get; set; }
+}
+
+public sealed class AnimationUnk3
+{
+    public Crc Name { get; set; }
+    public uint Count { get; set; }
+    public uint Index { get; set; }
+}
+
+public sealed class AnimationUnk4
+{
+    public uint Unk1 { get; set; }
+    public int Size { get; set; }
+    public int Offset { get; set; }
 }
