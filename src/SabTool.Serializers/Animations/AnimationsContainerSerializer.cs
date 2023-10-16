@@ -21,6 +21,8 @@ public static class AnimationsContainerSerializer
         if (isDlc)
             stream.Position += 256;
 
+        var headerStart = stream.Position;
+
         if (!reader.CheckHeaderString("AP0L", reversed: true))
             throw new Exception("Invalid AP0L header found!");
 
@@ -71,24 +73,31 @@ public static class AnimationsContainerSerializer
         var unkCount2 = reader.ReadUInt32();
         var unkCount3 = reader.ReadUInt32();
 
-        for (var i = 0; i < unkCount; ++i)
+        for (var i = 0; i < unkCount2; ++i)
         {
             container.Unk4s1.Add(new AnimationUnk4
             {
-                Unk1 = reader.ReadUInt32(),
+                Name = new(reader.ReadUInt32()),
                 Size = reader.ReadInt32(),
                 Offset = reader.ReadInt32()
             });
         }
 
-        for (var i = 0; i < unkCount; ++i)
+        for (var i = 0; i < unkCount3; ++i)
         {
             container.Unk4s2.Add(new AnimationUnk4
             {
-                Unk1 = reader.ReadUInt32(),
+                Name = new(reader.ReadUInt32()),
                 Size = reader.ReadInt32(),
                 Offset = reader.ReadInt32()
             });
+        }
+
+        foreach (var e in container.Unk4s1)
+        {
+            stream.Position = headerStart + e.Offset;
+
+            container.Animations.Add(AnimationSerializer.DeserializeAnimationRaw(stream, e.Name));
         }
 
         return container;

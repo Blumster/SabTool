@@ -2,6 +2,17 @@
 
 public sealed class Animation
 {
+    public Crc Name { get; }
+
+    public Animation(Crc name) => Name = name;
+
+    public uint Type { get; set; }
+    public byte[] HavokData { get; set; }
+    public Crc[] HavokTrackBones { get; set; }
+}
+
+public sealed class AnimationData
+{
     public Crc Crc { get; set; }
     public byte Unk1 { get; set; }
     public byte Unk2 { get; set; }

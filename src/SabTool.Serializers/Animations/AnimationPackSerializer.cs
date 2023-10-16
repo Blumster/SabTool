@@ -21,7 +21,7 @@ public static class AnimationPackSerializer
         var animationCount = reader.ReadUInt32();
 
         for (var i = 0u; i < animationCount; ++i)
-            animationPack.Animations.Add(AnimationSerializer.DeserializeRaw(stream));
+            animationPack.AnimationDatas.Add(AnimationSerializer.DeserializeDataRaw(stream));
 
         return animationPack;
     }

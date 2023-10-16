@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Text;
 
 namespace SabTool.Serializers.Animations;
@@ -9,11 +10,30 @@ using SabTool.Utils.Extensions;
 
 public static class AnimationSerializer
 {
-    public static Animation DeserializeRaw(Stream stream)
+    public static Animation DeserializeAnimationRaw(Stream stream, Crc name)
     {
         using var reader = new BinaryReader(stream, Encoding.UTF8, true);
 
-        var animation = new Animation
+        if (!reader.CheckHeaderString("ANMA", reversed: true))
+            throw new Exception("Invalid ANMA header found!");
+
+        var animation = new Animation(name)
+        {
+            Type = reader.ReadUInt32(),
+            HavokData = reader.ReadBytes(reader.ReadInt32()),
+            HavokTrackBones = reader.ReadConstArray(reader.ReadInt32(), () => new Crc(reader.ReadUInt32()))
+        };
+
+        // TODO: link to data? sequences? transitions?
+
+        return animation;
+    }
+
+    public static AnimationData DeserializeDataRaw(Stream stream)
+    {
+        using var reader = new BinaryReader(stream, Encoding.UTF8, true);
+
+        var animation = new AnimationData
         {
             Crc = new(reader.ReadUInt32()),
             Unk1 = reader.ReadByte(),

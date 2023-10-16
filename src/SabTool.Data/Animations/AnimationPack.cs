@@ -2,5 +2,5 @@
 
 public sealed class AnimationPack
 {
-    public List<Animation> Animations { get; } = new();
+    public List<AnimationData> AnimationDatas { get; } = new();
 }

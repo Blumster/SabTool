@@ -19,6 +19,7 @@ public sealed class AnimationsContainer
     public List<AnimationUnk3> Unk3s { get; } = new();
     public List<AnimationUnk4> Unk4s1 { get; } = new();
     public List<AnimationUnk4> Unk4s2 { get; } = new();
+    public List<Animation> Animations { get; } = new();
 
     public AnimationsContainer()
     {
@@ -90,7 +91,7 @@ public sealed class AnimationUnk3
 
 public sealed class AnimationUnk4
 {
-    public uint Unk1 { get; set; }
+    public Crc Name { get; set; }
     public int Size { get; set; }
     public int Offset { get; set; }
 }

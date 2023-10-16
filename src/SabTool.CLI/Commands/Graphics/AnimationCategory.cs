@@ -41,6 +41,40 @@ public sealed class AnimationCategory : BaseCategory
         }
     }
 
+    public sealed class UnpackHavokCommand : BaseCommand
+    {
+        public override string Key { get; } = "unpack-havok";
+        public override string Shortcut { get; } = "uh";
+        public override string Usage { get; } = "<game base path> <output directory>";
+
+        public override bool Execute(IEnumerable<string> arguments)
+        {
+            if (arguments.Count() < 2)
+            {
+                Console.WriteLine("ERROR: Not enough arguments given!");
+                return false;
+            }
+
+            ResourceDepot.Instance.Initialize(arguments.ElementAt(0));
+            ResourceDepot.Instance.Load(Resource.Animations);
+
+            var outputDir = arguments.ElementAt(1);
+
+            Directory.CreateDirectory(outputDir);
+
+            using var fs = new FileStream(Path.Combine(outputDir, "animation-pack-dump.json"), FileMode.Create, FileAccess.Write, FileShare.None);
+            using var fs2 = new FileStream(Path.Combine(outputDir, "animation-pack-dlc-dump.json"), FileMode.Create, FileAccess.Write, FileShare.None);
+
+            AnimationsContainerSerializer.SerializeJSON(ResourceDepot.Instance.AnimationsContainer, fs);
+            AnimationsContainerSerializer.SerializeJSON(ResourceDepot.Instance.DLCAnimationsContainer, fs2);
+
+            foreach (var anim in ResourceDepot.Instance.AnimationsContainer.Animations)
+                File.WriteAllBytes(Path.Combine(outputDir, $"{anim.Name.GetStringOrHexString()}.hkx"), anim.HavokData);
+
+            return true;
+        }
+    }
+
     public sealed class UnpackCommand : BaseCommand
     {
         public override string Key { get; } = "unpack";
