@@ -13,6 +13,6 @@ public sealed class CinematicsCategory : BaseCategory
 
     public override void Setup()
     {
-        SetupWithTypes(typeof(Cinematics.CinematicsCategory), typeof(ComplexAnimsCategory), typeof(ConversationsCategory), typeof(DialogCategory), typeof(RandomTextCategory));
+        SetupWithTypes(typeof(Cinematics.CinematicsCategory), typeof(ComplexAnimsCategory), typeof(ConversationsCategory), typeof(DialogCategory), typeof(MovieCategory), typeof(RandomTextCategory));
     }
 }
