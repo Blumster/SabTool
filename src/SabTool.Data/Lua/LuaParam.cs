@@ -68,6 +68,9 @@ public sealed class LuaParam
         Name = reader.ReadStringWithMaxLength(128);
         TypeCrc = reader.ReadUInt32();
 
+        // Store missing hashes
+        Hash.FNV32string(Name);
+
         switch (TypeCrc)
         {
             case LuaStringCrc:
