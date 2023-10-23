@@ -2,7 +2,7 @@
 
 public sealed class SoundPack
 {
-    public record Entry(Crc Id, int Size, int Offset);
+    public record Entry(uint Id, int Size, int Offset);
 
     public string Tag { get; set; }
     public int Align { get; set; }

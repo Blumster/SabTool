@@ -38,13 +38,13 @@ public static class SoundPackSerializer
             throw new Exception("Invalid position for SoundBank entries!");
 
         for (var i = 0; i < soundPack.NumBanks; ++i)
-            banks.Add(new SoundPack.Entry(new(reader.ReadUInt32()), reader.ReadInt32(), reader.ReadInt32()));
+            banks.Add(new SoundPack.Entry(reader.ReadUInt32(), reader.ReadInt32(), reader.ReadInt32()));
 
         if (stream.Position != soundPack.StreamEntriesOffset)
             throw new Exception("Invalid position for SoundStream entries!");
 
         for (var i = 0; i < soundPack.NumStreams; ++i)
-            streams.Add(new SoundPack.Entry(new(reader.ReadUInt32()), reader.ReadInt32(), reader.ReadInt32()));
+            streams.Add(new SoundPack.Entry(reader.ReadUInt32(), reader.ReadInt32(), reader.ReadInt32()));
 
         foreach (var entry in banks)
         {

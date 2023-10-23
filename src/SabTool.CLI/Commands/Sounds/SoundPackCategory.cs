@@ -56,8 +56,7 @@ public sealed class SoundPackCategory : BaseCategory
 
                 foreach (var bank in soundPack.SoundBanks)
                 {
-                    var bankName = bank.Id.GetStringOrHexString();
-                    var bankFilePath = Path.Combine(soundPackOutputDir, $"banks\\{bankName}.bnk");
+                    var bankFilePath = Path.Combine(soundPackOutputDir, $"banks\\{bank.Id}.bnk");
 
                     using var fs = new FileStream(bankFilePath, FileMode.Create, FileAccess.Write, FileShare.None);
 
@@ -66,15 +65,7 @@ public sealed class SoundPackCategory : BaseCategory
 
                 foreach (var stream in soundPack.SoundStreams)
                 {
-                    var streamName = stream.Id.GetStringOrHexString();
-                    if (streamName.Contains('\\'))
-                    {
-                        Console.WriteLine($"Possible bad Crc for stream: {stream.Id}");
-
-                        streamName = stream.Id.GetHexString();
-                    }
-
-                    var streamFilePath = Path.Combine(soundPackOutputDir, $"oggs\\{streamName}.wem");
+                    var streamFilePath = Path.Combine(soundPackOutputDir, $"oggs\\{stream.Id}.wem");
 
                     using var fs = new FileStream(streamFilePath, FileMode.Create, FileAccess.Write, FileShare.None);
 
