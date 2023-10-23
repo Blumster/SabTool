@@ -47,6 +47,10 @@ public static class BlueprintSerializer
                     throw new Exception($"Unknown BlueprintType encountered: {type}!");
 
                 blueprints.Add(new Blueprint((BlueprintType)Hash.StringToHash(type), name, properites));
+
+                // Store hashes
+                Hash.FNV32string(name);
+                Hash.StringToHash(name);
             }
 
             if (bpStartPosition + bpSize != reader.BaseStream.Position)
