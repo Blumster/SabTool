@@ -114,6 +114,13 @@ public static class ConversationsSerializer
 
                     // Store hash if missing
                     Hash.FNV32string(conversation.SoundBank);
+                    Hash.StringToHash(conversation.SoundBank);
+
+                    if (conversation.SoundBank.EndsWith(".bnk"))
+                    {
+                        Hash.FNV32string(conversation.SoundBank[..^4]);
+                        Hash.StringToHash(conversation.SoundBank[..^4]);
+                    }
                     break;
 
                 case 0x53435230: // SCR0

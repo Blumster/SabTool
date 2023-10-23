@@ -103,6 +103,7 @@ public static class CinematicsSerializer
 
                     // Store hash
                     Hash.FNV32string(sound3D.SoundName);
+                    Hash.StringToHash(sound3D.SoundName);
 
                     cinematic.Elements.Add(sound3D);
 
@@ -193,6 +194,7 @@ public static class CinematicsSerializer
 
                     // Store hash
                     Hash.FNV32string(flashMovie.Name);
+                    Hash.StringToHash(flashMovie.Name);
 
                     cinematic.Elements.Add(flashMovie);
 
@@ -212,6 +214,7 @@ public static class CinematicsSerializer
 
                     // Store hash
                     Hash.FNV32string(binkMovie.Name);
+                    Hash.StringToHash(binkMovie.Name);
 
                     cinematic.Elements.Add(binkMovie);
 
@@ -238,6 +241,7 @@ public static class CinematicsSerializer
 
                     // Store hash
                     Hash.FNV32string(soundBank.Name);
+                    Hash.StringToHash(soundBank.Name);
 
                     if (soundBank.Unk <= 0.0f)
                     {
@@ -310,6 +314,7 @@ public static class CinematicsSerializer
                     
                     // Store hash
                     Hash.FNV32string(loadBLock.Name);
+                    Hash.StringToHash(loadBLock.Name);
 
                     cinematic.Elements.Add(loadBLock);
 
@@ -331,6 +336,7 @@ public static class CinematicsSerializer
 
                     // Store hash
                     Hash.FNV32string(animation.Name);
+                    Hash.StringToHash(animation.Name);
 
                     cinematic.Elements.Add(animation);
 
@@ -443,6 +449,7 @@ public static class CinematicsSerializer
 
                     // Store hash
                     Hash.FNV32string(sound2D.Name);
+                    Hash.StringToHash(sound2D.Name);
 
                     cinematic.Elements.Add(sound2D);
 
@@ -758,6 +765,7 @@ public static class CinematicsSerializer
 
                     // Store hash
                     Hash.FNV32string(animateObject.Name);
+                    Hash.StringToHash(animateObject.Name);
 
                     cinematic.Elements.Add(animateObject);
 
