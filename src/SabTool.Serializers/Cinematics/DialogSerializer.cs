@@ -61,12 +61,17 @@ public static class DialogSerializer
             if (!reader.CheckHeaderString("DTXT", reversed: true))
                 throw new Exception("Invalid GameText start tag!");
 
-            texts.Add(new DialogText
+            var text = new DialogText
             {
                 Id = new Crc(reader.ReadUInt32()),
                 VoiceOver = reader.ReadUTF8StringOn(reader.ReadInt16()),
                 Text = reader.ReadUTF16StringOn(reader.ReadInt16())
-            });
+            };
+            texts.Add(text);
+
+            // Store hashes
+            Hash.FNV32string(text.VoiceOver);
+            Hash.StringToHash(text.VoiceOver);
         }
 
         if (!reader.CheckHeaderString("CEND", reversed: true))
