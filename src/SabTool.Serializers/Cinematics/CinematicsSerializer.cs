@@ -306,20 +306,20 @@ public static class CinematicsSerializer
                     break;
 
                 case 0x84B625DC: // Hash("LoadBlock")
-                    var loadBLock = new CinemaLoadBlock
+                    var loadBlock = new CinemaLoadBlock
                     {
                         EndTime = reader.ReadSingle(),
                         Name = reader.ReadStringWithMaxLength(reader.ReadInt16())
                     };
                     
                     // Store hash
-                    Hash.FNV32string(loadBLock.Name);
-                    Hash.StringToHash(loadBLock.Name);
+                    Hash.FNV32string(loadBlock.Name);
+                    Hash.StringToHash(loadBlock.Name);
 
-                    cinematic.Elements.Add(loadBLock);
+                    cinematic.Elements.Add(loadBlock);
 
-                    if (loadBLock.EndTime > 0.0f && cinematic.Duration < loadBLock.EndTime)
-                        cinematic.Duration = loadBLock.EndTime;
+                    if (loadBlock.EndTime > 0.0f && cinematic.Duration < loadBlock.EndTime)
+                        cinematic.Duration = loadBlock.EndTime;
 
                     break;
 
