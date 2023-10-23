@@ -140,6 +140,10 @@ public static class AnimationsContainerSerializer
             ParentBank = new(reader.ReadUInt32()),
         };
 
+        // Store hashes
+        Hash.FNV32string(animationBank.Name);
+        Hash.StringToHash(animationBank.Name);
+
         var overrideCount = reader.ReadUInt32();
         for (var i = 0u; i < overrideCount; ++i)
             animationBank.Overrides.Add(DeserializeBankOverrideRaw(reader));
