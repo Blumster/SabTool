@@ -45,6 +45,8 @@ public sealed class SoundPackCategory : BaseCategory
             ResourceDepot.Instance.Initialize(arguments.ElementAt(0));
             ResourceDepot.Instance.Load(Resource.Sounds);
 
+            var ww2offProcessInfos = new List<ProcessStartInfo>();
+
             foreach (var soundPack in ResourceDepot.Instance.GetSoundPacks())
             {
                 var soundPackOutputDir = Path.Combine(outputDirectory, soundPack.FilePath);
@@ -82,14 +84,68 @@ public sealed class SoundPackCategory : BaseCategory
                     if (!conv)
                         continue;
 
-                    var info = new ProcessStartInfo
+                    ww2offProcessInfos.Add(new ProcessStartInfo
                     {
                         WorkingDirectory = ww2OggPath,
                         FileName = ww2OggExePath,
-                        Arguments = $"{streamFilePath} -o {Path.ChangeExtension(streamFilePath, "ogg")} --full-setup"
-                    };
+                        Arguments = $"{streamFilePath} -o {Path.ChangeExtension(streamFilePath, "ogg")} --full-setup",
+                        RedirectStandardError = true,
+                        RedirectStandardOutput = true
+                    });
+                }
+            }
 
-                    Process.Start(info);
+            var ww2oggProcesses = new List<Process>();
+
+            Console.WriteLine($"Starting {ww2offProcessInfos.Count} processes...");
+
+            var lastEcho = 0L;
+            var sw = Stopwatch.StartNew();
+            var i = 0;
+
+            foreach (var info in ww2offProcessInfos)
+            {
+                ++i;
+
+                var p = Process.Start(info);
+
+                if (p is not null)
+                    ww2oggProcesses.Add(p);
+
+                if (lastEcho + 1000 < sw.ElapsedMilliseconds)
+                {
+                    Console.WriteLine($"Starting: {i}/{ww2offProcessInfos.Count} processes...");
+
+                    lastEcho = sw.ElapsedMilliseconds;
+                }
+            }
+
+            Console.WriteLine($"Processes started in {sw.ElapsedMilliseconds} ms!");
+
+            var totalProcesses = ww2oggProcesses.Count;
+
+            lastEcho = 0;
+
+            while (ww2oggProcesses.Count > 0)
+            {
+                var toDelete = new List<Process>();
+
+                foreach (var process in ww2oggProcesses)
+                {
+                    if (process.HasExited)
+                    {
+                        toDelete.Add(process);
+                    }
+                }
+
+                foreach (var process in toDelete)
+                    ww2oggProcesses.Remove(process);
+
+                if (lastEcho + 1000 < sw.ElapsedMilliseconds)
+                {
+                    Console.WriteLine($"{ww2oggProcesses.Count}/{totalProcesses}");
+
+                    lastEcho = sw.ElapsedMilliseconds;
                 }
             }
 
