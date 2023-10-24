@@ -4,6 +4,7 @@ namespace SabTool.CLI.Commands.Sounds;
 
 using SabTool.CLI.Base;
 using SabTool.Depot;
+using SabTool.Serializers.Sounds;
 
 public sealed class SoundPackCategory : BaseCategory
 {
@@ -11,10 +12,36 @@ public sealed class SoundPackCategory : BaseCategory
     public override string Shortcut { get; } = "s";
     public override string Usage { get; } = "";
 
+    public sealed class DumpCommand : BaseCommand
+    {
+        public override string Key { get; } = "dump";
+        public override string Shortcut { get; } = "d";
+        public override string Usage { get; } = "<game base path> <output dir path>";
+
+        public override bool Execute(IEnumerable<string> arguments)
+        {
+            if (arguments.Count() < 2)
+            {
+                Console.WriteLine("ERROR: Not enough arguments given!");
+                return false;
+            }
+
+            ResourceDepot.Instance.Initialize(arguments.ElementAt(0));
+            ResourceDepot.Instance.Load(Resource.Sounds);
+
+            var outputDirectory = arguments.ElementAt(1);
+            Directory.CreateDirectory(outputDirectory);
+
+            using var fs = new FileStream(Path.Combine(outputDirectory, "wwiseidtable-dump.json"), FileMode.Create, FileAccess.Write, FileShare.None);
+
+            WWiseIDTableSerializer.SerializeJSON(ResourceDepot.Instance.GetWWiseIDTable(), fs);
+
+            return true;
+        }
+    }
+
     public sealed class UnpackCommand : BaseCommand
     {
-        private const string DialogRootPath = @"Cinematics\Dialog";
-
         public override string Key { get; } = "unpack";
         public override string Shortcut { get; } = "u";
         public override string Usage { get; } = "<game base path> <output dir path> <ww2ogg path> [convert]";
@@ -86,57 +113,60 @@ public sealed class SoundPackCategory : BaseCategory
                 }
             }
 
-            var ww2oggProcesses = new List<Process>();
-
-            Console.WriteLine($"Starting {ww2offProcessInfos.Count} processes...");
-
-            var lastEcho = 0L;
-            var sw = Stopwatch.StartNew();
-            var i = 0;
-
-            foreach (var info in ww2offProcessInfos)
+            if (ww2offProcessInfos.Count > 0)
             {
-                ++i;
+                var ww2oggProcesses = new List<Process>();
 
-                var p = Process.Start(info);
+                Console.WriteLine($"Starting {ww2offProcessInfos.Count} processes...");
 
-                if (p is not null)
-                    ww2oggProcesses.Add(p);
+                var lastEcho = 0L;
+                var sw = Stopwatch.StartNew();
+                var i = 0;
 
-                if (lastEcho + 1000 < sw.ElapsedMilliseconds)
+                foreach (var info in ww2offProcessInfos)
                 {
-                    Console.WriteLine($"Starting: {i}/{ww2offProcessInfos.Count} processes...");
+                    ++i;
 
-                    lastEcho = sw.ElapsedMilliseconds;
-                }
-            }
+                    var p = Process.Start(info);
 
-            Console.WriteLine($"Processes started in {sw.ElapsedMilliseconds} ms!");
+                    if (p is not null)
+                        ww2oggProcesses.Add(p);
 
-            var totalProcesses = ww2oggProcesses.Count;
-
-            lastEcho = 0;
-
-            while (ww2oggProcesses.Count > 0)
-            {
-                var toDelete = new List<Process>();
-
-                foreach (var process in ww2oggProcesses)
-                {
-                    if (process.HasExited)
+                    if (lastEcho + 1000 < sw.ElapsedMilliseconds)
                     {
-                        toDelete.Add(process);
+                        Console.WriteLine($"Starting: {i}/{ww2offProcessInfos.Count} processes...");
+
+                        lastEcho = sw.ElapsedMilliseconds;
                     }
                 }
 
-                foreach (var process in toDelete)
-                    ww2oggProcesses.Remove(process);
+                Console.WriteLine($"Processes started in {sw.ElapsedMilliseconds} ms!");
 
-                if (lastEcho + 1000 < sw.ElapsedMilliseconds)
+                var totalProcesses = ww2oggProcesses.Count;
+
+                lastEcho = 0;
+
+                while (ww2oggProcesses.Count > 0)
                 {
-                    Console.WriteLine($"{ww2oggProcesses.Count}/{totalProcesses}");
+                    var toDelete = new List<Process>();
 
-                    lastEcho = sw.ElapsedMilliseconds;
+                    foreach (var process in ww2oggProcesses)
+                    {
+                        if (process.HasExited)
+                        {
+                            toDelete.Add(process);
+                        }
+                    }
+
+                    foreach (var process in toDelete)
+                        ww2oggProcesses.Remove(process);
+
+                    if (lastEcho + 1000 < sw.ElapsedMilliseconds)
+                    {
+                        Console.WriteLine($"{ww2oggProcesses.Count}/{totalProcesses}");
+
+                        lastEcho = sw.ElapsedMilliseconds;
+                    }
                 }
             }
 

@@ -5,6 +5,7 @@ using SabTool.Serializers.Sounds;
 
 public sealed partial class ResourceDepot
 {
+    private WWiseIDTable IDTable { get; set; }
     private List<SoundPack> SoundPacks { get; set; } = new();
     private List<SoundPack> DLCSoundPacks { get; set; } = new();
 
@@ -12,6 +13,7 @@ public sealed partial class ResourceDepot
     {
         Console.WriteLine("Loading Sounds...");
 
+        LoadWWiseIDTable();
         LoadSoundPacks();
         LoadDLCSoundPacks();
 
@@ -20,6 +22,17 @@ public sealed partial class ResourceDepot
         LoadedResources |= Resource.Sounds;
 
         return true;
+    }
+
+    private void LoadWWiseIDTable()
+    {
+        Console.WriteLine("  Loading WWise ID table...");
+
+        using var fs = new FileStream(GetGamePath(@"Sound\\WWiseIDTable.bin"), FileMode.Open, FileAccess.Read, FileShare.Read);
+
+        IDTable = WWiseIDTableSerializer.DeserializeRaw(fs);
+
+        Console.WriteLine("  WWise ID table loaded!");
     }
 
     private void LoadSoundPacks()
@@ -70,13 +83,7 @@ public sealed partial class ResourceDepot
         Console.WriteLine("  DLC Sound packs loaded!");
     }
 
-    public IEnumerable<SoundPack> GetSoundPacks()
-    {
-        return SoundPacks;
-    }
-
-    public IEnumerable<SoundPack> GetDLCSoundPacks()
-    {
-        return DLCSoundPacks;
-    }
+    public IEnumerable<SoundPack> GetSoundPacks() => SoundPacks;
+    public IEnumerable<SoundPack> GetDLCSoundPacks() => DLCSoundPacks;
+    public WWiseIDTable GetWWiseIDTable() => IDTable;
 }
