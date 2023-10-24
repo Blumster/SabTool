@@ -33,7 +33,7 @@ public class WWiseIDTable
 
     public class Entry3
     {
-        public uint Unk1 { get; set; }
+        public Crc Unk1 { get; set; }
         public uint Unk2 { get; set; }
     }
 }

@@ -99,7 +99,7 @@ public static class WWiseIDTableSerializer
     {
         return new WWiseIDTable.Entry3
         {
-            Unk1 = reader.ReadUInt32(),
+            Unk1 = new(reader.ReadUInt32()),
             Unk2 = reader.ReadUInt32()
         };
     }
