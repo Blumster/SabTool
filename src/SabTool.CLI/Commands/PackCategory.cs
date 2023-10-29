@@ -115,7 +115,7 @@ public sealed class PackCategory : BaseCategory
             PackSerializer.DeserializeRaw(fs, streamBlock);
 
             StreamBlockSerializer.ReadPayloads(streamBlock, fs);
-            StreamBlockSerializer.Export(streamBlock, outputDir, child.AsProgress<string>());
+            StreamBlockSerializer.Export(streamBlock, outputDir, child.AsProgress<string>(), ResourceDepot.Instance);
 
             streamBlock.FreePayloads();
         }

@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 
 namespace SabTool.Serializers.Packs;
 
+using SabTool.Data.Interfaces;
 using SabTool.Data.Packs;
 using SabTool.Serializers.Json.Converters;
 using SabTool.Serializers.Misc;
@@ -238,7 +239,7 @@ public static class StreamBlockSerializer
         writer.Write(JsonConvert.SerializeObject(streamBlock, Formatting.Indented, new CrcConverter()));
     }
 
-    public static void Export(StreamBlock streamBlock, string outputPath, IProgress<string> progress)
+    public static void Export(StreamBlock streamBlock, string outputPath, IProgress<string> progress, IBlueprintDepot depot)
     {
         Directory.CreateDirectory(outputPath);
 
@@ -330,12 +331,12 @@ public static class StreamBlockSerializer
                         case 8:
                             extension = "wsd-bin";
 
-                            var dictOutPath = Path.Combine(outputPath, entry.SpawnTag.Value == 0 ? "objects.wsd.json" : $"{entry.SpawnTag.GetStringOrHexString()}.wsd.json");
+                            var dictOutPath = Path.Combine(outputPath, entry.SpawnTag.Value == 0 ? "nodes.wsd.json" : $"{entry.SpawnTag.GetStringOrHexString()}.wsd.json");
 
-                            var dict = DictionarySerializer.DeserializeRaw(new MemoryStream(entry.Payload, false));
+                            var dict = EditNodesSerializer.DeserializeRaw(new MemoryStream(entry.Payload, false), depot);
 
                             using (var fs = new FileStream(dictOutPath, FileMode.Create, FileAccess.Write, FileShare.Read))
-                                DictionarySerializer.SerializeJSON(dict, fs);
+                                EditNodesSerializer.SerializeJSON(dict, fs);
 
                             continue;
                     }
