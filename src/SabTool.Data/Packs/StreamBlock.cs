@@ -1,7 +1,9 @@
 ﻿namespace SabTool.Data.Packs;
 
+[Flags]
 public enum StreamBlockFlags
 {
+    Unknown4    = 0x004,
     Dynpack     = 0x008,
     NoPackType  = 0x010,
     Palettepack = 0x100,
@@ -75,7 +77,7 @@ public sealed class StreamBlock
         public int CompressedSize { get; set; }
         public int UncompressedSize { get; set; }
         public byte[] Payload { get; set; }
-        public Crc UnkCrc { get; set; }
+        public Crc SpawnTag { get; set; }
 
         public Entry(BinaryReader reader)
         {
@@ -84,7 +86,7 @@ public sealed class StreamBlock
             CompressedSize = reader.ReadInt32();
             UncompressedSize = reader.ReadInt32();
             _ = reader.ReadInt32();
-            UnkCrc = new(reader.ReadUInt32());
+            SpawnTag = new(reader.ReadUInt32());
         }
     }
 }

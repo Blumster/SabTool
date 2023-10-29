@@ -120,4 +120,35 @@ public sealed class PackCategory : BaseCategory
             streamBlock.FreePayloads();
         }
     }
+
+    public sealed class DumpEditNodesCommand : BaseCommand
+    {
+        public override string Key { get; } = "dump-editnodes";
+        public override string Shortcut { get; } = "de";
+        public override string Usage { get; } = "<game base path> <output directory path>";
+
+        public override bool Execute(IEnumerable<string> arguments)
+        {
+            if (!arguments.Any())
+            {
+                Console.WriteLine("ERROR: Not enough arguments given!");
+                return false;
+            }
+
+            ResourceDepot.Instance.Initialize(arguments.ElementAt(0));
+            ResourceDepot.Instance.Load(Resource.Maps);
+
+            var outputDir = arguments.ElementAt(1);
+
+            Directory.CreateDirectory(outputDir);
+
+            using var fs = new FileStream(Path.Combine(outputDir, "editnodes-dump.json"), FileMode.Create, FileAccess.Write, FileShare.None);
+            EditNodesSerializer.SerializeJSON(ResourceDepot.Instance.EditNodes, fs);
+
+            using var fs2 = new FileStream(Path.Combine(outputDir, "editnodes-dlc-dump.json"), FileMode.Create, FileAccess.Write, FileShare.None);
+            EditNodesSerializer.SerializeJSON(ResourceDepot.Instance.DLCEditNodes, fs2);
+
+            return true;
+        }
+    }
 }

@@ -14,18 +14,22 @@ public sealed partial class ResourceDepot
     public FranceMap? FranceMap { get; set; }
     public Dictionary<(short, short, ushort), StreamBlock> MapBlocks { get; } = new();
 
+    public EditNodes EditNodes { get; private set; }
+    public EditNodes DLCEditNodes { get; private set; }
+
     private bool LoadMaps()
     {
-        Console.WriteLine("Loading Maps...");
+        Console.WriteLine("Loading Map data...");
 
         LoadGlobalMap();
         LoadDLCGlobalMap();
         LoadFranceMap();
         LoadDLCFranceMap();
+        LoadEditNodes();
 
         LoadedResources |= Resource.Maps;
 
-        Console.WriteLine("Maps loaded!");
+        Console.WriteLine("Map data loaded!");
 
         return true;
     }
@@ -67,7 +71,7 @@ public sealed partial class ResourceDepot
 
     private void LoadDLCFranceMap()
     {
-        Console.WriteLine("Loading DLC France Map...");
+        Console.WriteLine("  Loading DLC France Map...");
 
         var DLCFranceMapPath = GetGamePath(@"DLC\01\FRANCE.map");
 
@@ -76,6 +80,19 @@ public sealed partial class ResourceDepot
         FranceMapSerializer.DeserializeRaw(DLCFranceMapStream, FranceMap);
 
         Console.WriteLine("  DLC France Map loaded!");
+    }
+
+    private void LoadEditNodes()
+    {
+        Console.WriteLine("  Loading EditNodes...");
+
+        using var editNodesPack = GetLooseFile(@"France\EditNodes\EditNodes.pack") ?? throw new Exception("EditNodes.pack is missing from the loosefiles!");
+        EditNodes = EditNodesSerializer.DeserializeRaw(editNodesPack);
+
+        using var dlcEditNodesPack = new FileStream(GetGamePath(@"DLC\01\France\EditNodes\EditNodes.pack"), FileMode.Open, FileAccess.Read, FileShare.Read);
+        DLCEditNodes = EditNodesSerializer.DeserializeRaw(dlcEditNodesPack);
+
+        Console.WriteLine($"  Loaded EditNodes: Base: {EditNodes.Nodes.Count} DLC: {DLCEditNodes.Nodes.Count}");
     }
 
     public StreamBlock? GetStreamBlock(Crc crc)

@@ -330,7 +330,7 @@ public static class StreamBlockSerializer
                         case 8:
                             extension = "wsd-bin";
 
-                            var dictOutPath = Path.Combine(outputPath, entry.UnkCrc.Value == 0 ? "objects.wsd.json" : $"{entry.UnkCrc.GetStringOrHexString()}.wsd.json");
+                            var dictOutPath = Path.Combine(outputPath, entry.SpawnTag.Value == 0 ? "objects.wsd.json" : $"{entry.SpawnTag.GetStringOrHexString()}.wsd.json");
 
                             var dict = DictionarySerializer.DeserializeRaw(new MemoryStream(entry.Payload, false));
 

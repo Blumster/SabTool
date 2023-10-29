@@ -4,6 +4,7 @@ namespace SabTool.CLI.Commands;
 
 using SabTool.CLI.Base;
 using SabTool.Depot;
+using SabTool.Serializers.Packs;
 
 public sealed class MegapackCategory : BaseCategory
 {

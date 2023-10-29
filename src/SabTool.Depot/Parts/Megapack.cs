@@ -2,6 +2,7 @@
 
 using SabTool.Data.Packs;
 using SabTool.Serializers.Megapacks;
+using SabTool.Serializers.Packs;
 using SabTool.Utils;
 
 public enum MegapackType
@@ -59,8 +60,6 @@ public sealed partial class ResourceDepot
             Megapacks.Add(megapack, entry);
         }
 
-        LoadEditNodes();
-
         LoadedResources |= Resource.Megapacks;
 
         Console.WriteLine($"Loaded {Megapacks.Count} Megapacks!");
@@ -84,11 +83,6 @@ public sealed partial class ResourceDepot
         Console.WriteLine($"Loaded Megapack: {entry.FilePath}");
         
         return true;
-    }
-
-    private static void LoadEditNodes()
-    {
-        Console.WriteLine($"Loaded EditNodes: ");
     }
 
     public MemoryStream? GetPackStream(Crc key)
