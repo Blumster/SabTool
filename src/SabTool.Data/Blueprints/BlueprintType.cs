@@ -78,6 +78,7 @@ public enum BlueprintType : uint
     ClothForce = 0x060FD1B4,
     WillToFight = 0xFE6CDF30,
     WillToFightNode = 0x0584B7F4,
+    WillToFightPortal = 0xD359BD64,
     HealthEffectFilter = 0x932C532A,
     ParticleEffectSpawner = 0x9DCC91D0,
     ButtonPrompt = 0x35899B4F,
@@ -95,6 +96,7 @@ public enum BlueprintType : uint
     BridgeController = 0x22DC02B6,
     Ricochet = 0x73393C4A,
     AIRoad = 0x2E0750D5,
+    AISidewalk = 0x70B6908D,
     Highlight = 0x1CC87777,
     MiniGame = 0xBBDF8DF6,
     SabotageTarget = 0xC5B4B2B6,
@@ -145,5 +147,16 @@ public enum BlueprintType : uint
     SeatWithMount = 0x77F3BA45,
     Seat = 0x10B39BE6,
     TweakableColors = 0x1935B883,
-    CommonUI_Persistent = 0x7434754C
+    CommonUI_Persistent = 0x7434754C,
+    Occluder = 0x359D640,
+    TriggerPolygon = 0xAF36A899,
+    TriggerRain = 0x976F2D35,
+    TriggerZone = 0x0A0AFF97,
+    TriggerSound = 0x9EE26816,
+    LocatorScripted = 0x6542BB4B,
+    LocatorGarage = 0xDE850532,
+    Locator = 0x7D718595,
+    Rope = 0x330B1105,
+    DetailBlock = 0xC3FA36EA,
+    Module = 0x2730D015
 }

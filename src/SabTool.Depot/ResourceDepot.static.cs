@@ -14,7 +14,7 @@ public partial class ResourceDepot
         { Resource.Materials,  new(() => Instance.LoadMaterials(),  new() { Resource.None }) },
         { Resource.Shaders,    new(() => Instance.LoadShaders(),    new() { Resource.LooseFiles }) },
         { Resource.LooseFiles, new(() => Instance.LoadLooseFiles(), new() { Resource.None }) },
-        { Resource.Maps,       new(() => Instance.LoadMaps(),       new() { Resource.LooseFiles }) },
+        { Resource.Maps,       new(() => Instance.LoadMaps(),       new() { Resource.Blueprints }) },
         { Resource.Blueprints, new(() => Instance.LoadBlueprints(), new() { Resource.LooseFiles }) },
         { Resource.Cinematics, new(() => Instance.LoadCinematics(), new() { Resource.LooseFiles }) },
         { Resource.Sounds,     new(() => Instance.LoadSounds(),     new() { Resource.None }) },

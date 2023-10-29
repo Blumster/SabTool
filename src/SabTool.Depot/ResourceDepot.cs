@@ -1,5 +1,6 @@
 ﻿namespace SabTool.Depot;
 
+using SabTool.Data.Interfaces;
 using SabTool.Utils.Extensions;
 
 [Flags]
@@ -21,7 +22,7 @@ public enum Resource
     All        = Megapacks | Materials | Shaders | LooseFiles | Maps | Blueprints | Cinematics | Sounds | Lua | Misc | Animations,
 }
 
-public sealed partial class ResourceDepot
+public sealed partial class ResourceDepot : IBlueprintDepot
 {
     private const string GameExecutableName = "Saboteur.exe";
 

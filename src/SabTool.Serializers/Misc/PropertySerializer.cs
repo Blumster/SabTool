@@ -5,6 +5,7 @@ using System.Text;
 namespace SabTool.Serializers.Misc;
 
 using SabTool.Data.Misc;
+using SabTool.Utils;
 
 public static class PropertySerializer
 {
@@ -21,6 +22,15 @@ public static class PropertySerializer
         {
             Name = new(reader.ReadUInt32()),
             Data = reader.ReadBytes(reader.ReadInt32())
+        };
+    }
+
+    public static Property DeserializeWithNameAndSizeRaw(BinaryReader reader, Crc name, int size)
+    {
+        return new Property
+        {
+            Name = name,
+            Data = reader.ReadBytes(size)
         };
     }
 

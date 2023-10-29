@@ -223,6 +223,7 @@ public static class BlueprintFieldTypes
         { BlueprintType.ClothForce, new() { } },
         { BlueprintType.WillToFight, new() { } },
         { BlueprintType.WillToFightNode, new() { } },
+        { BlueprintType.WillToFightPortal, new() { } },
         { BlueprintType.HealthEffectFilter, new() { } },
         { BlueprintType.ParticleEffectSpawner, new() { BlueprintType.Audible } },
         { BlueprintType.ButtonPrompt, new() { } },
@@ -240,6 +241,7 @@ public static class BlueprintFieldTypes
         { BlueprintType.BridgeController, new() { } },
         { BlueprintType.Ricochet, new() { } },
         { BlueprintType.AIRoad, new() { } },
+        { BlueprintType.AISidewalk, new() { } },
         { BlueprintType.Highlight, new() { } },
         { BlueprintType.MiniGame, new() { } },
         { BlueprintType.SabotageTarget, new() { } },
@@ -283,6 +285,14 @@ public static class BlueprintFieldTypes
         { BlueprintType.CreditName, new() { } },
         { BlueprintType.WaterFlow, new() { } },
         { BlueprintType.CommonUI_Persistent, new() { } },
+        { BlueprintType.Occluder, new() { } },
+        { BlueprintType.Locator, new() { } },
+        { BlueprintType.LocatorGarage, new() { BlueprintType.Locator } },
+        { BlueprintType.LocatorScripted, new() { BlueprintType.Locator, BlueprintType.Controllable } },
+        { BlueprintType.Rope, new() { } },
+        { BlueprintType.DetailBlock, new() { } },
+        { BlueprintType.TriggerPolygon, new() { BlueprintType.Controllable } },
+        { BlueprintType.Module, new() { } },
 
         // Shared
         { BlueprintType.Damageable, new() { BlueprintType.DamageableRoot } },
@@ -510,6 +520,21 @@ public static class BlueprintFieldTypes
         { (BlueprintType.AIRoad, 0x2B8D1FDF), typeof(Crc) },
         { (BlueprintType.AIRoad, 0x5B8F052C), typeof(Crc) },
         { (BlueprintType.AIRoad, 0x830107DA), typeof(int) },
+
+        { (BlueprintType.AISidewalk, 0xFD08E4FA), typeof(int) },
+        { (BlueprintType.AISidewalk, 0xFB8065AA), typeof(int) },
+        { (BlueprintType.AISidewalk, 0xC3B329FE), typeof(int) },
+        { (BlueprintType.AISidewalk, 0xE5B59E1B), typeof(int) },
+        { (BlueprintType.AISidewalk, 0xB0B01FF4), typeof(int) },
+        { (BlueprintType.AISidewalk, 0x99327D6F), typeof(float) },
+        { (BlueprintType.AISidewalk, 0x8AB222B9), typeof(int) },
+        { (BlueprintType.AISidewalk, 0x65BAE4C9), typeof(int) },
+        { (BlueprintType.AISidewalk, 0x8AADA58B), typeof(int) },
+        { (BlueprintType.AISidewalk, 0x5D78EDE2), typeof(string) },
+        { (BlueprintType.AISidewalk, 0x4BB87D44), typeof(int) },
+        { (BlueprintType.AISidewalk, 0x369E33A3), typeof(int) },
+        { (BlueprintType.AISidewalk, 0x05D7FC60), typeof(Vector3) },
+        { (BlueprintType.AISidewalk, 0x28AACCAE), typeof(int) },
 
         { (BlueprintType.AISpawner, 0x6D0C6486), typeof(int) },
         { (BlueprintType.AISpawner, 0x61DEE14D), typeof(bool) },
@@ -1735,6 +1760,8 @@ public static class BlueprintFieldTypes
         { (BlueprintType.LightVolume, 0xEDC59AF4), typeof(float) },
         { (BlueprintType.LightVolume, 0x622DA6EE), typeof(Crc) },
 
+        { (BlueprintType.LocatorScripted, 0xE0B01D9F), typeof(string) },
+
         { (BlueprintType.Melee, 0x5AAB6EAD), typeof(Vector2) },
         { (BlueprintType.Melee, 0x30BE46C0), typeof(float) },
         { (BlueprintType.Melee, 0x3136E3E8), typeof(float) },
@@ -1807,6 +1834,20 @@ public static class BlueprintFieldTypes
 
         { (BlueprintType.ModelRenderable, 0x5B724250), typeof(Crc) },
         { (BlueprintType.ModelRenderable, 0xAE1ED17F), typeof(bool) },
+
+        { (BlueprintType.Module, 0x24F94EA3), typeof(int) },
+        { (BlueprintType.Module, 0x9435D566), typeof(Crc) },
+        { (BlueprintType.Module, 0xB3E8A8C7), typeof(int) },
+
+        { (BlueprintType.Occluder, 0xFBB4BDA8), typeof(Vector3) },
+        { (BlueprintType.Occluder, 0xD3443E4A), typeof(float) },
+        { (BlueprintType.Occluder, 0x9EB3EE85), typeof(float) },
+        { (BlueprintType.Occluder, 0xD0C26E7D), typeof(Vector3) },
+        { (BlueprintType.Occluder, 0x7F46515C), typeof(float) },
+        { (BlueprintType.Occluder, 0x5D78EDE2), typeof(string) },
+        { (BlueprintType.Occluder, 0x530C5749), typeof(int) },
+        { (BlueprintType.Occluder, 0x05D7FC60), typeof(Vector3) },
+        { (BlueprintType.Occluder, 0x4FB76002), typeof(Vector3) },
 
         { (BlueprintType.Ordnance, 0x58D3A5D8), typeof(Crc) },
         { (BlueprintType.Ordnance, 0x336E0ADA), typeof(float) },
@@ -2272,6 +2313,11 @@ public static class BlueprintFieldTypes
         { (BlueprintType.Rocket, 0x85ADCA56), typeof(Vector3) },
         { (BlueprintType.Rocket, 0x034C80CA), typeof(float) },
         { (BlueprintType.Rocket, 0xA1296F81), typeof(bool) },
+
+        { (BlueprintType.Rope, 0x7F451191), typeof(Vector3) },
+        { (BlueprintType.Rope, 0x28E10525), typeof(string) },
+        { (BlueprintType.Rope, 0x354694DB), typeof(float) },
+        { (BlueprintType.Rope, 0xFD3D8926), typeof(Vector3) },
 
         { (BlueprintType.Rumble, 0xF0E6BA5F), typeof(Crc) },
         { (BlueprintType.Rumble, 0x6E4A81D9), typeof(Crc) },
@@ -3619,6 +3665,17 @@ public static class BlueprintFieldTypes
         { (BlueprintType.WillToFightNode, 0x790A0A7B), typeof(float) },
         { (BlueprintType.WillToFightNode, 0x7FD9A169), typeof(float) },
         { (BlueprintType.WillToFightNode, 0x59C1C47C), typeof(bool) },
+
+        { (BlueprintType.WillToFightPortal, 0x4EE116BB), typeof(float) },
+        { (BlueprintType.WillToFightPortal, 0x34E32C64), typeof(float) },
+        { (BlueprintType.WillToFightPortal, 0x2D565374), typeof(Crc) },
+        { (BlueprintType.WillToFightPortal, 0x222F3ED9), typeof(Crc) },
+        { (BlueprintType.WillToFightPortal, 0x0753D90B), typeof(Crc) },
+        { (BlueprintType.WillToFightPortal, 0x0FC275DB), typeof(Crc) },
+        { (BlueprintType.WillToFightPortal, 0x65871746), typeof(Crc) },
+        { (BlueprintType.WillToFightPortal, 0xC2329074), typeof(Crc) },
+        { (BlueprintType.WillToFightPortal, 0x7F451191), typeof(Vector3) },
+        { (BlueprintType.WillToFightPortal, 0xFD3D8926), typeof(Vector3) },
 
         { (BlueprintType.sub_7FB4D0, 0xE813FE45), typeof(int) },
         { (BlueprintType.sub_7FB4D0, 0x772B0B2F), typeof(Vector3) },

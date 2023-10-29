@@ -87,10 +87,10 @@ public sealed partial class ResourceDepot
         Console.WriteLine("  Loading EditNodes...");
 
         using var editNodesPack = GetLooseFile(@"France\EditNodes\EditNodes.pack") ?? throw new Exception("EditNodes.pack is missing from the loosefiles!");
-        EditNodes = EditNodesSerializer.DeserializeRaw(editNodesPack);
+        EditNodes = EditNodesSerializer.DeserializeRaw(editNodesPack, this);
 
         using var dlcEditNodesPack = new FileStream(GetGamePath(@"DLC\01\France\EditNodes\EditNodes.pack"), FileMode.Open, FileAccess.Read, FileShare.Read);
-        DLCEditNodes = EditNodesSerializer.DeserializeRaw(dlcEditNodesPack);
+        DLCEditNodes = EditNodesSerializer.DeserializeRaw(dlcEditNodesPack, this);
 
         Console.WriteLine($"  Loaded EditNodes: Base: {EditNodes.Nodes.Count} DLC: {DLCEditNodes.Nodes.Count}");
     }
