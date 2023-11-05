@@ -24,6 +24,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "lib", "lib", "{B4E1E62A-448
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HlslDecompiler", "..\lib\HlslDecompiler\HlslDecompiler.csproj", "{AAAFAB4F-838C-48E6-82E2-4DC926660F73}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SabTool.GameData", "SabTool.GameData\SabTool.GameData.csproj", "{CC487742-EADB-4970-B4FA-2765A9FC2EF0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -54,6 +56,10 @@ Global
 		{AAAFAB4F-838C-48E6-82E2-4DC926660F73}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AAAFAB4F-838C-48E6-82E2-4DC926660F73}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AAAFAB4F-838C-48E6-82E2-4DC926660F73}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CC487742-EADB-4970-B4FA-2765A9FC2EF0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC487742-EADB-4970-B4FA-2765A9FC2EF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC487742-EADB-4970-B4FA-2765A9FC2EF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC487742-EADB-4970-B4FA-2765A9FC2EF0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -65,6 +71,7 @@ Global
 		{CC12CACA-3829-4408-9620-5AAB0202BF1F} = {E4A5E9AA-5FE9-49B6-A61A-6C53AB44DBC6}
 		{3E56F604-3EEE-490A-8B9A-6E0DDE68FE6C} = {E4A5E9AA-5FE9-49B6-A61A-6C53AB44DBC6}
 		{AAAFAB4F-838C-48E6-82E2-4DC926660F73} = {B4E1E62A-4486-41FD-8908-F60A986F0115}
+		{CC487742-EADB-4970-B4FA-2765A9FC2EF0} = {E4A5E9AA-5FE9-49B6-A61A-6C53AB44DBC6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E9B397AE-37D9-45F9-AD46-E3EA25B95266}

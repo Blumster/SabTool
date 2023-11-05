@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Buffers;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Text;
 
@@ -8,8 +8,8 @@ using Newtonsoft.Json;
 
 namespace SabTool.Serializers.Blueprints;
 
-using SabTool.Data.Blueprints;
-using SabTool.Serializers.Misc;
+using SabTool.GameData;
+using SabTool.Serializers.Json.Converters;
 using SabTool.Utils;
 using SabTool.Utils.Extensions;
 
@@ -39,22 +39,29 @@ public static class BlueprintSerializer
             {
                 var name = reader.ReadStringWithMaxLength(reader.ReadInt32());
                 var type = reader.ReadStringWithMaxLength(reader.ReadInt32());
-                var propertyCount = reader.ReadInt32();
-
-                var properites = PropertySerializer.DeserializeMultipleRaw(reader, propertyCount);
-
-                if (!Enum.IsDefined(typeof(BlueprintType), Hash.StringToHash(type)))
-                    throw new Exception($"Unknown BlueprintType encountered: {type}!");
-
-                blueprints.Add(new Blueprint((BlueprintType)Hash.StringToHash(type), name, properites));
 
                 // Store hashes
                 Hash.FNV32string(name);
                 Hash.StringToHash(name);
+
+                var propertyCount = reader.ReadInt32();
+
+                var blueprintData = reader.ReadBytes(bpSize - (int)(stream.Position - bpStartPosition));
+
+                using var subReader = new BinaryReader(new MemoryStream(blueprintData, false));
+
+                var bp = Blueprint.Create(type, name, subReader);
+                if (bp is null)
+                {
+                    Console.WriteLine($"Blueprint({type}, {name}) cannot be created!");
+                    continue;
+                }
+
+                blueprints.Add(bp);
             }
 
-            if (bpStartPosition + bpSize != reader.BaseStream.Position)
-                Debugger.Break();
+            if (bpStartPosition + bpSize != stream.Position)
+                Console.WriteLine($"Didn't properly read the blueprint! Start: {bpStartPosition}, size: {bpSize}, end: {stream.Position}, expectedEnd: {bpStartPosition + bpSize}");
         }
 
         return blueprints;
@@ -69,25 +76,34 @@ public static class BlueprintSerializer
 
         foreach (var blueprint in blueprints)
         {
-            var templateSize = 0; // TODO
+            var bpStartPosition = stream.Position;
 
-            writer.Write(templateSize);
+            writer.Write(0); // Size
+            writer.Write(0); // Unknown
+            writer.Write(1); // Inner count
 
-            var bpStartPosition = writer.BaseStream.Position;
+            writer.WriteUTF8LengthedString(blueprint.Name.GetStringOrHexString());
+            writer.WriteUTF8LengthedString(blueprint.Type.GetStringOrHexString());
 
-            writer.Write(0);
-            writer.Write(blueprint.Properties.Count);
+            var propertyPosition = stream.Position;
+            writer.Write(0); // Property count
 
-            foreach (var prop in blueprint.Properties)
-            {
+            var propertyCount = blueprint.WriteProperties(writer);
 
-            }
+            var bpEndPosition = stream.Position;
+
+            writer.DoAtPosition(propertyPosition, _ => writer.Write(propertyCount));
+            writer.DoAtPosition(bpStartPosition, _ => writer.Write((int)(bpEndPosition - bpStartPosition - 4)));
         }
     }
 
-    public static List<Blueprint> DeserialzieJSON(Stream stream)
+    public static List<Blueprint> DeserializeJSON(Stream stream)
     {
-        var blueprints = new List<Blueprint>();
+        using var reader = new StreamReader(stream, Encoding.UTF8, leaveOpen: true);
+            
+        var blueprints = JsonConvert.DeserializeObject<List<Blueprint>>(reader.ReadToEnd(), new CrcConverter());
+        if (blueprints is null)
+            return new List<Blueprint>();
 
         return blueprints;
     }
@@ -96,6 +112,6 @@ public static class BlueprintSerializer
     {
         using var writer = new StreamWriter(stream, Encoding.UTF8, leaveOpen: true);
 
-        writer.Write(JsonConvert.SerializeObject(blueprints));
+        writer.Write(JsonConvert.SerializeObject(blueprints, new CrcConverter()));
     }
 }

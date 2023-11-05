@@ -1,13 +1,12 @@
 ﻿namespace SabTool.Depot;
 
-using SabTool.Data.Blueprints;
+using SabTool.GameData;
 using SabTool.Serializers.Blueprints;
 using SabTool.Utils;
 
 public sealed partial class ResourceDepot
 {
-    private Dictionary<string, Blueprint> BlueprintsByName { get; } = new();
-    private Dictionary<Crc, Blueprint> BlueprintsByNameCrc { get; } = new();
+    private Dictionary<Crc, Blueprint> BlueprintsByNameCrc { get; set; }
 
     private bool LoadBlueprints()
     {
@@ -17,11 +16,7 @@ public sealed partial class ResourceDepot
 
         var blueprints = BlueprintSerializer.DeserializeRaw(gameTemplatesStream);
 
-        foreach (var blueprint in blueprints)
-        {
-            BlueprintsByName.Add(blueprint.Name, blueprint);
-            BlueprintsByNameCrc.Add(new(Hash.StringToHash(blueprint.Name)), blueprint);
-        }
+        BlueprintsByNameCrc = blueprints.ToDictionary(b => b.Name);
 
         Console.WriteLine("Blueprints loaded!");
 
@@ -30,15 +25,10 @@ public sealed partial class ResourceDepot
         return true;
     }
 
-    public Blueprint? GetBlueprintByName(string name)
-    {
-        return BlueprintsByName.TryGetValue(name, out var blueprint) ? blueprint : null;
-    }
-
-    public Blueprint? GetBlueprintByNameCrc(Crc nameCrc)
+    public object? GetBlueprintByNameCrc(Crc nameCrc)
     {
         return BlueprintsByNameCrc.TryGetValue(nameCrc, out var blueprint) ? blueprint : null;
     }
 
-    public IEnumerable<Blueprint> GetAllBlueprints() => BlueprintsByName.Values;
+    public IEnumerable<Blueprint> GetAllBlueprints() => BlueprintsByNameCrc.Values;
 }

@@ -17,17 +17,10 @@ public static class DictionaryPropertyTypes
     // this is a hack, remove it...
     public static Dictionary<Crc, Type> Types { get; } = new()
     {
-        { new(0x5D78EDE2), typeof(string) }, // ClassName
         { new(0x0012BDC3), typeof(string) }, // BaseName
         { new(0xDBAA9984), typeof(string) }, // Traffic
-        { new(0x28E10525), typeof(string) }, // Type
-        { new(0x79450675), typeof(string) }, // Parent
-        { new(0x05D7FC60), typeof(Vector3) }, // Position
         { new(0x7F451191), typeof(Vector3) }, // Position1
         { new(0xCB289CD9), typeof(Vector3) }, // Tangent1
-        { new(0xFBB4BDA8), typeof(Vector3) }, // XAxis
-        { new(0xD0C26E7D), typeof(Vector3) }, // YAxis
-        { new(0x4FB76002), typeof(Vector3) }, // ZAxis
         { new(0xCBE8ED58), typeof(float) }, // Distance
         { new(0x99327D6F), typeof(float) }, // Width
         { new(0xC4197FF4), typeof(int) }, // LaneCount
@@ -51,7 +44,6 @@ public static class DictionaryPropertyTypes
         { new(0x65BAE4C9), typeof(Crc) }, // AttachedID3
         { new(0x404D1343), typeof(Crc) }, // LuaTable
         { new(0x8CDA47A7), typeof(bool) }, // BubbleProof
-        { new(0x42498680), typeof(bool) }, // Script
 
         
         { new(0xB100447A), typeof(int) },
@@ -62,14 +54,36 @@ public static class DictionaryPropertyTypes
         { new(0xBBBDA49B), typeof(Vector3) },
         { new(0xE42680F4), typeof(Vector3) },
         { new(0xF0ED6EBD), typeof(Vector3) },
+
+        //{ new(0x65F01872), typeof(int) }, // AttractionPt
+
+        // VERIFIED
+        { new(0x05D7FC60), typeof(Vector3) }, // Position
+        { new(0x1ACF73A2), typeof(int) }, // DynamicFenceNodes
+        { new(0x28E10525), typeof(string) }, // Type
+        { new(0x3CE51772), typeof(int) }, // UNKNOWN WSTriggerRegion::SetFlags
+        { new(0x42498680), typeof(string) }, // Script
+        { new(0x4FB76002), typeof(Vector3) }, // ZAxis
+        { new(0x52856DBA), typeof(int) }, // Volumes
+        { new(0x5D78EDE2), typeof(string) }, // ClassName
+        { new(0x6B9391D0), typeof(int) }, // DynamicPathNodes
+        { new(0x79450675), typeof(string) }, // Parent
+        { new(0xB1524043), typeof(Crc) }, // CollisionModule
+        { new(0xD0C26E7D), typeof(Vector3) }, // YAxis
+        { new(0xE1AE04B8), typeof(float) }, // Height
+        { new(0xE85F4CFC), typeof(int) }, // DynamicFenceFlags
+        { new(0xFBB4BDA8), typeof(Vector3) }, // XAxis
     };
 
     public static object? ConvertData(Crc crc, byte[] data)
     {
-        static void CheckDataSize(byte[] data, int expectedSize)
+        void CheckDataSize(byte[] data, int expectedSize)
         {
-            if (data == null || data.Length != expectedSize)
-                throw new Exception("");
+            if (data is null)
+                throw new Exception($"Data is null!");
+
+            if (data.Length != expectedSize)
+                throw new Exception($"Data for {crc} should be {expectedSize}, but real size: {data.Length}!");
         }
 
         if (!Types.ContainsKey(crc))

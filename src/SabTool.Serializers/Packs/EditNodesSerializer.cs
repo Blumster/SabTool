@@ -7,9 +7,9 @@ using Newtonsoft.Json;
 
 namespace SabTool.Serializers.Packs;
 
-using SabTool.Data.Blueprints;
 using SabTool.Data.Interfaces;
 using SabTool.Data.Packs;
+using SabTool.GameData;
 using SabTool.Serializers.Json.Converters;
 using SabTool.Serializers.Misc;
 using SabTool.Utils;
@@ -234,7 +234,7 @@ public static class EditNodesSerializer
                                 posts[nodeIndex].WallFlags = reader.ReadUInt32();
                             }
                         }
-                    }
+                    }/*
                     else
                     {
                         if (obj.ClassName is null)
@@ -311,7 +311,7 @@ public static class EditNodesSerializer
                             default:
                                 if (depot is not null)
                                 {
-                                    var bp = depot.GetBlueprintByNameCrc(obj.ClassName);
+                                    var bp = depot.GetBlueprintByNameCrc(obj.ClassName) as Blueprint;
                                     if (bp is not null)
                                         bpType = bp.Type;
                                     else
@@ -344,7 +344,7 @@ public static class EditNodesSerializer
 
                             obj.InstanceData.Add((propertyType, BlueprintFieldTypes.ReadProperty(bpType, property)));
                         }
-                    }
+                    }*/
 
                     break;
             }
