@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.IO;
 using System.Text;
 
@@ -29,16 +30,18 @@ namespace SabTool.Utils.Extensions
                 writer.Write((byte)0);
         }
 
-        public static void WriteLengthedString(this BinaryWriter writer, string text)
+        public static void WriteUTF8LengthedString(this BinaryWriter writer, string value)
         {
-            if (string.IsNullOrEmpty(text))
+            if (string.IsNullOrEmpty(value))
             {
                 writer.Write(0);
                 return;
             }
 
-            writer.Write(text.Length);
-            writer.WriteUtf8StringOn(text, text.Length);
+            var bytes = Encoding.UTF8.GetBytes(value);
+
+            writer.Write(bytes.Length);
+            writer.Write(bytes);
         }
 
         public static void WriteConstArray<T>(this BinaryWriter _, T[] data, int count, Action<T> writerFunction) where T : new()
@@ -51,6 +54,17 @@ namespace SabTool.Utils.Extensions
         {
             for (var i = 0; i < count; ++i)
                 writerFunction(writer, data[i]);
+        }
+
+        public static void DoAtPosition(this BinaryWriter writer, long position, Action<BinaryWriter> writerFunction)
+        {
+            var currentPos = writer.BaseStream.Position;
+
+            writer.BaseStream.Position = position;
+
+            writerFunction(writer);
+
+            writer.BaseStream.Position = currentPos;
         }
     }
 }

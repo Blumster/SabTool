@@ -27,7 +27,7 @@ internal class CrcConverter : JsonConverter<Crc>
         {
             var hexString = match.Groups[1].Value;
 
-            if (uint.TryParse(hexString, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out uint crc))
+            if (uint.TryParse(hexString, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var crc))
                 return new Crc(crc);
         }
 
