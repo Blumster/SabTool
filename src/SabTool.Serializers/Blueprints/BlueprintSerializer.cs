@@ -26,42 +26,50 @@ public static class BlueprintSerializer
 
         var blueprints = new List<Blueprint>(blueprintCount);
 
-        for (var i = 0; i < blueprintCount; ++i)
+        try
         {
-            var bpSize = reader.ReadInt32();
-
-            var bpStartPosition = reader.BaseStream.Position;
-
-            var unknown = reader.ReadInt32();
-            var innerCount = reader.ReadInt32();
-
-            for (var j = 0; j < innerCount; ++j)
+            for (var i = 0; i < blueprintCount; ++i)
             {
-                var name = reader.ReadStringWithMaxLength(reader.ReadInt32());
-                var type = reader.ReadStringWithMaxLength(reader.ReadInt32());
+                var bpSize = reader.ReadInt32();
 
-                // Store hashes
-                Hash.FNV32string(name);
-                Hash.StringToHash(name);
+                var bpStartPosition = reader.BaseStream.Position;
 
-                var propertyCount = reader.ReadInt32();
+                var unknown = reader.ReadInt32();
+                var innerCount = reader.ReadInt32();
 
-                var blueprintData = reader.ReadBytes(bpSize - (int)(stream.Position - bpStartPosition));
-
-                using var subReader = new BinaryReader(new MemoryStream(blueprintData, false));
-
-                var bp = Blueprint.Create(type, name, subReader);
-                if (bp is null)
+                for (var j = 0; j < innerCount; ++j)
                 {
-                    Console.WriteLine($"Blueprint({type}, {name}) cannot be created!");
-                    continue;
+                    var name = reader.ReadStringWithMaxLength(reader.ReadInt32());
+                    var type = reader.ReadStringWithMaxLength(reader.ReadInt32());
+
+                    // Store hashes
+                    Hash.FNV32string(name);
+                    Hash.StringToHash(name);
+
+                    var propertyCount = reader.ReadInt32();
+
+                    var blueprintData = reader.ReadBytes(bpSize - (int)(stream.Position - bpStartPosition));
+
+                    using var subReader = new BinaryReader(new MemoryStream(blueprintData, false));
+
+                    var bp = Blueprint.Create(type, name, subReader);
+                    if (bp is null)
+                    {
+                        Console.WriteLine($"Blueprint({type}, {name}) cannot be created!");
+                        continue;
+                    }
+
+                    blueprints.Add(bp);
                 }
 
-                blueprints.Add(bp);
+                if (bpStartPosition + bpSize != stream.Position)
+                    Console.WriteLine($"Didn't properly read the blueprint! Start: {bpStartPosition}, size: {bpSize}, end: {stream.Position}, expectedEnd: {bpStartPosition + bpSize}");
             }
-
-            if (bpStartPosition + bpSize != stream.Position)
-                Console.WriteLine($"Didn't properly read the blueprint! Start: {bpStartPosition}, size: {bpSize}, end: {stream.Position}, expectedEnd: {bpStartPosition + bpSize}");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Blueprint count: {blueprintCount}, read blueprints: {blueprints.Count}, skipping the remaining because of the following exception:");
+            Console.WriteLine($"Exception while unpacking Blueprints: {e}");
         }
 
         return blueprints;
