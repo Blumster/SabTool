@@ -350,7 +350,12 @@ public static class EditNodesSerializer
             }
 
             if (startOffset + propertySize != reader.BaseStream.Position)
-                throw new Exception($"Under or over reading property! Start: {startOffset} size: {propertySize} end: {reader.BaseStream.Position}");
+            {
+                Console.WriteLine($"Skipping property {propertyType.GetStringOrHexString()} on {obj.ClassName?.GetStringOrHexString()}...");
+
+                reader.BaseStream.Position = startOffset + propertySize;
+            }
+                //throw new Exception($"Under or over reading property! Start: {startOffset} size: {propertySize} end: {reader.BaseStream.Position}");
         }
 
         obj.PathNodes = Enumerable.Range(0, dynamicPathNodeCount).Select(i => pathNodes.GetValueOrDefault(i)).ToArray();

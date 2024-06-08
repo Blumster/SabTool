@@ -4,7 +4,7 @@ public class LightAttachmentBlueprintPart : IBlueprintPart
 {
     public LightAttachmentData[]? AttachmentDatas { get; set; }
 
-    private int _currentIndex = -1;
+    private int _currentIndex = -2;
 
     public bool SetProperty(Crc field, PropertySet properties)
     {
@@ -16,6 +16,9 @@ public class LightAttachmentBlueprintPart : IBlueprintPart
 
             return true;
         }
+
+        if (_currentIndex == -2)
+            return false;
 
         if (AttachmentDatas is null)
             throw new Exception($"LightHaloAttachmentBlueprint properties are in an invalid order!");
