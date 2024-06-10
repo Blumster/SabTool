@@ -56,14 +56,19 @@ public sealed class ShaderCategory : BaseCategory
                     foreach (var param in data.Parameters)
                         sw.WriteLine($"    Param: {param.Name} = {param.DefaultValue}");
 
+                    sw.WriteLine();
+
                     if (data.Size == 0)
                         continue;
+
+                    File.WriteAllBytes(Path.Combine(outputDir, $"{shaderFileName}c"), data.Data);
 
                     using var stream = new MemoryStream(data.Data, false);
                     using var shaderReader = new ShaderReader(stream, true);
 
-                    var writer = new HlslSimpleWriter(shaderReader.ReadShader());
+                    var shaderModel = shaderReader.ReadShader();
 
+                    HlslWriter writer = new HlslSimpleWriter(shaderModel);
                     
                     writer.Write(Path.Combine(outputDir, shaderFileName));
                 }
@@ -89,13 +94,19 @@ public sealed class ShaderCategory : BaseCategory
                     foreach (var param in data.Parameters)
                         sw.WriteLine($"    Param: {param.Name} = {param.DefaultValue}");
 
+                    sw.WriteLine();
+
                     if (data.Size == 0)
                         continue;
+
+                    File.WriteAllBytes(Path.Combine(outputDir, $"{shaderFileName}c"), data.Data);
 
                     using var stream = new MemoryStream(data.Data, false);
                     using var shaderReader = new ShaderReader(stream, true);
 
-                    var writer = new HlslSimpleWriter(shaderReader.ReadShader());
+                    var shaderModel = shaderReader.ReadShader();
+
+                    HlslWriter writer = new HlslSimpleWriter(shaderModel);
 
                     writer.Write(Path.Combine(outputDir, shaderFileName));
                 }

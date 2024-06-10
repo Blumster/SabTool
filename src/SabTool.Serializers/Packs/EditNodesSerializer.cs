@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 using Newtonsoft.Json;
@@ -9,12 +10,9 @@ namespace SabTool.Serializers.Packs;
 
 using SabTool.Data.Interfaces;
 using SabTool.Data.Packs;
-using SabTool.GameData;
 using SabTool.Serializers.Json.Converters;
-using SabTool.Serializers.Misc;
 using SabTool.Utils;
 using SabTool.Utils.Extensions;
-using System.Linq;
 
 public static class EditNodesSerializer
 {
