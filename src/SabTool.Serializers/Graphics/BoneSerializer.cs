@@ -9,6 +9,7 @@ namespace SabTool.Serializers.Graphics;
 using SabTool.Data.Graphics;
 using SabTool.Serializers.Json.Converters;
 using SabTool.Utils;
+using SabTool.Utils.Extensions;
 
 public static class BoneSerializer
 {
@@ -32,14 +33,8 @@ public static class BoneSerializer
 
         stream.Position += 0x3;
 
-        bone.Field20 = reader.ReadSingle();
-        bone.Field24 = reader.ReadSingle();
-        bone.Field28 = reader.ReadSingle();
-        bone.Field2C = reader.ReadInt32();
-        bone.Field30 = reader.ReadSingle();
-        bone.Field34 = reader.ReadSingle();
-        bone.Field38 = reader.ReadSingle();
-        bone.Field3C = reader.ReadSingle();
+        bone.AABBOffset = reader.ReadVector4();
+        bone.AABBSize = reader.ReadVector4();
 
         if (currentStart + 0x40 != stream.Position)
             throw new Exception($"Under or orver read of the Bone part of the mesh asset! Pos: {stream.Position} | Expected: {currentStart + 0x40}");
@@ -65,14 +60,14 @@ public static class BoneSerializer
 
         stream.Position += 0x3;
 
-        writer.Write(bone.Field20);
-        writer.Write(bone.Field24);
-        writer.Write(bone.Field28);
-        writer.Write(bone.Field2C);
-        writer.Write(bone.Field30);
-        writer.Write(bone.Field34);
-        writer.Write(bone.Field38);
-        writer.Write(bone.Field3C);
+        writer.Write(bone.AABBOffset.X);
+        writer.Write(bone.AABBOffset.Y);
+        writer.Write(bone.AABBOffset.Z);
+        writer.Write(bone.AABBOffset.W);
+        writer.Write(bone.AABBSize.X);
+        writer.Write(bone.AABBSize.Y);
+        writer.Write(bone.AABBSize.Z);
+        writer.Write(bone.AABBSize.W);
 
         if (currentStart + 0x40 != stream.Position)
             throw new Exception($"Under or orver write of the Bone part of the mesh asset! Pos: {stream.Position} | Expected: {currentStart + 0x40}");
