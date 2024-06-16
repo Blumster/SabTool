@@ -109,27 +109,27 @@ public static class MaterialSerializer
         if (!reader.CheckHeaderString("WSCP", reversed: true))
             throw new Exception("Invalid magic found!");
 
-        var unk3s = new Material.CPUParams[paramCount];
+        var cpuParam = new Material.CPUParams[paramCount];
 
         for (var i = 0; i < paramCount; ++i)
         {
             var numParams = (byte)reader.ReadInt32();
 
-            unk3s[i] = new Material.CPUParams
+            cpuParam[i] = new Material.CPUParams
             {
                 NumParams = numParams,
                 Registers = new byte[numParams],
                 Floats = new Vector4[numParams]
             };
 
-            for (var j = 0; j < unk3s[i].NumParams; ++j)
+            for (var j = 0; j < cpuParam[i].NumParams; ++j)
             {
-                unk3s[i].Registers[j] = (byte)reader.ReadInt32();
-                unk3s[i].Floats[j] = reader.ReadVector4();
+                cpuParam[i].Registers[j] = (byte)reader.ReadInt32();
+                cpuParam[i].Floats[j] = reader.ReadVector4();
             }
         }
 
-        return unk3s;
+        return cpuParam;
     }
 
     private static Material.ShaderParameter[] DeserializeShaderParameters(BinaryReader reader, string magic, int shaderCount)
