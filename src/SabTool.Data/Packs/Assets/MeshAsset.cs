@@ -42,9 +42,9 @@ public sealed class MeshAsset
             var parent = skeletonNodes[parentIndex];
 
             var boneData = skeletonData.Bones[i];
-            var boneName = boneData.Crc.GetString();
+            var boneName = boneData.CrcName.GetString();
 
-            skeletonNodes[i] = parent.CreateNode(string.IsNullOrEmpty(boneName) ? $"0x{boneData.Crc.Value:X8}" : boneName).WithLocalTransform(skeletonData.UnkBasePoses[i]);
+            skeletonNodes[i] = parent.CreateNode(string.IsNullOrEmpty(boneName) ? $"0x{boneData.CrcName.Value:X8}" : boneName).WithLocalTransform(skeletonData.UnkBasePoses[i]);
         }
 
         var joints = skeletonNodes.Where(p => p.Key != -1).Select(p => p.Value).ToArray();

@@ -21,15 +21,15 @@ public static class BoneSerializer
 
         var currentStart = stream.Position;
 
-        bone.UnkNamePtr = new Crc(reader.ReadUInt32());
-        bone.UnkByte = reader.ReadByte();
+        bone.DebugName = new Crc(reader.ReadUInt32());
+        bone.LockTranslation = reader.ReadBoolean();
 
         stream.Position += 0xF;
 
-        bone.Crc = new Crc(reader.ReadUInt32());
+        bone.CrcName = new Crc(reader.ReadUInt32());
         bone.Flags = reader.ReadInt16();
         bone.Index = reader.ReadInt16();
-        bone.UnkFlags = reader.ReadByte();
+        bone.ExportFlags = reader.ReadByte();
 
         stream.Position += 0x3;
 
@@ -48,15 +48,15 @@ public static class BoneSerializer
 
         var currentStart = stream.Position;
 
-        writer.Write(bone.UnkNamePtr.Value);
-        writer.Write(bone.UnkByte);
+        writer.Write(bone.DebugName.Value);
+        writer.Write(bone.LockTranslation);
 
         stream.Position += 0xF;
 
-        writer.Write(bone.Crc.Value);
+        writer.Write(bone.CrcName.Value);
         writer.Write(bone.Flags);
         writer.Write(bone.Index);
-        writer.Write(bone.UnkFlags);
+        writer.Write(bone.ExportFlags);
 
         stream.Position += 0x3;
 
