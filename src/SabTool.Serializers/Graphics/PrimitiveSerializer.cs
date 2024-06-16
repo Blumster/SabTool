@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 namespace SabTool.Serializers.Graphics;
 
 using SabTool.Data.Graphics;
+using SabTool.Utils.Extensions;
 
 public static class PrimitiveSerializer
 {
@@ -29,14 +30,8 @@ public static class PrimitiveSerializer
 
         stream.Position += 0x28;
 
-        primitive.Float30 = reader.ReadSingle();
-        primitive.Float34 = reader.ReadSingle();
-        primitive.Float38 = reader.ReadSingle();
-        primitive.Int3C = reader.ReadInt32();
-        primitive.Float40 = reader.ReadSingle();
-        primitive.Float44 = reader.ReadSingle();
-        primitive.Float48 = reader.ReadSingle();
-        primitive.Int4C = reader.ReadInt32();
+        primitive.Vector30 = reader.ReadVector4();
+        primitive.Vector40 = reader.ReadVector4();
 
         primitive.VertexHolderIndex = reader.ReadInt32();
         primitive.VertexHolder = primitive.Mesh.VertexHolders[primitive.VertexHolderIndex];

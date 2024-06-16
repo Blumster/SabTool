@@ -7,14 +7,8 @@ public sealed class Primitive
     public VertexHolder VertexHolder { get; set; }
     public int ShadowIndex { get; set; }
     public int VertexHolderIndex { get; set; }
-    public float Float30 { get; set; }
-    public float Float34 { get; set; }
-    public float Float38 { get; set; }
-    public int Int3C { get; set; }
-    public float Float40 { get; set; }
-    public float Float44 { get; set; }
-    public float Float48 { get; set; }
-    public int Int4C { get; set; }
+    public Vector4 Vector30 { get; set; }
+    public Vector4 Vector40 { get; set; }
     public int Int54 { get; set; }
     public int IndexStartOffset { get; set; }
     public int NumVertex { get; set; }
@@ -173,14 +167,8 @@ public sealed class Primitive
         sb.Append(' ', indentCount).AppendLine("{");
         sb.Append(' ', indentCount + 2).AppendLine($"{nameof(ShadowIndex)} = {ShadowIndex}");
         sb.Append(' ', indentCount + 2).AppendLine($"{nameof(VertexHolderIndex)} = {VertexHolderIndex}");
-        sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Float30)} = {Float30}");
-        sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Float34)} = {Float34}");
-        sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Float38)} = {Float38}");
-        sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Int3C)} = {Int3C}");
-        sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Float40)} = {Float40}");
-        sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Float44)} = {Float44}");
-        sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Float48)} = {Float48}");
-        sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Int4C)} = {Int4C}");
+        sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Vector30)} = {Vector30}");
+        sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Vector40)} = {Vector40}");
         sb.Append(' ', indentCount + 2).AppendLine($"{nameof(Int54)} = {Int54}");
         sb.Append(' ', indentCount + 2).AppendLine($"{nameof(IndexStartOffset)} = {IndexStartOffset}");
         sb.Append(' ', indentCount + 2).AppendLine($"{nameof(NumVertex)} = {NumVertex}");
