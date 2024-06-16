@@ -12,7 +12,7 @@ public sealed class Material
     public MaterialFlags Flags { get; set; }
     public RenderState[] RenderStates { get; set; }
     public TextureState[] TextureStates { get; set; }
-    public Unk3 Unk3Val { get; set; }
+    public CPUParams Params { get; set; }
     public Crc VertexShader { get; set; }
     public ShaderParameter VertexShaderParameters { get; set; }
     public Crc PixelShader { get; set; }
@@ -57,11 +57,11 @@ public sealed class Material
         public uint Value { get; set; }
     }
 
-    public class Unk3
+    public class CPUParams
     {
-        public byte Count { get; set; }
-        public byte[] UnkArray { get; set; }
-        public Vector4[] UnkVectors { get; set; }
+        public byte NumParams { get; set; }
+        public byte[] Registers { get; set; }
+        public Vector4[] Floats { get; set; }
     }
 
     public class ShaderParameter

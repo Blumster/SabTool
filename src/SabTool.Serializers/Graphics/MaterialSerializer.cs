@@ -37,19 +37,19 @@ public static class MaterialSerializer
         var unk6 = reader.ReadInt32();
         var unk7 = reader.ReadInt32();
         var unk8 = reader.ReadInt32();
-        var unk3Count = reader.ReadInt32();
+        var cpuParamCount = reader.ReadInt32();
         var unk9 = reader.ReadInt32();
         var numTextures = reader.ReadInt32();
         _ = reader.ReadInt32();
         var passCount = reader.ReadInt32();
 
         (var renderStates, var textureStates) = DeserializeStates(reader, numRenderStates, numTextureStates);
-        var unk3Array = DeserializeUnk3Array(reader, unk3Count);
+        var cpuParamsArray = DeserializeCPUParamsArray(reader, cpuParamCount);
         var shaderArray1 = DeserializeShaderParameters(reader, "WSPP", shaderParameters1Count);
         var shaderArray2 = DeserializeShaderParameters(reader, "WSVP", shaderParameters2Count);
         var textures = DeserializeTextures(reader, numTextures);
         var passes = DeserializePassArray(reader, passCount);
-        var materials = DeserializeMaterials(reader, materialCount, passes, textures, renderStates, textureStates, unk3Array, shaderArray2, shaderArray1);
+        var materials = DeserializeMaterials(reader, materialCount, passes, textures, renderStates, textureStates, cpuParamsArray, shaderArray2, shaderArray1);
 
         if (reader.BaseStream.Position != reader.BaseStream.Length)
             throw new Exception("Materials file wasn't properly read!");
@@ -104,28 +104,28 @@ public static class MaterialSerializer
         return (renderStates, textureStates);
     }
 
-    private static Material.Unk3[] DeserializeUnk3Array(BinaryReader reader, int unkCount)
+    private static Material.CPUParams[] DeserializeCPUParamsArray(BinaryReader reader, int paramCount)
     {
         if (!reader.CheckHeaderString("WSCP", reversed: true))
             throw new Exception("Invalid magic found!");
 
-        var unk3s = new Material.Unk3[unkCount];
+        var unk3s = new Material.CPUParams[paramCount];
 
-        for (var i = 0; i < unkCount; ++i)
+        for (var i = 0; i < paramCount; ++i)
         {
-            var count = (byte)reader.ReadInt32();
+            var numParams = (byte)reader.ReadInt32();
 
-            unk3s[i] = new Material.Unk3
+            unk3s[i] = new Material.CPUParams
             {
-                Count = count,
-                UnkArray = new byte[count],
-                UnkVectors = new Vector4[count]
+                NumParams = numParams,
+                Registers = new byte[numParams],
+                Floats = new Vector4[numParams]
             };
 
-            for (var j = 0; j < unk3s[i].Count; ++j)
+            for (var j = 0; j < unk3s[i].NumParams; ++j)
             {
-                unk3s[i].UnkArray[j] = (byte)reader.ReadInt32();
-                unk3s[i].UnkVectors[j] = new Vector4(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
+                unk3s[i].Registers[j] = (byte)reader.ReadInt32();
+                unk3s[i].Floats[j] = reader.ReadVector4();
             }
         }
 
@@ -200,7 +200,7 @@ public static class MaterialSerializer
                 Flags = (Material.MaterialFlags)reader.ReadUInt32(),
                 RenderStateIndex = reader.ReadInt32(),
                 TextureStateIndex = reader.ReadInt32(),
-                Unk3Index = reader.ReadInt32(),
+                CPUParameterIndex = reader.ReadInt32(),
                 PixelParameterIndex = reader.ReadInt32(),
                 VertexParameterIndex = reader.ReadInt32(),
                 PixelShader = new(reader.ReadUInt32()),
@@ -211,7 +211,7 @@ public static class MaterialSerializer
         return passes;
     }
 
-    private static List<Material> DeserializeMaterials(BinaryReader reader, int materialCount, Pass[] passes, Crc[] textures, Material.RenderState[][] renderStates, Material.TextureState[][] textureStates, Material.Unk3[] unk3s, Material.ShaderParameter[] vertexParameters, Material.ShaderParameter[] pixelParameters)
+    private static List<Material> DeserializeMaterials(BinaryReader reader, int materialCount, Pass[] passes, Crc[] textures, Material.RenderState[][] renderStates, Material.TextureState[][] textureStates, Material.CPUParams[] cpuParams, Material.ShaderParameter[] vertexParameters, Material.ShaderParameter[] pixelParameters)
     {
         Material.Container.Clear();
 
@@ -282,8 +282,8 @@ public static class MaterialSerializer
                 if (pass.TextureStateIndex != -1)
                     material.TextureStates = textureStates[pass.TextureStateIndex];
 
-                if (pass.Unk3Index != -1)
-                    material.Unk3Val = unk3s[pass.Unk3Index];
+                if (pass.CPUParameterIndex != -1)
+                    material.Params = cpuParams[pass.CPUParameterIndex];
 
                 if (pass.VertexParameterIndex != -1)
                     material.VertexShaderParameters = vertexParameters[pass.VertexParameterIndex];
@@ -370,7 +370,7 @@ public static class MaterialSerializer
         public Material.MaterialFlags Flags { get; set; }
         public int RenderStateIndex { get; set; }
         public int TextureStateIndex { get; set; }
-        public int Unk3Index { get; set; }
+        public int CPUParameterIndex { get; set; }
         public int PixelParameterIndex { get; set; }
         public int VertexParameterIndex { get; set; }
         public Crc PixelShader { get; set; } = new(0);
