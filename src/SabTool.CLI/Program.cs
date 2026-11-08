@@ -13,7 +13,7 @@ public sealed class Program
 
         Console.WriteLine("Loaded hashes!");
 
-        if (args.Length > 0 && args[1] == "exec")
+        if (args.Length > 0 && args[0] == "exec")
         {
             CommandParser.ExecuteCommand(args.Skip(1));
             return;
