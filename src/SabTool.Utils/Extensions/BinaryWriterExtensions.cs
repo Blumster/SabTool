@@ -3,6 +3,8 @@ using System.Drawing;
 using System.IO;
 using System.Text;
 
+using Ionic.Zlib;
+
 namespace SabTool.Utils.Extensions
 {
     public static class BinaryWriterExtensions
@@ -54,6 +56,17 @@ namespace SabTool.Utils.Extensions
         {
             for (var i = 0; i < count; ++i)
                 writerFunction(writer, data[i]);
+        }
+
+        public static void WriteCompressedBytes(this BinaryWriter writer, byte[] data)
+        {
+            using var outStream = new MemoryStream();
+
+            using (var zip = new ZlibStream(outStream, CompressionMode.Compress, true))
+                zip.Write(data, 0, data.Length);
+
+            writer.Write((int)outStream.Length);
+            writer.Write(outStream.GetBuffer(), 0, (int)outStream.Length);
         }
 
         public static void DoAtPosition(this BinaryWriter writer, long position, Action<BinaryWriter> writerFunction)

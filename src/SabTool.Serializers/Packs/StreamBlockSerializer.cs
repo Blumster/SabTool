@@ -283,6 +283,9 @@ public static class StreamBlockSerializer
                             {
                                 textureAsset.Export(outputPath);
 
+                                using (var fs = new FileStream(Path.Combine(outputPath, $"{textureAsset.Name}.texture.json"), FileMode.Create, FileAccess.Write, FileShare.Read))
+                                    TextureAssetSerializer.SerializeMetadataJSON(textureAsset.Metadata, fs);
+
                                 progress.Report(textureAsset.Name ?? "");
 
                                 continue;

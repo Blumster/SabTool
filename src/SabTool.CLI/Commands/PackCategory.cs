@@ -6,9 +6,11 @@ using ShellProgressBar;
 namespace SabTool.CLI.Commands;
 
 using SabTool.CLI.Base;
+using SabTool.Data.Packs.Assets;
 using SabTool.Depot;
 using SabTool.Serializers.Megapacks;
 using SabTool.Serializers.Packs;
+using SabTool.Serializers.Packs.Assets;
 using SabTool.Utils;
 
 public sealed class PackCategory : BaseCategory
@@ -118,6 +120,64 @@ public sealed class PackCategory : BaseCategory
             StreamBlockSerializer.Export(streamBlock, outputDir, child.AsProgress<string>(), ResourceDepot.Instance);
 
             streamBlock.FreePayloads();
+        }
+    }
+
+    public sealed class TextureImportCommand : BaseCommand
+    {
+        public override string Key { get; } = "texture-import";
+        public override string Shortcut { get; } = "ti";
+        public override string Usage { get; } = "<input .dds file or directory> <output directory>";
+
+        public override bool Execute(IEnumerable<string> arguments)
+        {
+            if (arguments.Count() < 2)
+            {
+                Console.WriteLine("ERROR: Not enough arguments given!");
+                return false;
+            }
+
+            var inputPath = arguments.ElementAt(0);
+            var outputDir = arguments.ElementAt(1);
+
+            string[] files;
+            if (File.Exists(inputPath))
+                files = new[] { inputPath };
+            else if (Directory.Exists(inputPath))
+                files = Directory.GetFiles(inputPath, "*.dds", SearchOption.AllDirectories);
+            else
+            {
+                Console.WriteLine("ERROR: The input path doesn't exist!");
+                return false;
+            }
+
+            Directory.CreateDirectory(outputDir);
+
+            foreach (var file in files)
+            {
+                var textureAsset = TextureAsset.Import(file);
+
+                var metadataPath = Path.Combine(Path.GetDirectoryName(file)!, $"{textureAsset.Name}.texture.json");
+                if (File.Exists(metadataPath))
+                {
+                    using var metadataStream = new FileStream(metadataPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+                    textureAsset.Metadata = TextureAssetSerializer.DeserializeMetadataJSON(metadataStream);
+                }
+
+                try
+                {
+                    using var fs = new FileStream(Path.Combine(outputDir, $"{textureAsset.Name}.texture-bin"), FileMode.Create, FileAccess.Write, FileShare.None);
+                    TextureAssetSerializer.SerializeRaw(textureAsset, fs);
+
+                    Console.WriteLine($"Imported {file}");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"ERROR: Unable to import {file}: {ex.Message}");
+                }
+            }
+
+            return true;
         }
     }
 
